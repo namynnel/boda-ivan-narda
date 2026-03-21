@@ -533,17 +533,16 @@
         // Prepare record for Canva Sheet
         const record = {
           codigo: code,
-          confirmation_code: code,
-          first_name: firstName,
-          last_name: lastName,
-          phone: phone,
-          attendance: attendance,
-          has_allergy: formData.get('has_allergy') || 'no',
-          dietary_restrictions: formData.get('dietary_restrictions') || '',
-          has_companion: hasCompanion || 'no',
-          companion_count: companionCount.toString(),
-          companion_names: companionNames,
-          message: formData.get('message') || '',
+          nombre: firstName,
+          apellido: lastName,
+          telefono: phone,
+          asistencia: attendance,
+
+          detalle_alergia: formData.get('dietary_restrictions') || '',
+          'acompañantes': companionCount,
+          nombres_acompañantes: companionNames,
+          alergia: formData.get('has_allergy') || 'no',
+          mensaje: formData.get('message') || '',
           submitted_at: new Date().toISOString()
         };
         
