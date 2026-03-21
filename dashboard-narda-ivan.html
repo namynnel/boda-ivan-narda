@@ -135,6 +135,15 @@ select.edit-input{cursor:pointer;}
 .wa-textarea:focus{border-color:var(--olive);}
 .wa-footer{padding:.9rem 1.4rem;border-top:1px solid rgba(168,197,176,.2);display:flex;gap:.6rem;justify-content:flex-end;}
 
+/* GROUPS */
+.groups-bar{padding:.6rem 1.5rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;border-bottom:1px solid rgba(168,197,176,.2);background:rgba(92,107,77,.03);}
+.group-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .7rem;border-radius:20px;background:rgba(92,107,77,.1);border:1px solid rgba(92,107,77,.2);font-size:.65rem;color:var(--olive-dk);font-family:'Montserrat',sans-serif;}
+.group-chip .del-g{background:transparent;border:none;color:var(--red);cursor:pointer;font-size:.7rem;padding:0 .1rem;line-height:1;}
+.group-section{margin-bottom:1.5rem;}
+.group-header{padding:.5rem 1.5rem;background:linear-gradient(90deg,rgba(92,107,77,.1),transparent);border-left:3px solid var(--olive);display:flex;align-items:center;justify-content:space-between;}
+.group-header-name{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--olive-dk);}
+.group-header-count{font-size:.65rem;color:var(--ink-lt);}
+
 /* EMPTY */
 .empty{text-align:center;padding:3rem;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--ink-lt);font-style:italic;}
 
@@ -210,8 +219,19 @@ select.edit-input{cursor:pointer;}
     <input type="text" class="search-input" id="guest-search" placeholder="Buscar..." oninput="renderGuests()" style="max-width:180px;">
   </div>
 
+  <div class="groups-bar" id="groups-bar">
+    <span style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;color:var(--olive-dk);text-transform:uppercase;">Grupos:</span>
+    <div id="group-chips"></div>
+    <button class="btn btn-ghost" onclick="openAddGroup()" style="font-size:.6rem;">＋ Nuevo grupo</button>
+    <div style="margin-left:auto;display:flex;gap:.5rem;align-items:center;">
+      <span style="font-size:.65rem;color:var(--ink-lt);">Ordenar:</span>
+      <button class="btn btn-ghost active" id="sort-group-btn" onclick="setSortMode('grupo',this)" style="font-size:.6rem;">Por grupo</button>
+      <button class="btn btn-ghost" id="sort-name-btn" onclick="setSortMode('nombre',this)" style="font-size:.6rem;">Por nombre</button>
+    </div>
+  </div>
   <div class="table-wrap">
-    <table id="guests-table">
+    <div id="guests-by-group"></div>
+    <table id="guests-table" style="display:none;">
       <thead><tr>
         <th>N°</th><th>Nombre</th><th>Apellido</th><th>&amp;</th>
         <th>Cupos</th><th>Grupo</th><th>Código</th><th>WhatsApp</th><th>Enviado</th><th></th>
@@ -267,7 +287,9 @@ select.edit-input{cursor:pointer;}
       </div>
       <div class="form-group">
         <label class="form-label">Grupo *</label>
-        <input type="text" class="form-input" id="f-grupo" placeholder="Ej: ARZE, KPOP, CETI...">
+        <select class="form-select" id="f-grupo">
+          <option value="">— Selecciona un grupo —</option>
+        </select>
       </div>
       <div class="form-group">
         <label class="form-label">Código (asignado automáticamente)</label>
@@ -364,6 +386,40 @@ const INITIAL_GUESTS = [{"nombre": "Victor", "apellido": "Aguirre", "sufijo": ""
 /* ══════════════════════════════════════
    STATE — uses localStorage to persist
 ══════════════════════════════════════ */
+function loadGroups() {
+  const saved = localStorage.getItem('ni-groups');
+  if(saved) return JSON.parse(saved);
+  return ['ARZE','ZELADA','MARIÑO','KPOP','COSPLAY','CETI','ABOG','DAMA','CABALLERO','COMPA','CALDERO','TALLER','7 REINOS','CEREMONIA','OTROS','Novios'];
+}
+function saveGroups(g) { localStorage.setItem('ni-groups', JSON.stringify(g)); }
+function getGroups() { return loadGroups(); }
+
+function renderGroupChips() {
+  const groups = getGroups();
+  document.getElementById('group-chips').innerHTML = groups.map(g=>
+    `<span class="group-chip">${g}<button class="del-g" onclick="deleteGroup('${g}')" title="Eliminar grupo">✕</button></span>`
+  ).join('');
+}
+
+function openAddGroup() {
+  const name = prompt('Nombre del nuevo grupo:');
+  if(!name || !name.trim()) return;
+  const groups = getGroups();
+  if(groups.includes(name.trim().toUpperCase())) { alert('Ese grupo ya existe.'); return; }
+  groups.push(name.trim().toUpperCase());
+  saveGroups(groups);
+  renderGuests();
+}
+
+function deleteGroup(name) {
+  const inUse = guests.some(g=>g.grupo===name);
+  if(inUse) { alert('No puedes eliminar "'+name+'" porque tiene invitados asignados.'); return; }
+  if(!confirm('¿Eliminar el grupo "'+name+'"?')) return;
+  const groups = getGroups().filter(g=>g!==name);
+  saveGroups(groups);
+  renderGuests();
+}
+
 function loadGuests() {
   const saved = localStorage.getItem('ni-guests');
   return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(INITIAL_GUESTS));
@@ -467,10 +523,11 @@ function renderRSVP() {
     const nombre = r.nombre||r.first_name||r['Nombre']||'';
     const apellido = r.apellido||r.last_name||r['Apellido']||'';
     const name = `${nombre} ${apellido}`.trim()||'—';
-    const phone= r.telefono||r.phone||r['telefono']||r['Telefono']||'—';
+    const phone = String(r.telefono||r.phone||r['telefono']||r['Telefono']||'').trim();
+    const phoneDisplay = phone && phone!=='' ? phone : '—';
     const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
     const att  = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : attLabel[''];
-    const numAcomp = parseInt(r['acompañantes']||r.acompanantes||r.companion_count||0);
+    const numAcomp = parseInt(r['acompañantes']||r.acompanantes||r.companion_count||0)||0;
     const ppl  = asistencia&&asistencia!=='no' ? 1+numAcomp : '—';
     const mesaNum = code !== '—' ? (mesaAssigns[String(code).trim()] || '—') : '—';
     const mesaLabel = mesaNum !== '—' ? mesas.find(function(m){return m.num===mesaNum;}) : null;
@@ -498,41 +555,109 @@ function updateCuposBar() {
   document.getElementById('cupos-num').textContent = `${total} / ${MAX_CUPOS}`;
 }
 
+let sortMode = 'grupo';
+
+function setSortMode(mode, btn) {
+  sortMode = mode;
+  document.querySelectorAll('#sort-group-btn,#sort-name-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGuests();
+}
+
+function guestRow(g, i) {
+  const isSent = sent[g.codigo]||false;
+  const sufijoOpts = ['','y Sr.','y Sra.','y flia.','y cia.'].map(s=>
+    `<option value="${s}" ${g.sufijo===s?'selected':''}>${s||'—'}</option>`).join('');
+  const grupoOpts = getGroups().map(gr=>
+    `<option value="${gr}" ${g.grupo===gr?'selected':''}>${gr}</option>`).join('');
+  return `<tr>
+    <td style="color:var(--ink-lt);font-size:.72rem;">${i+1}</td>
+    <td><input class="edit-input" value="${g.nombre}" onchange="updateGuest(${i},'nombre',this.value)" style="min-width:80px;"></td>
+    <td><input class="edit-input" value="${g.apellido}" onchange="updateGuest(${i},'apellido',this.value)" style="min-width:80px;"></td>
+    <td><select class="edit-input" onchange="updateGuest(${i},'sufijo',this.value)" style="min-width:90px;">${sufijoOpts}</select></td>
+    <td><input class="edit-input" type="number" min="1" max="10" value="${g.cupos}" onchange="updateGuest(${i},'cupos',parseInt(this.value)||1)" style="width:50px;text-align:center;"></td>
+    <td><select class="edit-input" onchange="updateGuest(${i},'grupo',this.value)" style="min-width:90px;">${grupoOpts}</select></td>
+    <td class="td-code">${g.codigo}</td>
+    <td><button class="wa-btn" onclick="openWAModal(${i})">📱 WhatsApp</button></td>
+    <td><button class="sent-btn ${isSent?'sent':'not-sent'}" id="sb-${g.codigo}" onclick="toggleSent('${g.codigo}')">${isSent?'✓ Enviado':'Marcar'}</button></td>
+    <td><button class="icon-btn" onclick="deleteGuest(${i})" title="Eliminar">🗑️</button></td>
+  </tr>`;
+}
+
 function renderGuests() {
   const q = document.getElementById('guest-search').value.toLowerCase();
-  const tbody = document.getElementById('guests-tbody');
   updateCuposBar();
+  renderGroupChips();
 
-  const filtered = guests.filter((_,i)=>{
-    const g = guests[i];
-    const name = `${g.nombre} ${g.apellido}`.toLowerCase();
-    return !q || name.includes(q) || g.grupo.toLowerCase().includes(q) || g.codigo.includes(q);
+  const filtered = guests.filter((g,i)=>{
+    const name = (g.nombre+' '+g.apellido).toLowerCase();
+    return !q || name.includes(q) || (g.grupo||'').toLowerCase().includes(q) || g.codigo.includes(q);
   });
 
-  tbody.innerHTML = filtered.map((g,fi)=>{
-    const i = guests.indexOf(g);
-    const isSent = sent[g.codigo]||false;
-    return `<tr>
-      <td style="color:var(--ink-lt);font-size:.72rem;">${i+1}</td>
-      <td><input class="edit-input" value="${g.nombre}" onchange="updateGuest(${i},'nombre',this.value)" style="min-width:80px;"></td>
-      <td><input class="edit-input" value="${g.apellido}" onchange="updateGuest(${i},'apellido',this.value)" style="min-width:80px;"></td>
-      <td>
-        <select class="edit-input" onchange="updateGuest(${i},'sufijo',this.value)" style="min-width:90px;">
-          <option value="" ${!g.sufijo?'selected':''}>—</option>
-          <option value="y Sr." ${g.sufijo==='y Sr.'?'selected':''}>y Sr.</option>
-          <option value="y Sra." ${g.sufijo==='y Sra.'?'selected':''}>y Sra.</option>
-          <option value="y flia." ${g.sufijo==='y flia.'?'selected':''}>y flia.</option>
-          <option value="y cia." ${g.sufijo==='y cia.'?'selected':''}>y cia.</option>
-        </select>
-      </td>
-      <td><input class="edit-input" type="number" min="1" max="10" value="${g.cupos}" onchange="updateGuest(${i},'cupos',parseInt(this.value)||1)" style="width:50px;text-align:center;"></td>
-      <td><input class="edit-input" value="${g.grupo}" onchange="updateGuest(${i},'grupo',this.value)" style="min-width:70px;"></td>
-      <td class="td-code">${g.codigo}</td>
-      <td><button class="wa-btn" onclick="openWAModal(${i})">📱 WhatsApp</button></td>
-      <td><button class="sent-btn ${isSent?'sent':'not-sent'}" id="sb-${g.codigo}" onclick="toggleSent('${g.codigo}')">${isSent?'✓ Enviado':'Marcar'}</button></td>
-      <td><button class="icon-btn" onclick="deleteGuest(${i})" title="Eliminar">🗑️</button></td>
-    </tr>`;
-  }).join('');
+  const container = document.getElementById('guests-by-group');
+
+  if(sortMode === 'nombre') {
+    // Sort by name, show as single table
+    const sorted = [...filtered].sort((a,b)=>a.nombre.localeCompare(b.nombre));
+    container.innerHTML = `<table style="width:100%;border-collapse:collapse;min-width:580px;">
+      <thead><tr>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">N°</th>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">Nombre</th>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">Apellido</th>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">&</th>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">Cupos</th>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">Grupo</th>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">Código</th>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">WhatsApp</th>
+        <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);">Enviado</th>
+        <th></th>
+      </tr></thead>
+      <tbody>${sorted.map((g)=>guestRow(g,guests.indexOf(g))).join('')}</tbody>
+    </table>`;
+  } else {
+    // Group by grupo
+    const groups = getGroups();
+    container.innerHTML = groups.map(grupo => {
+      const groupGuests = filtered.filter(g=>g.grupo===grupo);
+      if(!groupGuests.length) return '';
+      const totalG = groupGuests.reduce((a,g)=>a+g.cupos,0);
+      return `<div class="group-section">
+        <div class="group-header">
+          <span class="group-header-name">🌿 ${grupo}</span>
+          <span class="group-header-count">${groupGuests.length} invitados · ${totalG} cupos</span>
+        </div>
+        <table style="width:100%;border-collapse:collapse;min-width:580px;">
+          <thead><tr>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">N°</th>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">Nombre</th>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">Apellido</th>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">&</th>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">Cupos</th>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">Grupo</th>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">Código</th>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">WhatsApp</th>
+            <th style="font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.6rem .8rem;text-align:left;border-bottom:1px solid rgba(168,197,176,.3);">Enviado</th>
+            <th></th>
+          </tr></thead>
+          <tbody>${groupGuests.map(g=>guestRow(g,guests.indexOf(g))).join('')}</tbody>
+        </table>
+      </div>`;
+    }).join('');
+
+    // Ungrouped guests
+    const ungrouped = filtered.filter(g=>!groups.includes(g.grupo));
+    if(ungrouped.length) {
+      container.innerHTML += `<div class="group-section">
+        <div class="group-header">
+          <span class="group-header-name">🌿 Sin grupo</span>
+          <span class="group-header-count">${ungrouped.length} invitados</span>
+        </div>
+        <table style="width:100%;border-collapse:collapse;min-width:580px;">
+          <tbody>${ungrouped.map(g=>guestRow(g,guests.indexOf(g))).join('')}</tbody>
+        </table>
+      </div>`;
+    }
+  }
 }
 
 function updateGuest(i, field, val) {
@@ -564,6 +689,10 @@ function openAddGuest() {
   const usedCodes = new Set(guests.map(g=>g.codigo));
   const nextCode = AVAILABLE_CODES.find(c=>!usedCodes.has(c)) || '—';
   document.getElementById('f-codigo').value = nextCode;
+  // Populate group dropdown
+  const grupSel = document.getElementById('f-grupo');
+  grupSel.innerHTML = '<option value="">— Selecciona un grupo —</option>' +
+    getGroups().map(g=>`<option value="${g}">${g}</option>`).join('');
   document.getElementById('modal-error').style.display='none';
   document.getElementById('modal-overlay').classList.add('open');
 }
@@ -640,10 +769,8 @@ function renderMesas() {
         var ppl = 1+(parseInt(row['acompañantes']||row.acompanantes||0)||0);
         mesaCounts[mesaNum] = (mesaCounts[mesaNum]||0)+ppl;
       }
-    } else {
-      // Count from localStorage even without rsvp confirmation
-      mesaCounts[mesaNum] = (mesaCounts[mesaNum]||0)+1;
     }
+    // Only count from RSVP confirmations, not from localStorage alone
   });
 
   let totalAsignadas=0, totalDisponibles=0;
@@ -653,6 +780,16 @@ function renderMesas() {
     const fillClass = pct>=100?'full':pct>=80?'warn':'';
     totalAsignadas  += count;
     totalDisponibles+= (m.maxPersonas||MAX_MESA)-count;
+    // Get people assigned to this mesa
+    const mesaPeople = Object.entries(mesaAssigns)
+      .filter(function(e){ return e[1]===m.num; })
+      .map(function(e){
+        var row = rsvpRows.find(function(r){ return String(r.codigo||'').trim()===String(e[0]).trim(); });
+        if(row) return (row.nombre||'')+' '+(row.apellido||'');
+        var g = guests.find(function(g){ return g.codigo===e[0]; });
+        return g ? g.nombre+' '+g.apellido : e[0];
+      }).filter(Boolean);
+
     return `<div class="mesa-card">
       <div class="mesa-num">Mesa ${m.num}</div>
       <input class="mesa-name-input" value="${m.nombre}" placeholder="Nombre de la mesa" 
@@ -661,6 +798,7 @@ function renderMesas() {
         onchange="updateMesa(${i},'grupo',this.value)">
       <div class="mesa-count"><span>${count} personas</span><span>${(m.maxPersonas||MAX_MESA)-count} disponibles</span></div>
       <div class="mesa-track"><div class="mesa-fill ${fillClass}" style="width:${pct}%"></div></div>
+      ${mesaPeople.length ? `<div style="margin-top:.5rem;font-size:.65rem;color:var(--ink-lt);line-height:1.6;">${mesaPeople.map(p=>'· '+p).join('<br>')}</div>` : ''}
     </div>`;
   }).join('');
 
