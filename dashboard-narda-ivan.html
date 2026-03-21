@@ -173,11 +173,10 @@ select.edit-input{cursor:pointer;}
 <!-- ══ TAB 1: RSVP ══ -->
 <div id="tab-rsvp" class="tab-content active">
   <div id="stats">
-    <div class="stat-card s-cupos"><span class="stat-num" id="s-inv">—</span><span class="stat-label">Invitados totales</span></div>
-    <div class="stat-card s-confirmed"><span class="stat-num" id="s-conf">—</span><span class="stat-label">Confirmados</span></div>
+    <div class="stat-card s-cupos"><span class="stat-num" id="s-inv">—</span><span class="stat-label">Cupos totales</span></div>
+    <div class="stat-card s-confirmed"><span class="stat-num" id="s-conf">—</span><span class="stat-label">Personas confirmadas</span></div>
     <div class="stat-card s-no"><span class="stat-num" id="s-no">—</span><span class="stat-label">No asisten</span></div>
     <div class="stat-card s-pending"><span class="stat-num" id="s-pend">—</span><span class="stat-label">Sin respuesta</span></div>
-    <div class="stat-card s-people"><span class="stat-num" id="s-ppl">—</span><span class="stat-label">Personas conf.</span></div>
   </div>
 
   <div class="controls">
@@ -468,15 +467,18 @@ function renderRSVP() {
     const nombre = r.nombre||r.first_name||r['Nombre']||'';
     const apellido = r.apellido||r.last_name||r['Apellido']||'';
     const name = `${nombre} ${apellido}`.trim()||'—';
-    const phone= r.telefono||r.phone||r['Teléfono']||'—';
+    const phone= r.telefono||r.phone||r['telefono']||r['Telefono']||'—';
     const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
     const att  = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : attLabel[''];
     const numAcomp = parseInt(r['acompañantes']||r.acompanantes||r.companion_count||0);
     const ppl  = asistencia&&asistencia!=='no' ? 1+numAcomp : '—';
-    const mesaNum = code !== '—' ? (mesaAssigns[code] || '—') : '—';
-    const mesaBtn = `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;" onclick="openMesaModal('${code}','${name}')">${mesaNum==='—'?'Asignar':mesaNum}</button>`;
+    const mesaNum = code !== '—' ? (mesaAssigns[String(code).trim()] || '—') : '—';
+    const mesaLabel = mesaNum !== '—' ? mesas.find(function(m){return m.num===mesaNum;}) : null;
+    const mesaBtnLabel = mesaLabel ? mesaLabel.nombre : (mesaNum !== '—' ? 'Mesa '+mesaNum : 'Asignar');
+    const mesaBtn = `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;" onclick="openMesaModal('${code}','${name}')">${mesaBtnLabel}</button>`;
     const alergia = (r.alergia==='yes'||r.has_allergy==='yes') ? `<span style="color:#e07070;">⚠️ ${r.detalle_alergia||r.dietary_restrictions||''}</span>` : '—';
-    const msg = r.mensaje ? `<span style="cursor:pointer;color:var(--euca);" title="${r.mensaje}">💬</span>` : '—';
+    const msgText = r.mensaje||r.message||'';
+    const msg = msgText ? `<span style="cursor:pointer;color:var(--euca);text-decoration:underline;font-size:.72rem;" onclick="alert('${msgText.replace(/'/g,"\'")}')">💬 Ver</span>` : '—';
     const fecha = (r.fecha||r.submitted_at||'').split('T')[0]||'—';
     return `<tr><td class="td-name">${name}</td><td class="td-code">${code}</td><td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱${phone}</a></td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${mesaBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${fecha}</td></tr>`;
   }).join('');
@@ -627,11 +629,20 @@ function renderMesas() {
   const grid = document.getElementById('mesas-grid');
   // Count people per mesa from rsvp assigns
   const mesaCounts = {};
-  Object.entries(mesaAssigns).forEach(([codigo, mesaNum])=>{
-    const row = rsvpRows.find(r=>(r.codigo||r.confirmation_code)===codigo);
-    if(row && row.asistencia && row.asistencia!=='no'){
-      const ppl = 1+(parseInt(row['acompañantes'])||0);
-      mesaCounts[mesaNum] = (mesaCounts[mesaNum]||0)+ppl;
+  Object.entries(mesaAssigns).forEach(function(entry){
+    var codigo = entry[0]; var mesaNum = entry[1];
+    var row = rsvpRows.find(function(r){ 
+      return String(r.codigo||r.confirmation_code||'').trim() === String(codigo).trim(); 
+    });
+    if(row){
+      var asist = row.asistencia||row.attendance||'';
+      if(asist && asist!=='no'){
+        var ppl = 1+(parseInt(row['acompañantes']||row.acompanantes||0)||0);
+        mesaCounts[mesaNum] = (mesaCounts[mesaNum]||0)+ppl;
+      }
+    } else {
+      // Count from localStorage even without rsvp confirmation
+      mesaCounts[mesaNum] = (mesaCounts[mesaNum]||0)+1;
     }
   });
 
@@ -694,7 +705,7 @@ function saveMesaAssign() {
   const codigo   = document.getElementById('mesa-guest-codigo').value;
   const mesaNum  = parseInt(document.getElementById('mesa-select').value);
   if(!mesaNum){ alert('Selecciona una mesa'); return; }
-  mesaAssigns[codigo] = mesaNum;
+  mesaAssigns[String(codigo).trim()] = mesaNum;
   saveMesaAssigns(mesaAssigns);
   closeMesaModal();
   renderRSVP();
