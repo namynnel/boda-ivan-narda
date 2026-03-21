@@ -336,7 +336,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwmXfgHQNWdlivPx5fUUBh46mFRLi1xNGZoifLn_yprVFh1eIcrMmsQO_6WXZYyrRgHTQ/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw4KkzTyzhbWj8rY47Dx-8KwPj9RI4Zkl4D2KltC9g76HqHy1C-I0zWv6fZXEHcqdltWw/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -425,9 +425,9 @@ async function refreshRSVP() {
 }
 
 function updateStats() {
-  const conf  = rsvpRows.filter(r=>r.asistencia && r.asistencia!=='no');
-  const no    = rsvpRows.filter(r=>r.asistencia==='no');
-  const ppl   = conf.reduce((a,r)=>a+1+(parseInt(r['acompañantes'])||0),0);
+  const conf  = rsvpRows.filter(r=>(r.asistencia||r.attendance) && (r.asistencia||r.attendance)!=='no');
+  const no    = rsvpRows.filter(r=>(r.asistencia||r.attendance)==='no');
+  const ppl   = conf.reduce((a,r)=>a+1+(parseInt(r['acompañantes']||r.companion_count)||0),0);
   document.getElementById('s-inv').textContent  = guests.length;
   document.getElementById('s-conf').textContent = conf.length;
   document.getElementById('s-no').textContent   = no.length;
@@ -463,14 +463,19 @@ function renderRSVP() {
   empty.style.display='none'; document.getElementById('rsvp-table').style.display='table';
 
   tbody.innerHTML = rows.map(r=>{
-    const code = r.codigo||r.confirmation_code||'—';
-    const name = `${r.nombre||''} ${r.apellido||''}`.trim()||'—';
-    const phone= r.telefono||'—';
-    const att  = r.asistencia ? `<span class="badge ${r.asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[r.asistencia]||r.asistencia}</span>` : attLabel[''];
-    const ppl  = r.asistencia&&r.asistencia!=='no' ? 1+(parseInt(r['acompañantes'])||0) : '—';
-    const mesaNum = mesaAssigns[code] || '—';
+    // Try all possible column name variations
+    const code = r.codigo||r.confirmation_code||r['código']||'—';
+    const nombre = r.nombre||r.first_name||r['Nombre']||'';
+    const apellido = r.apellido||r.last_name||r['Apellido']||'';
+    const name = `${nombre} ${apellido}`.trim()||'—';
+    const phone= r.telefono||r.phone||r['Teléfono']||'—';
+    const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
+    const att  = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : attLabel[''];
+    const numAcomp = parseInt(r['acompañantes']||r.acompanantes||r.companion_count||0);
+    const ppl  = asistencia&&asistencia!=='no' ? 1+numAcomp : '—';
+    const mesaNum = code !== '—' ? (mesaAssigns[code] || '—') : '—';
     const mesaBtn = `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;" onclick="openMesaModal('${code}','${name}')">${mesaNum==='—'?'Asignar':mesaNum}</button>`;
-    const alergia = r.alergia==='yes' ? `<span style="color:#e07070;">⚠️ ${r.detalle_alergia||''}</span>` : '—';
+    const alergia = (r.alergia==='yes'||r.has_allergy==='yes') ? `<span style="color:#e07070;">⚠️ ${r.detalle_alergia||r.dietary_restrictions||''}</span>` : '—';
     const msg = r.mensaje ? `<span style="cursor:pointer;color:var(--euca);" title="${r.mensaje}">💬</span>` : '—';
     const fecha = (r.fecha||r.submitted_at||'').split('T')[0]||'—';
     return `<tr><td class="td-name">${name}</td><td class="td-code">${code}</td><td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱${phone}</a></td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${mesaBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${fecha}</td></tr>`;

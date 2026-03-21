@@ -550,7 +550,7 @@
         // Send via URL params (works with no-cors)
         const params = new URLSearchParams();
         Object.entries(record).forEach(([k,v]) => params.append(k, v));
-        await fetch('https://script.google.com/macros/s/AKfycbwmXfgHQNWdlivPx5fUUBh46mFRLi1xNGZoifLn_yprVFh1eIcrMmsQO_6WXZYyrRgHTQ/exec?' + params.toString(), {
+        await fetch('https://script.google.com/macros/s/AKfycbw4KkzTyzhbWj8rY47Dx-8KwPj9RI4Zkl4D2KltC9g76HqHy1C-I0zWv6fZXEHcqdltWw/exec?' + params.toString(), {
           method: 'GET',
           mode: 'no-cors'
         });
