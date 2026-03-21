@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Ivan & Narda</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --olive:#5C6B4D;--olive-dk:#3A4520;--olive-lt:#7A8A58;
+  --euca:#7B9E87;--euca-lt:#A8C5B0;
+  --cream:#FDFBF7;--linen:#F0E8D4;
+  --gold:#C9A962;--gold-lt:#D4BA7A;
+  --ink:#1E2410;--ink-lt:#5C6B4D;
+  --red:#DC6B6B;--green:#5C9E7A;--amber:#C9A040;
+}
+body{background:var(--cream);color:var(--ink);font-family:'Montserrat',sans-serif;min-height:100vh;}
+
+/* ── HEADER ── */
+#header{
+  background:linear-gradient(135deg,var(--olive-dk),var(--olive));
+  padding:1.5rem 2rem;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+}
+.header-names{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.4rem,3vw,2rem);
+  font-weight:400;color:#fff;letter-spacing:.05em;
+}
+.header-names span{color:var(--gold-lt);font-style:italic;}
+.header-sub{
+  font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(255,255,255,.55);margin-top:.2rem;
+}
+.refresh-btn{
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
+  color:#fff;padding:.55rem 1.2rem;border-radius:6px;cursor:pointer;
+  font-family:'Montserrat',sans-serif;font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;transition:all .3s;display:flex;align-items:center;gap:.5rem;
+}
+.refresh-btn:hover{background:rgba(255,255,255,.2);}
+.spin{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── STATS ── */
+#stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:1rem;padding:1.5rem 2rem;
+  background:linear-gradient(180deg,rgba(92,107,77,.06),transparent);
+  border-bottom:1px solid rgba(168,132,42,.15);
+}
+.stat-card{
+  background:#fff;border:1px solid rgba(168,197,176,.3);border-radius:10px;
+  padding:1.2rem;text-align:center;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+  position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--bar,var(--gold));
+}
+.stat-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:2.4rem;font-weight:600;color:var(--col,var(--olive-dk));
+  line-height:1;display:block;
+}
+.stat-label{
+  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-lt);margin-top:.4rem;display:block;
+}
+.stat-card.confirmed{--bar:var(--green);--col:var(--green);}
+.stat-card.no-attend{--bar:var(--red);--col:var(--red);}
+.stat-card.pending{--bar:var(--amber);--col:var(--amber);}
+.stat-card.people{--bar:var(--euca);--col:var(--euca);}
+
+/* ── CONTROLS ── */
+#controls{
+  padding:1rem 2rem;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;
+  border-bottom:1px solid rgba(168,197,176,.2);
+}
+.search-input{
+  flex:1;min-width:200px;
+  padding:.65rem 1rem .65rem 2.4rem;
+  border:1px solid var(--euca-lt);border-radius:8px;
+  font-family:'Montserrat',sans-serif;font-size:.8rem;color:var(--ink);
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237B9E87' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") .75rem center/16px no-repeat;
+  outline:none;transition:border-color .2s;
+}
+.search-input:focus{border-color:var(--olive);}
+
+.filter-btn{
+  padding:.6rem 1.1rem;border-radius:8px;border:1px solid var(--euca-lt);
+  background:#fff;font-family:'Montserrat',sans-serif;font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  color:var(--ink-lt);transition:all .2s;
+}
+.filter-btn.active,.filter-btn:hover{
+  background:var(--olive);color:#fff;border-color:var(--olive);
+}
+.filter-btn.f-confirmed.active{background:var(--green);border-color:var(--green);}
+.filter-btn.f-no.active{background:var(--red);border-color:var(--red);}
+.filter-btn.f-pending.active{background:var(--amber);border-color:var(--amber);}
+
+/* ── TABLE ── */
+#table-wrap{padding:1rem 2rem 3rem;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:700px;}
+thead th{
+  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-lt);padding:.8rem 1rem;text-align:left;
+  border-bottom:2px solid rgba(168,197,176,.3);
+  background:rgba(92,107,77,.03);
+}
+tbody tr{
+  border-bottom:1px solid rgba(168,197,176,.15);
+  transition:background .2s;
+}
+tbody tr:hover{background:rgba(123,158,135,.05);}
+tbody td{
+  padding:.85rem 1rem;font-size:.8rem;color:var(--ink);
+  vertical-align:middle;
+}
+.td-name{font-weight:500;}
+.td-code{
+  font-size:.7rem;letter-spacing:.1em;
+  color:var(--ink-lt);font-family:'Courier New',monospace;
+}
+.badge{
+  display:inline-flex;align-items:center;gap:.3rem;
+  padding:.25rem .7rem;border-radius:20px;
+  font-size:.65rem;font-weight:500;letter-spacing:.05em;
+  white-space:nowrap;
+}
+.badge-confirmed{background:rgba(92,158,122,.12);color:var(--green);}
+.badge-no{background:rgba(220,107,107,.1);color:var(--red);}
+.badge-pending{background:rgba(201,160,64,.1);color:var(--amber);}
+.badge-sent{background:rgba(123,158,135,.12);color:var(--euca);}
+.badge-not-sent{background:rgba(200,200,200,.2);color:#999;}
+
+.sent-toggle{
+  cursor:pointer;padding:.2rem .6rem;border-radius:4px;border:1px solid;
+  font-size:.65rem;font-family:'Montserrat',sans-serif;
+  transition:all .2s;background:transparent;
+}
+.sent-toggle.sent{border-color:var(--euca);color:var(--euca);}
+.sent-toggle.sent:hover{background:var(--euca);color:#fff;}
+.sent-toggle.not-sent{border-color:#ccc;color:#999;}
+.sent-toggle.not-sent:hover{border-color:var(--olive);color:var(--olive);}
+
+.td-msg{
+  max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-style:italic;color:var(--ink-lt);font-size:.75rem;cursor:pointer;
+}
+.td-msg:hover{color:var(--olive);}
+
+/* Allergy warning */
+.allergy-icon{color:#e07070;font-size:.9rem;}
+
+/* ── EMPTY STATE ── */
+#empty-state{
+  text-align:center;padding:4rem 2rem;
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.2rem;color:var(--ink-lt);font-style:italic;
+}
+
+/* ── MESSAGE MODAL ── */
+#msg-modal{
+  display:none;position:fixed;inset:0;
+  background:rgba(30,36,16,.6);backdrop-filter:blur(6px);
+  z-index:500;align-items:center;justify-content:center;padding:1.5rem;
+}
+#msg-modal.open{display:flex;}
+.msg-box{
+  background:var(--cream);border:1px solid rgba(168,197,176,.4);
+  border-radius:12px;max-width:440px;width:100%;padding:2rem;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.msg-box h3{
+  font-family:'Cormorant Garamond',serif;font-size:1.3rem;
+  color:var(--olive-dk);margin-bottom:.5rem;
+}
+.msg-box p{font-size:.85rem;color:var(--ink-lt);line-height:1.7;margin-top:.8rem;}
+.msg-close{
+  margin-top:1.2rem;padding:.6rem 1.4rem;
+  background:var(--olive);color:#fff;border:none;border-radius:6px;
+  font-family:'Montserrat',sans-serif;font-size:.75rem;cursor:pointer;
+}
+
+/* ── LOADING ── */
+#loading{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:5rem;gap:1rem;
+}
+.loader{
+  width:40px;height:40px;border:3px solid var(--euca-lt);
+  border-top-color:var(--olive);border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  #stats{grid-template-columns:repeat(2,1fr);}
+  #controls{padding:1rem;}
+  #table-wrap{padding:1rem;}
+  #header{padding:1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+  <div>
+    <div class="header-names">Ivan <span>&amp;</span> Narda</div>
+    <div class="header-sub">Panel de gestión · 5 de Diciembre de 2026</div>
+  </div>
+  <button class="refresh-btn" onclick="loadData()">
+    <svg id="refresh-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+      <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+    </svg>
+    Actualizar
+  </button>
+</div>
+
+<!-- STATS -->
+<div id="stats">
+  <div class="stat-card">
+    <span class="stat-num" id="s-total">—</span>
+    <span class="stat-label">Total invitados</span>
+  </div>
+  <div class="stat-card confirmed">
+    <span class="stat-num" id="s-confirmed">—</span>
+    <span class="stat-label">Confirmados</span>
+  </div>
+  <div class="stat-card no-attend">
+    <span class="stat-num" id="s-no">—</span>
+    <span class="stat-label">No asisten</span>
+  </div>
+  <div class="stat-card pending">
+    <span class="stat-num" id="s-pending">—</span>
+    <span class="stat-label">Sin respuesta</span>
+  </div>
+  <div class="stat-card people">
+    <span class="stat-num" id="s-people">—</span>
+    <span class="stat-label">Personas totales</span>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div id="controls">
+  <input type="text" class="search-input" id="search" placeholder="Buscar por nombre o código...">
+  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Todos</button>
+  <button class="filter-btn f-confirmed" data-filter="confirmed" onclick="setFilter('confirmed',this)">✅ Confirmados</button>
+  <button class="filter-btn f-no" data-filter="no" onclick="setFilter('no',this)">❌ No asisten</button>
+  <button class="filter-btn f-pending" data-filter="pending" onclick="setFilter('pending',this)">⏳ Pendientes</button>
+  <button class="filter-btn" data-filter="allergy" onclick="setFilter('allergy',this)">⚠️ Alergias</button>
+</div>
+
+<!-- TABLE -->
+<div id="table-wrap">
+  <div id="loading">
+    <div class="loader"></div>
+    <p style="font-size:.8rem;color:var(--ink-lt);">Cargando respuestas...</p>
+  </div>
+  <table id="data-table" style="display:none">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Código</th>
+        <th>Teléfono</th>
+        <th>Asistencia</th>
+        <th>Personas</th>
+        <th>Alergia</th>
+        <th>Mensaje</th>
+        <th>Link enviado</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <div id="empty-state" style="display:none">
+    Aún no hay respuestas confirmadas 🌿
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div id="msg-modal">
+  <div class="msg-box">
+    <h3 id="modal-name">Mensaje</h3>
+    <p id="modal-msg"></p>
+    <button class="msg-close" onclick="closeModal()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby_fbtXj5K5Rd4QbQdY1xYVzQLpm_piwyeIHj7p6MiuSD3cTl7LaisFsTVi0VL91QLzJw/exec';
+
+let allRows = [];
+let currentFilter = 'all';
+// Track "link sent" state locally (persists in localStorage)
+let sentMap = JSON.parse(localStorage.getItem('sent-map') || '{}');
+
+async function loadData() {
+  const icon = document.getElementById('refresh-icon');
+  icon.classList.add('spin');
+
+  try {
+    const res  = await fetch(SHEETS_URL + '?action=read&t=' + Date.now());
+    const data = await res.json();
+    allRows = data.rows || [];
+    renderStats();
+    renderTable();
+    document.getElementById('loading').style.display     = 'none';
+    document.getElementById('data-table').style.display  = 'table';
+  } catch(e) {
+    document.getElementById('loading').innerHTML =
+      '<p style="color:var(--red);font-size:.85rem;">Error al cargar datos. Verifica que el script de Google esté publicado correctamente.</p>';
+  }
+  icon.classList.remove('spin');
+}
+
+function renderStats() {
+  const confirmed = allRows.filter(r => r.asistencia && r.asistencia !== 'no');
+  const no        = allRows.filter(r => r.asistencia === 'no');
+  // Total invited = all codes in valid list (approximate from loaded)
+  const total = allRows.length;
+  const people = confirmed.reduce((acc, r) => acc + 1 + (parseInt(r['acompañantes']) || 0), 0);
+
+  document.getElementById('s-total').textContent     = total;
+  document.getElementById('s-confirmed').textContent = confirmed.length;
+  document.getElementById('s-no').textContent        = no.length;
+  document.getElementById('s-pending').textContent   = '—'; // from external list
+  document.getElementById('s-people').textContent    = people;
+}
+
+function renderTable() {
+  const q      = document.getElementById('search').value.toLowerCase();
+  const tbody  = document.getElementById('tbody');
+  const empty  = document.getElementById('empty-state');
+
+  let rows = allRows.filter(r => {
+    const name = `${r.nombre||''} ${r.apellido||''}`.toLowerCase();
+    const code = (r.codigo||'').toLowerCase();
+    const matchQ = !q || name.includes(q) || code.includes(q);
+
+    let matchF = true;
+    if (currentFilter === 'confirmed') matchF = r.asistencia && r.asistencia !== 'no';
+    if (currentFilter === 'no')        matchF = r.asistencia === 'no';
+    if (currentFilter === 'pending')   matchF = !r.asistencia;
+    if (currentFilter === 'allergy')   matchF = r.alergia === 'yes';
+
+    return matchQ && matchF;
+  });
+
+  if (rows.length === 0) {
+    tbody.innerHTML = '';
+    document.getElementById('data-table').style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  document.getElementById('data-table').style.display = 'table';
+  empty.style.display = 'none';
+
+  const attendanceLabel = {
+    both:      '<span class="badge badge-confirmed">💍 Ambos</span>',
+    ceremony:  '<span class="badge badge-confirmed">🎩 Ceremonia</span>',
+    reception: '<span class="badge badge-confirmed">🍽️ Recepción</span>',
+    no:        '<span class="badge badge-no">❌ No asiste</span>',
+    '':        '<span class="badge badge-pending">⏳ Pendiente</span>',
+  };
+
+  tbody.innerHTML = rows.map((r, i) => {
+    const code    = r.codigo || '—';
+    const name    = `${r.nombre||''} ${r.apellido||''}`.trim() || '—';
+    const phone   = r.telefono || '—';
+    const att     = attendanceLabel[r.asistencia] || attendanceLabel[''];
+    const companions = parseInt(r['acompañantes']) || 0;
+    const people  = r.asistencia && r.asistencia !== 'no' ? 1 + companions : '—';
+    const allergy = r.alergia === 'yes'
+      ? `<span class="allergy-icon" title="${r.detalle_alergia||''}">⚠️</span>`
+      : '<span style="color:#ccc">—</span>';
+    const msg     = r.mensaje
+      ? `<span class="td-msg" onclick="openModal('${name}','${(r.mensaje||'').replace(/'/g,"\\'")}')">💬 Ver</span>`
+      : '<span style="color:#ccc">—</span>';
+    const fecha   = r.fecha ? r.fecha.split('T')[0] : (r.submitted_at||'').split('T')[0] || '—';
+
+    const isSent  = sentMap[code] || false;
+    const sentBtn = `<button class="sent-toggle ${isSent?'sent':'not-sent'}"
+      onclick="toggleSent('${code}',this)">${isSent?'✓ Enviado':'Marcar'}</button>`;
+
+    return `<tr>
+      <td class="td-name">${name}</td>
+      <td class="td-code">${code}</td>
+      <td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱 ${phone}</a></td>
+      <td>${att}</td>
+      <td style="text-align:center;font-weight:500;">${people}</td>
+      <td style="text-align:center;">${allergy}</td>
+      <td>${msg}</td>
+      <td>${sentBtn}</td>
+      <td style="font-size:.7rem;color:var(--ink-lt);">${fecha}</td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleSent(code, btn) {
+  sentMap[code] = !sentMap[code];
+  localStorage.setItem('sent-map', JSON.stringify(sentMap));
+  btn.className = `sent-toggle ${sentMap[code]?'sent':'not-sent'}`;
+  btn.textContent = sentMap[code] ? '✓ Enviado' : 'Marcar';
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function openModal(name, msg) {
+  document.getElementById('modal-name').textContent = name;
+  document.getElementById('modal-msg').textContent  = msg;
+  document.getElementById('msg-modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('msg-modal').classList.remove('open');
+}
+document.getElementById('msg-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('msg-modal')) closeModal();
+});
+
+document.getElementById('search').addEventListener('input', renderTable);
+
+// Initial load
+loadData();
+</script>
+</body>
+</html>
