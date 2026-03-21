@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard · Ivan & Narda</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@400;500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
@@ -17,424 +17,685 @@
 }
 body{background:var(--cream);color:var(--ink);font-family:'Montserrat',sans-serif;min-height:100vh;}
 
-/* ── HEADER ── */
-#header{
-  background:linear-gradient(135deg,var(--olive-dk),var(--olive));
-  padding:1.5rem 2rem;
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:1rem;
-  box-shadow:0 4px 20px rgba(0,0,0,.2);
-}
-.header-names{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(1.4rem,3vw,2rem);
-  font-weight:400;color:#fff;letter-spacing:.05em;
-}
+#header{background:linear-gradient(135deg,var(--olive-dk),var(--olive));padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.header-names{font-family:'Cormorant Garamond',serif;font-size:clamp(1.2rem,3vw,1.8rem);font-weight:400;color:#fff;}
 .header-names span{color:var(--gold-lt);font-style:italic;}
-.header-sub{
-  font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;
-  color:rgba(255,255,255,.55);margin-top:.2rem;
-}
-.refresh-btn{
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);
-  color:#fff;padding:.55rem 1.2rem;border-radius:6px;cursor:pointer;
-  font-family:'Montserrat',sans-serif;font-size:.7rem;letter-spacing:.15em;
-  text-transform:uppercase;transition:all .3s;display:flex;align-items:center;gap:.5rem;
-}
-.refresh-btn:hover{background:rgba(255,255,255,.2);}
+.header-sub{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:.2rem;}
+
+#tabs{display:flex;background:var(--olive-dk);border-bottom:2px solid rgba(201,169,98,.3);overflow-x:auto;}
+.tab{padding:.8rem 1.2rem;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(221,184,78,.45);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .3s;white-space:nowrap;}
+.tab.active{color:var(--gold-lt);border-bottom-color:var(--gold-lt);}
+.tab:hover{color:var(--gold-lt);}
+
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* STATS */
+#stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.8rem;padding:1.2rem 1.5rem;border-bottom:1px solid rgba(168,132,42,.15);}
+.stat-card{background:#fff;border:1px solid rgba(168,197,176,.3);border-radius:8px;padding:1rem;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.05);position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--bar,var(--gold));}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--col,var(--olive-dk));line-height:1;display:block;}
+.stat-label{font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-lt);margin-top:.3rem;display:block;}
+.stat-card.s-confirmed{--bar:var(--green);--col:var(--green);}
+.stat-card.s-no{--bar:var(--red);--col:var(--red);}
+.stat-card.s-pending{--bar:var(--amber);--col:var(--amber);}
+.stat-card.s-people{--bar:var(--euca);--col:var(--euca);}
+.stat-card.s-cupos{--bar:var(--olive);--col:var(--olive-dk);}
+
+/* CONTROLS */
+.controls{padding:.8rem 1.5rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;border-bottom:1px solid rgba(168,197,176,.2);}
+.search-input{flex:1;min-width:160px;padding:.55rem .9rem .55rem 2rem;border:1px solid var(--euca-lt);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:.78rem;color:var(--ink);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='none' stroke='%237B9E87' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") .65rem center/13px no-repeat;outline:none;}
+.search-input:focus{border-color:var(--olive);}
+.btn{padding:.55rem 1rem;border-radius:6px;font-family:'Montserrat',sans-serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:1px solid;transition:all .2s;display:inline-flex;align-items:center;gap:.4rem;}
+.btn-olive{background:var(--olive);color:#fff;border-color:var(--olive);}
+.btn-olive:hover{background:var(--olive-dk);}
+.btn-ghost{background:#fff;color:var(--ink-lt);border-color:var(--euca-lt);}
+.btn-ghost.active,.btn-ghost:hover{background:var(--olive);color:#fff;border-color:var(--olive);}
+.btn-ghost.f-confirmed.active{background:var(--green);border-color:var(--green);}
+.btn-ghost.f-no.active{background:var(--red);border-color:var(--red);}
+.btn-ghost.f-pending.active{background:var(--amber);border-color:var(--amber);}
 .spin{animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── STATS ── */
-#stats{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:1rem;padding:1.5rem 2rem;
-  background:linear-gradient(180deg,rgba(92,107,77,.06),transparent);
-  border-bottom:1px solid rgba(168,132,42,.15);
-}
-.stat-card{
-  background:#fff;border:1px solid rgba(168,197,176,.3);border-radius:10px;
-  padding:1.2rem;text-align:center;
-  box-shadow:0 2px 12px rgba(0,0,0,.06);
-  position:relative;overflow:hidden;
-}
-.stat-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--bar,var(--gold));
-}
-.stat-num{
-  font-family:'Cormorant Garamond',serif;
-  font-size:2.4rem;font-weight:600;color:var(--col,var(--olive-dk));
-  line-height:1;display:block;
-}
-.stat-label{
-  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--ink-lt);margin-top:.4rem;display:block;
-}
-.stat-card.confirmed{--bar:var(--green);--col:var(--green);}
-.stat-card.no-attend{--bar:var(--red);--col:var(--red);}
-.stat-card.pending{--bar:var(--amber);--col:var(--amber);}
-.stat-card.people{--bar:var(--euca);--col:var(--euca);}
-
-/* ── CONTROLS ── */
-#controls{
-  padding:1rem 2rem;display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;
-  border-bottom:1px solid rgba(168,197,176,.2);
-}
-.search-input{
-  flex:1;min-width:200px;
-  padding:.65rem 1rem .65rem 2.4rem;
-  border:1px solid var(--euca-lt);border-radius:8px;
-  font-family:'Montserrat',sans-serif;font-size:.8rem;color:var(--ink);
-  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237B9E87' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") .75rem center/16px no-repeat;
-  outline:none;transition:border-color .2s;
-}
-.search-input:focus{border-color:var(--olive);}
-
-.filter-btn{
-  padding:.6rem 1.1rem;border-radius:8px;border:1px solid var(--euca-lt);
-  background:#fff;font-family:'Montserrat',sans-serif;font-size:.7rem;
-  letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
-  color:var(--ink-lt);transition:all .2s;
-}
-.filter-btn.active,.filter-btn:hover{
-  background:var(--olive);color:#fff;border-color:var(--olive);
-}
-.filter-btn.f-confirmed.active{background:var(--green);border-color:var(--green);}
-.filter-btn.f-no.active{background:var(--red);border-color:var(--red);}
-.filter-btn.f-pending.active{background:var(--amber);border-color:var(--amber);}
-
-/* ── TABLE ── */
-#table-wrap{padding:1rem 2rem 3rem;overflow-x:auto;}
-table{width:100%;border-collapse:collapse;min-width:700px;}
-thead th{
-  font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--ink-lt);padding:.8rem 1rem;text-align:left;
-  border-bottom:2px solid rgba(168,197,176,.3);
-  background:rgba(92,107,77,.03);
-}
-tbody tr{
-  border-bottom:1px solid rgba(168,197,176,.15);
-  transition:background .2s;
-}
+/* TABLE */
+.table-wrap{padding:.8rem 1.5rem 2rem;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:580px;}
+thead th{font-size:.56rem;letter-spacing:.15em;text-transform:uppercase;color:var(--ink-lt);padding:.7rem .8rem;text-align:left;border-bottom:2px solid rgba(168,197,176,.3);background:rgba(92,107,77,.03);}
+tbody tr{border-bottom:1px solid rgba(168,197,176,.12);transition:background .15s;}
 tbody tr:hover{background:rgba(123,158,135,.05);}
-tbody td{
-  padding:.85rem 1rem;font-size:.8rem;color:var(--ink);
-  vertical-align:middle;
-}
+tbody td{padding:.7rem .8rem;font-size:.77rem;color:var(--ink);vertical-align:middle;}
 .td-name{font-weight:500;}
-.td-code{
-  font-size:.7rem;letter-spacing:.1em;
-  color:var(--ink-lt);font-family:'Courier New',monospace;
-}
-.badge{
-  display:inline-flex;align-items:center;gap:.3rem;
-  padding:.25rem .7rem;border-radius:20px;
-  font-size:.65rem;font-weight:500;letter-spacing:.05em;
-  white-space:nowrap;
-}
-.badge-confirmed{background:rgba(92,158,122,.12);color:var(--green);}
-.badge-no{background:rgba(220,107,107,.1);color:var(--red);}
-.badge-pending{background:rgba(201,160,64,.1);color:var(--amber);}
-.badge-sent{background:rgba(123,158,135,.12);color:var(--euca);}
-.badge-not-sent{background:rgba(200,200,200,.2);color:#999;}
+.td-code{font-family:'Courier New',monospace;font-size:.7rem;color:var(--ink-lt);}
+.badge{display:inline-flex;align-items:center;gap:.25rem;padding:.18rem .6rem;border-radius:20px;font-size:.6rem;font-weight:500;}
+.b-confirmed{background:rgba(92,158,122,.12);color:var(--green);}
+.b-no{background:rgba(220,107,107,.1);color:var(--red);}
+.b-pending{background:rgba(201,160,64,.1);color:var(--amber);}
+.wa-btn{display:inline-flex;align-items:center;gap:.3rem;padding:.28rem .65rem;border-radius:4px;background:#25D366;color:#fff;border:none;font-size:.6rem;cursor:pointer;font-family:'Montserrat',sans-serif;transition:opacity .2s;}
+.wa-btn:hover{opacity:.85;}
+.sent-btn{cursor:pointer;padding:.2rem .55rem;border-radius:4px;border:1px solid;font-size:.6rem;font-family:'Montserrat',sans-serif;background:transparent;transition:all .2s;}
+.sent-btn.sent{border-color:var(--euca);color:var(--euca);}
+.sent-btn.sent:hover{background:var(--euca);color:#fff;}
+.sent-btn.not-sent{border-color:#ccc;color:#999;}
+.sent-btn.not-sent:hover{border-color:var(--olive);color:var(--olive);}
+.icon-btn{background:transparent;border:none;cursor:pointer;padding:.2rem .4rem;border-radius:3px;font-size:.85rem;transition:background .2s;}
+.icon-btn:hover{background:rgba(0,0,0,.06);}
 
-.sent-toggle{
-  cursor:pointer;padding:.2rem .6rem;border-radius:4px;border:1px solid;
-  font-size:.65rem;font-family:'Montserrat',sans-serif;
-  transition:all .2s;background:transparent;
-}
-.sent-toggle.sent{border-color:var(--euca);color:var(--euca);}
-.sent-toggle.sent:hover{background:var(--euca);color:#fff;}
-.sent-toggle.not-sent{border-color:#ccc;color:#999;}
-.sent-toggle.not-sent:hover{border-color:var(--olive);color:var(--olive);}
+/* GUEST LIST */
+.cupos-bar{padding:.6rem 1.5rem;background:linear-gradient(90deg,rgba(92,107,77,.08),rgba(92,107,77,.03));border-bottom:1px solid rgba(168,132,42,.15);display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.cupos-label{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--olive-dk);}
+.cupos-track{flex:1;min-width:150px;height:8px;background:rgba(168,197,176,.3);border-radius:4px;overflow:hidden;}
+.cupos-fill{height:100%;background:linear-gradient(90deg,var(--olive),var(--euca));border-radius:4px;transition:width .5s ease;}
+.cupos-fill.warn{background:linear-gradient(90deg,var(--amber),#E8A020);}
+.cupos-fill.full{background:linear-gradient(90deg,var(--red),#C04040);}
+.cupos-num{font-family:'Cinzel',serif;font-size:.75rem;font-weight:500;color:var(--olive-dk);}
 
-.td-msg{
-  max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-  font-style:italic;color:var(--ink-lt);font-size:.75rem;cursor:pointer;
-}
-.td-msg:hover{color:var(--olive);}
+.edit-input{background:transparent;border:none;border-bottom:1px solid transparent;font-family:'Montserrat',sans-serif;font-size:.77rem;color:var(--ink);width:100%;padding:1px 3px;transition:border-color .2s;}
+.edit-input:focus{outline:none;border-bottom-color:var(--olive);background:rgba(92,107,77,.04);}
+select.edit-input{cursor:pointer;}
 
-/* Allergy warning */
-.allergy-icon{color:#e07070;font-size:.9rem;}
+/* MESAS */
+.mesas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;padding:1.2rem 1.5rem;}
+.mesa-card{background:#fff;border:1px solid rgba(168,197,176,.3);border-radius:8px;padding:1rem;box-shadow:0 2px 10px rgba(0,0,0,.05);position:relative;}
+.mesa-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--sage,var(--olive)),var(--euca));border-radius:8px 8px 0 0;}
+.mesa-num{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem;}
+.mesa-name-input{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:600;color:var(--olive-dk);border:none;border-bottom:1px dashed rgba(168,132,42,.3);background:transparent;width:100%;outline:none;padding:2px 0;margin-bottom:.5rem;}
+.mesa-name-input:focus{border-bottom-color:var(--gold);}
+.mesa-grupo-input{font-size:.72rem;color:var(--ink-lt);border:none;border-bottom:1px dashed rgba(168,197,176,.4);background:transparent;width:100%;outline:none;padding:1px 0;font-family:'Montserrat',sans-serif;margin-bottom:.7rem;}
+.mesa-grupo-input:focus{border-bottom-color:var(--euca);}
+.mesa-progress{margin-top:.5rem;}
+.mesa-track{height:5px;background:rgba(168,197,176,.25);border-radius:3px;overflow:hidden;margin:.3rem 0;}
+.mesa-fill{height:100%;background:linear-gradient(90deg,var(--olive),var(--euca));border-radius:3px;transition:width .4s;}
+.mesa-fill.warn{background:linear-gradient(90deg,var(--amber),#E8A020);}
+.mesa-fill.full{background:linear-gradient(90deg,var(--red),#C04040);}
+.mesa-count{font-size:.62rem;color:var(--ink-lt);display:flex;justify-content:space-between;}
 
-/* ── EMPTY STATE ── */
-#empty-state{
-  text-align:center;padding:4rem 2rem;
-  font-family:'Cormorant Garamond',serif;
-  font-size:1.2rem;color:var(--ink-lt);font-style:italic;
-}
+/* MODAL */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,28,10,.7);backdrop-filter:blur(6px);z-index:500;align-items:center;justify-content:center;padding:1rem;}
+#modal-overlay.open{display:flex;}
+.modal-box{background:var(--cream);border:1px solid rgba(168,197,176,.35);border-radius:10px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.modal-header{padding:1.2rem 1.5rem;border-bottom:1px solid rgba(168,197,176,.2);display:flex;justify-content:space-between;align-items:center;}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--olive-dk);}
+.modal-close{background:transparent;border:1px solid rgba(168,197,176,.3);border-radius:50%;width:28px;height:28px;cursor:pointer;color:var(--ink-lt);font-size:.85rem;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:1.2rem 1.5rem;}
+.form-group{margin-bottom:1rem;}
+.form-label{display:block;font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem;}
+.form-input,.form-select{width:100%;padding:.6rem .9rem;border:1px solid rgba(168,197,176,.5);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:.82rem;color:var(--ink);background:#fff;outline:none;transition:border-color .2s;}
+.form-input:focus,.form-select:focus{border-color:var(--olive);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.modal-footer{padding:1rem 1.5rem;border-top:1px solid rgba(168,197,176,.2);display:flex;gap:.6rem;justify-content:flex-end;}
 
-/* ── MESSAGE MODAL ── */
-#msg-modal{
-  display:none;position:fixed;inset:0;
-  background:rgba(30,36,16,.6);backdrop-filter:blur(6px);
-  z-index:500;align-items:center;justify-content:center;padding:1.5rem;
-}
-#msg-modal.open{display:flex;}
-.msg-box{
-  background:var(--cream);border:1px solid rgba(168,197,176,.4);
-  border-radius:12px;max-width:440px;width:100%;padding:2rem;
-  box-shadow:0 20px 60px rgba(0,0,0,.25);
-}
-.msg-box h3{
-  font-family:'Cormorant Garamond',serif;font-size:1.3rem;
-  color:var(--olive-dk);margin-bottom:.5rem;
-}
-.msg-box p{font-size:.85rem;color:var(--ink-lt);line-height:1.7;margin-top:.8rem;}
-.msg-close{
-  margin-top:1.2rem;padding:.6rem 1.4rem;
-  background:var(--olive);color:#fff;border:none;border-radius:6px;
-  font-family:'Montserrat',sans-serif;font-size:.75rem;cursor:pointer;
-}
+/* WA MODAL */
+#wa-modal-overlay{display:none;position:fixed;inset:0;background:rgba(20,28,10,.7);backdrop-filter:blur(6px);z-index:600;align-items:center;justify-content:center;padding:1rem;}
+#wa-modal-overlay.open{display:flex;}
+.wa-box{background:var(--cream);border:1px solid rgba(168,197,176,.35);border-radius:10px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.wa-header{padding:1rem 1.4rem;border-bottom:1px solid rgba(168,197,176,.2);display:flex;justify-content:space-between;align-items:center;}
+.wa-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--olive-dk);}
+.wa-body{padding:1.2rem 1.4rem;}
+.wa-textarea{width:100%;height:220px;padding:.7rem;border:1px solid var(--euca-lt);border-radius:6px;font-family:'Montserrat',sans-serif;font-size:.77rem;color:var(--ink);resize:vertical;outline:none;line-height:1.75;}
+.wa-textarea:focus{border-color:var(--olive);}
+.wa-footer{padding:.9rem 1.4rem;border-top:1px solid rgba(168,197,176,.2);display:flex;gap:.6rem;justify-content:flex-end;}
 
-/* ── LOADING ── */
-#loading{
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:center;padding:5rem;gap:1rem;
-}
-.loader{
-  width:40px;height:40px;border:3px solid var(--euca-lt);
-  border-top-color:var(--olive);border-radius:50%;
-  animation:spin 1s linear infinite;
-}
+/* EMPTY */
+.empty{text-align:center;padding:3rem;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--ink-lt);font-style:italic;}
 
-/* ── RESPONSIVE ── */
 @media(max-width:600px){
   #stats{grid-template-columns:repeat(2,1fr);}
-  #controls{padding:1rem;}
-  #table-wrap{padding:1rem;}
-  #header{padding:1rem;}
+  .controls{padding:.7rem 1rem;}
+  .table-wrap{padding:.7rem 1rem 2rem;}
+  .mesas-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));padding:.8rem 1rem;}
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div id="header">
   <div>
     <div class="header-names">Ivan <span>&amp;</span> Narda</div>
     <div class="header-sub">Panel de gestión · 5 de Diciembre de 2026</div>
   </div>
-  <button class="refresh-btn" onclick="loadData()">
-    <svg id="refresh-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
-      <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-    </svg>
+  <button class="btn btn-olive" onclick="refreshRSVP()" style="font-size:.6rem;">
+    <svg id="ri" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
     Actualizar
   </button>
 </div>
 
-<!-- STATS -->
-<div id="stats">
-  <div class="stat-card">
-    <span class="stat-num" id="s-total">—</span>
-    <span class="stat-label">Total invitados</span>
+<div id="tabs">
+  <div class="tab active" onclick="switchTab('rsvp',this)">📋 Confirmaciones</div>
+  <div class="tab" onclick="switchTab('guests',this)">👥 Invitados</div>
+  <div class="tab" onclick="switchTab('mesas',this)">🪑 Mesas</div>
+</div>
+
+<!-- ══ TAB 1: RSVP ══ -->
+<div id="tab-rsvp" class="tab-content active">
+  <div id="stats">
+    <div class="stat-card s-cupos"><span class="stat-num" id="s-inv">—</span><span class="stat-label">Invitados totales</span></div>
+    <div class="stat-card s-confirmed"><span class="stat-num" id="s-conf">—</span><span class="stat-label">Confirmados</span></div>
+    <div class="stat-card s-no"><span class="stat-num" id="s-no">—</span><span class="stat-label">No asisten</span></div>
+    <div class="stat-card s-pending"><span class="stat-num" id="s-pend">—</span><span class="stat-label">Sin respuesta</span></div>
+    <div class="stat-card s-people"><span class="stat-num" id="s-ppl">—</span><span class="stat-label">Personas conf.</span></div>
   </div>
-  <div class="stat-card confirmed">
-    <span class="stat-num" id="s-confirmed">—</span>
-    <span class="stat-label">Confirmados</span>
+
+  <div class="controls">
+    <input type="text" class="search-input" id="rsvp-search" placeholder="Buscar nombre o código..." oninput="renderRSVP()">
+    <button class="btn btn-ghost active" data-f="all" onclick="setRSVPFilter('all',this)">Todos</button>
+    <button class="btn btn-ghost f-confirmed" data-f="confirmed" onclick="setRSVPFilter('confirmed',this)">✅ Confirmados</button>
+    <button class="btn btn-ghost f-no" data-f="no" onclick="setRSVPFilter('no',this)">❌ No asisten</button>
+    <button class="btn btn-ghost f-pending" data-f="pending" onclick="setRSVPFilter('pending',this)">⏳ Pendientes</button>
   </div>
-  <div class="stat-card no-attend">
-    <span class="stat-num" id="s-no">—</span>
-    <span class="stat-label">No asisten</span>
-  </div>
-  <div class="stat-card pending">
-    <span class="stat-num" id="s-pending">—</span>
-    <span class="stat-label">Sin respuesta</span>
-  </div>
-  <div class="stat-card people">
-    <span class="stat-num" id="s-people">—</span>
-    <span class="stat-label">Personas totales</span>
+
+  <div class="table-wrap">
+    <table id="rsvp-table">
+      <thead><tr>
+        <th>Nombre</th><th>Código</th><th>Teléfono</th>
+        <th>Asistencia</th><th>Personas</th><th>Mesa</th>
+        <th>Alergia</th><th>Mensaje</th><th>Fecha</th>
+      </tr></thead>
+      <tbody id="rsvp-tbody"></tbody>
+    </table>
+    <div id="rsvp-empty" class="empty" style="display:none">No hay respuestas aún 🌿</div>
   </div>
 </div>
 
-<!-- CONTROLS -->
-<div id="controls">
-  <input type="text" class="search-input" id="search" placeholder="Buscar por nombre o código...">
-  <button class="filter-btn active" data-filter="all" onclick="setFilter('all',this)">Todos</button>
-  <button class="filter-btn f-confirmed" data-filter="confirmed" onclick="setFilter('confirmed',this)">✅ Confirmados</button>
-  <button class="filter-btn f-no" data-filter="no" onclick="setFilter('no',this)">❌ No asisten</button>
-  <button class="filter-btn f-pending" data-filter="pending" onclick="setFilter('pending',this)">⏳ Pendientes</button>
-  <button class="filter-btn" data-filter="allergy" onclick="setFilter('allergy',this)">⚠️ Alergias</button>
-</div>
-
-<!-- TABLE -->
-<div id="table-wrap">
-  <div id="loading">
-    <div class="loader"></div>
-    <p style="font-size:.8rem;color:var(--ink-lt);">Cargando respuestas...</p>
+<!-- ══ TAB 2: INVITADOS ══ -->
+<div id="tab-guests" class="tab-content">
+  <div class="cupos-bar">
+    <span class="cupos-label">Cupos utilizados:</span>
+    <div class="cupos-track"><div class="cupos-fill" id="cupos-fill" style="width:0%"></div></div>
+    <span class="cupos-num" id="cupos-num">0 / 300</span>
+    <button class="btn btn-olive" onclick="openAddGuest()">+ Agregar invitado</button>
+    <input type="text" class="search-input" id="guest-search" placeholder="Buscar..." oninput="renderGuests()" style="max-width:180px;">
   </div>
-  <table id="data-table" style="display:none">
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Código</th>
-        <th>Teléfono</th>
-        <th>Asistencia</th>
-        <th>Personas</th>
-        <th>Alergia</th>
-        <th>Mensaje</th>
-        <th>Link enviado</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
-    <tbody id="tbody"></tbody>
-  </table>
-  <div id="empty-state" style="display:none">
-    Aún no hay respuestas confirmadas 🌿
+
+  <div class="table-wrap">
+    <table id="guests-table">
+      <thead><tr>
+        <th>N°</th><th>Nombre</th><th>Apellido</th><th>&amp;</th>
+        <th>Cupos</th><th>Grupo</th><th>Código</th><th>WhatsApp</th><th>Enviado</th><th></th>
+      </tr></thead>
+      <tbody id="guests-tbody"></tbody>
+    </table>
   </div>
 </div>
 
-<!-- MESSAGE MODAL -->
-<div id="msg-modal">
-  <div class="msg-box">
-    <h3 id="modal-name">Mensaje</h3>
-    <p id="modal-msg"></p>
-    <button class="msg-close" onclick="closeModal()">Cerrar</button>
+<!-- ══ TAB 3: MESAS ══ -->
+<div id="tab-mesas" class="tab-content">
+  <div class="controls">
+    <span style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--olive-dk);">29 MESAS · Mesa Principal: 12 · Resto: 10 · Total: 300</span>
+    <span id="mesas-resumen" style="font-size:.72rem;color:var(--ink-lt);margin-left:auto;"></span>
+  </div>
+  <div class="mesas-grid" id="mesas-grid"></div>
+</div>
+
+<!-- ══ MODAL: Agregar/Editar invitado ══ -->
+<div id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Agregar invitado</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-idx" value="-1">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Nombre *</label>
+          <input type="text" class="form-input" id="f-nombre" placeholder="Nombre">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apellido *</label>
+          <input type="text" class="form-input" id="f-apellido" placeholder="Apellido">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">& (si cupos &gt; 1)</label>
+          <select class="form-select" id="f-sufijo">
+            <option value="">— Ninguno —</option>
+            <option value="y Sr.">y Sr.</option>
+            <option value="y Sra.">y Sra.</option>
+            <option value="y flia.">y flia.</option>
+            <option value="y cia.">y cia.</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Cupos *</label>
+          <input type="number" class="form-input" id="f-cupos" min="1" max="10" value="1">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Grupo *</label>
+        <input type="text" class="form-input" id="f-grupo" placeholder="Ej: ARZE, KPOP, CETI...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Código (asignado automáticamente)</label>
+        <input type="text" class="form-input" id="f-codigo" readonly style="background:rgba(92,107,77,.05);color:var(--ink-lt);">
+      </div>
+      <div id="modal-error" style="color:var(--red);font-size:.75rem;margin-top:.5rem;display:none;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-olive" onclick="saveGuest()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Asignar mesa ══ -->
+<div id="mesa-modal-overlay" onclick="if(event.target===this)closeMesaModal()">
+  <div class="modal-box" style="max-width:440px;">
+    <div class="modal-header">
+      <span class="modal-title">Asignar mesa</span>
+      <button class="modal-close" onclick="closeMesaModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mesa-guest-codigo">
+      <div class="form-group">
+        <label class="form-label">Invitado</label>
+        <input type="text" class="form-input" id="mesa-guest-name" readonly style="background:rgba(92,107,77,.05);">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mesa *</label>
+        <select class="form-select" id="mesa-select">
+          <option value="">— Selecciona una mesa —</option>
+        </select>
+      </div>
+      <div id="mesa-warn" style="font-size:.72rem;color:var(--amber);margin-top:.4rem;display:none;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeMesaModal()">Cancelar</button>
+      <button class="btn btn-olive" onclick="saveMesaAssign()">Asignar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: WhatsApp ══ -->
+<div id="wa-modal-overlay" onclick="if(event.target===this)closeWAModal()">
+  <div class="wa-box">
+    <div class="wa-header">
+      <span class="wa-title" id="wa-guest-name">Mensaje</span>
+      <button class="modal-close" onclick="closeWAModal()">✕</button>
+    </div>
+    <div class="wa-body">
+      <p style="font-size:.72rem;color:var(--ink-lt);margin-bottom:.8rem;">Edita el mensaje si lo necesitas y toca enviar:</p>
+      <textarea class="wa-textarea" id="wa-text"></textarea>
+    </div>
+    <div class="wa-footer">
+      <button class="btn btn-ghost" onclick="closeWAModal()">Cancelar</button>
+      <a id="wa-send-btn" href="#" target="_blank" class="btn btn-olive" style="text-decoration:none;background:#25D366;border-color:#25D366;" onclick="markSent()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Enviar por WhatsApp
+      </a>
+    </div>
   </div>
 </div>
 
 <script>
+/* ══════════════════════════════════════
+   CONFIG
+══════════════════════════════════════ */
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycby_fbtXj5K5Rd4QbQdY1xYVzQLpm_piwyeIHj7p6MiuSD3cTl7LaisFsTVi0VL91QLzJw/exec';
+const MAX_CUPOS  = 300;
+const MAX_MESA   = 10;
+const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
+const WA_MESSAGE_TEMPLATE = (nombre, codigo) =>
+`Hola ${nombre} 🌿
 
-let allRows = [];
-let currentFilter = 'all';
-// Track "link sent" state locally (persists in localStorage)
-let sentMap = JSON.parse(localStorage.getItem('sent-map') || '{}');
+Por fin podemos compartir contigo esta noticia tan especial —
+el 5 de diciembre de 2026 nos casamos,
+y queremos que seas parte de ese momento.
 
-async function loadData() {
-  const icon = document.getElementById('refresh-icon');
+Aquí encontrarás todos los detalles:
+${INVITE_URL}
+
+Tu código de confirmación: ${codigo}
+(Lo necesitarás para confirmar tu asistencia)
+
+Con cariño,
+Ivan & Narda 💍`;
+
+/* ══════════════════════════════════════
+   AVAILABLE CODES
+══════════════════════════════════════ */
+const AVAILABLE_CODES = ["1906", "4041", "9500", "8623", "4610", "4234", "4082", "8748", "8289", "9135", "8198", "7686", "7383", "6995", "3910", "3271", "7379", "7262", "6010", "5313", "4298", "4822", "7107", "1864", "8788", "6113", "9299", "9047", "1603", "5045", "7596", "9837", "9531", "4581", "1092", "8284", "2427", "7701", "7981", "4043", "7134", "6865", "3259", "3537", "7729", "5816", "8500", "1827", "9743", "4462", "8397", "9578", "4380", "9919", "5407", "4094", "5309", "9939", "8631", "8201", "5578", "7790", "4010", "6638", "8332", "7452", "7851", "7570", "1886", "7766", "1363", "6870", "5114", "9371", "7806", "8652", "3686", "5679", "6773", "6359", "8226", "1564", "2957", "3449", "6930", "1773", "9637", "5649", "3410", "7869", "2152", "8277", "7337", "7530", "3262", "4235", "2326", "4641", "6209", "8486", "3541", "9499", "4272", "2515", "4222", "8495", "1653", "1889", "7972", "3538", "1675", "8151", "1068", "2567", "4351", "6837", "3230", "6077", "9456", "7036", "1027", "2131", "4175", "1271", "3854", "7454", "2522", "8379", "1071", "9127", "2770", "7941", "3413", "6914", "4124", "2088", "2279", "9622", "9638", "7288", "5835", "8640", "3948", "5640", "7016", "9496", "8897", "9484", "2670", "3691", "9667", "6956", "5513", "4180", "4295", "2248", "1922", "5566", "6008", "4814", "9365", "4229", "4559", "4492", "3356", "6628", "4228", "8144", "4505", "7771", "7712", "6610", "6491", "7381", "4325", "7945", "3794", "1949", "4756", "6475"];
+const INITIAL_GUESTS = [{"nombre": "Victor", "apellido": "Aguirre", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "4238", "enviado": false}, {"nombre": "Wara", "apellido": "Aiza", "sufijo": "y Sr.", "cupos": 2, "grupo": "KPOP", "codigo": "5999", "enviado": false}, {"nombre": "Alancito", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "2090", "enviado": false}, {"nombre": "Darlyn", "apellido": "Alanez", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "6608", "enviado": false}, {"nombre": "Silvio", "apellido": "Alcozer", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "1204", "enviado": false}, {"nombre": "Ariana", "apellido": "Antezana", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "3002", "enviado": false}, {"nombre": "Rosario", "apellido": "Arze", "sufijo": "", "cupos": 1, "grupo": "ARZE", "codigo": "6912", "enviado": false}, {"nombre": "Katherine", "apellido": "Arze", "sufijo": "y Sr.", "cupos": 2, "grupo": "ARZE", "codigo": "2438", "enviado": false}, {"nombre": "Marianela", "apellido": "Arze", "sufijo": "y flia.", "cupos": 5, "grupo": "ARZE", "codigo": "7457", "enviado": false}, {"nombre": "Jose", "apellido": "Arze", "sufijo": "y Sra.", "cupos": 2, "grupo": "ARZE", "codigo": "3990", "enviado": false}, {"nombre": "Tatiana", "apellido": "Arze", "sufijo": "y Sr.", "cupos": 2, "grupo": "ARZE", "codigo": "9979", "enviado": false}, {"nombre": "Aneliz", "apellido": "Arze", "sufijo": "y Sra.", "cupos": 2, "grupo": "ARZE", "codigo": "7495", "enviado": false}, {"nombre": "Justo", "apellido": "Javier Arze Ramos", "sufijo": "", "cupos": 1, "grupo": "ARZE", "codigo": "4572", "enviado": false}, {"nombre": "Carola", "apellido": "Avalos", "sufijo": "y cia.", "cupos": 2, "grupo": "CETI", "codigo": "6162", "enviado": false}, {"nombre": "Shirley", "apellido": "Barrientos", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "2190", "enviado": false}, {"nombre": "Florentina", "apellido": "Conde Benito", "sufijo": "", "cupos": 1, "grupo": "ZELADA", "codigo": "9349", "enviado": false}, {"nombre": "Lucero", "apellido": "Borda", "sufijo": "", "cupos": 1, "grupo": "ABOG", "codigo": "6659", "enviado": false}, {"nombre": "Lizbeth", "apellido": "Cadena", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "5367", "enviado": false}, {"nombre": "Karencita", "apellido": "Candia", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "8880", "enviado": false}, {"nombre": "Erika", "apellido": "Quispe", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6775", "enviado": false}, {"nombre": "Maira", "apellido": "Aliaga Castro", "sufijo": "", "cupos": 1, "grupo": "DAMA", "codigo": "4118", "enviado": false}, {"nombre": "Leo", "apellido": "Chirino", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "9404", "enviado": false}, {"nombre": "Fatima", "apellido": "Zelada Conde", "sufijo": "y cia.", "cupos": 2, "grupo": "ZELADA", "codigo": "1289", "enviado": false}, {"nombre": "Gloria", "apellido": "Zelada Conde", "sufijo": "y cia.", "cupos": 2, "grupo": "ZELADA", "codigo": "5213", "enviado": false}, {"nombre": "Jazmin", "apellido": "Cruz", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "5383", "enviado": false}, {"nombre": "Bianca", "apellido": "Davalos", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6794", "enviado": false}, {"nombre": "Marianne", "apellido": "Mariel Duran", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "7492", "enviado": false}, {"nombre": "Walter", "apellido": "Flores", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "4215", "enviado": false}, {"nombre": "Alcides", "apellido": "Flores", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "9759", "enviado": false}, {"nombre": "Ricard", "apellido": "Fontanillas", "sufijo": "y Sra.", "cupos": 2, "grupo": "COSPLAY", "codigo": "3057", "enviado": false}, {"nombre": "Rodrigo", "apellido": "Goyzueta", "sufijo": "y Sra.", "cupos": 2, "grupo": "COSPLAY", "codigo": "3240", "enviado": false}, {"nombre": "Heidy", "apellido": "Gutierrez", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "4875", "enviado": false}, {"nombre": "Carla", "apellido": "Vargas", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6320", "enviado": false}, {"nombre": "Araceli", "apellido": "Gutierrez", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "1928", "enviado": false}, {"nombre": "Honey", "apellido": "OwO", "sufijo": "y Sr.", "cupos": 2, "grupo": "KPOP", "codigo": "5175", "enviado": false}, {"nombre": "Yenny", "apellido": "Huanca", "sufijo": "y Sr.", "cupos": 2, "grupo": "OTROS", "codigo": "2151", "enviado": false}, {"nombre": "Ida", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "1969", "enviado": false}, {"nombre": "Amanda", "apellido": "Carvajal", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6288", "enviado": false}, {"nombre": "Katherine", "apellido": "Loza", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "9738", "enviado": false}, {"nombre": "Juls", "apellido": "M", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "7010", "enviado": false}, {"nombre": "David", "apellido": "Maldonado", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "9600", "enviado": false}, {"nombre": "Nataly", "apellido": "Gutierrez Mamani", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "9731", "enviado": false}, {"nombre": "Noemi", "apellido": "Tola", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "2688", "enviado": false}, {"nombre": "Feli", "apellido": "Apaza", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "8582", "enviado": false}, {"nombre": "Viviana", "apellido": "Gonzales", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "9881", "enviado": false}, {"nombre": "Alber", "apellido": "Mamani", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "5590", "enviado": false}, {"nombre": "Luz", "apellido": "Narda Mariño Munguia", "sufijo": "", "cupos": 1, "grupo": "MARIÑO", "codigo": "5670", "enviado": false}, {"nombre": "Alejandra", "apellido": "Mendoza", "sufijo": "", "cupos": 2, "grupo": "MARIÑO", "codigo": "7575", "enviado": false}, {"nombre": "Sandra", "apellido": "Mariño", "sufijo": "", "cupos": 1, "grupo": "MARIÑO", "codigo": "3604", "enviado": false}, {"nombre": "Marlon", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "8988", "enviado": false}, {"nombre": "Mayumi", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "8105", "enviado": false}, {"nombre": "Bianca", "apellido": "Mendoza", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6144", "enviado": false}, {"nombre": "Adrian", "apellido": "Merino", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "6187", "enviado": false}, {"nombre": "MIkumi", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "9171", "enviado": false}, {"nombre": "Patricia", "apellido": "Choque Miranda", "sufijo": "", "cupos": 1, "grupo": "DAMA", "codigo": "4184", "enviado": false}, {"nombre": "Carlos", "apellido": "Monroy", "sufijo": "y Sra.", "cupos": 2, "grupo": "ABOG", "codigo": "5038", "enviado": false}, {"nombre": "Maya", "apellido": "Callisaya", "sufijo": "y Sr.", "cupos": 2, "grupo": "OTROS", "codigo": "1044", "enviado": false}, {"nombre": "Emilia", "apellido": "Munguia", "sufijo": "", "cupos": 1, "grupo": "MARIÑO", "codigo": "6778", "enviado": false}, {"nombre": "Geraldine", "apellido": "Palenque", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "4558", "enviado": false}, {"nombre": "Daynor", "apellido": "Murillo", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "7058", "enviado": false}, {"nombre": "Niyeon", "apellido": "OwO", "sufijo": "", "cupos": 2, "grupo": "KPOP", "codigo": "1480", "enviado": false}, {"nombre": "Uriel", "apellido": "(opc) OwO", "sufijo": "", "cupos": 2, "grupo": "COSPLAY", "codigo": "9856", "enviado": false}, {"nombre": "Pam", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "2139", "enviado": false}, {"nombre": "Nataly", "apellido": "Paredes", "sufijo": "y Sra.", "cupos": 2, "grupo": "KPOP", "codigo": "5095", "enviado": false}, {"nombre": "Saul", "apellido": "Peñaranda", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "9771", "enviado": false}, {"nombre": "Mayerly", "apellido": "Quelca", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "5477", "enviado": false}, {"nombre": "Fabiola", "apellido": "Torrez", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "9591", "enviado": false}, {"nombre": "Cristian", "apellido": "Quispe", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "4067", "enviado": false}, {"nombre": "Monica", "apellido": "Quispe Quispe", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "3622", "enviado": false}, {"nombre": "Carol", "apellido": "Quispe Quispe", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "5156", "enviado": false}, {"nombre": "Mayte", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "ABOG", "codigo": "7672", "enviado": false}, {"nombre": "Alvaro", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "2970", "enviado": false}, {"nombre": "Paola", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "5459", "enviado": false}, {"nombre": "Jacqueline", "apellido": "Arze y Sr", "sufijo": "", "cupos": 2, "grupo": "ARZE", "codigo": "4269", "enviado": false}, {"nombre": "Rogelia", "apellido": "Ramos", "sufijo": "", "cupos": 1, "grupo": "ARZE", "codigo": "3499", "enviado": false}, {"nombre": "Edward", "apellido": "Rocabado", "sufijo": "y cia.", "cupos": 2, "grupo": "CETI", "codigo": "7768", "enviado": false}, {"nombre": "Ian", "apellido": "Rojas", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "4562", "enviado": false}, {"nombre": "Mary", "apellido": "Seiyunime", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "5925", "enviado": false}, {"nombre": "Cielo", "apellido": "Shawol", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "7489", "enviado": false}, {"nombre": "Darlen", "apellido": "Shawol", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "4198", "enviado": false}, {"nombre": "Andry", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "8763", "enviado": false}, {"nombre": "Milo", "apellido": "", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "6241", "enviado": false}, {"nombre": "Rodolfo", "apellido": "Cabrera", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "8836", "enviado": false}, {"nombre": "Karla", "apellido": "Sofia Tellez", "sufijo": "", "cupos": 1, "grupo": "DAMA", "codigo": "2838", "enviado": false}, {"nombre": "Toshy", "apellido": "Garfías", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "5738", "enviado": false}, {"nombre": "Paola", "apellido": "Vargas", "sufijo": "y Sr.", "cupos": 2, "grupo": "KPOP", "codigo": "5705", "enviado": false}, {"nombre": "Amanda", "apellido": "Veizaga", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "2016", "enviado": false}, {"nombre": "Marce", "apellido": "Verastegui", "sufijo": "y Sra.", "cupos": 2, "grupo": "KPOP", "codigo": "5033", "enviado": false}, {"nombre": "Ada", "apellido": "Pinedo", "sufijo": "", "cupos": 1, "grupo": "ABOG", "codigo": "2553", "enviado": false}, {"nombre": "Carola", "apellido": "Zelada Conde", "sufijo": "", "cupos": 1, "grupo": "ZELADA", "codigo": "8945", "enviado": false}, {"nombre": "Katalina", "apellido": "Thelma Zelada Conde", "sufijo": "y flia.", "cupos": 3, "grupo": "ZELADA", "codigo": "6499", "enviado": false}, {"nombre": "Nieves", "apellido": "Blanca Zelada Conde", "sufijo": "y flia.", "cupos": 2, "grupo": "ZELADA", "codigo": "7655", "enviado": false}, {"nombre": "Abrahan", "apellido": "Antonio Zelada Conde", "sufijo": "", "cupos": 1, "grupo": "ZELADA", "codigo": "9061", "enviado": false}, {"nombre": "Adrian", "apellido": "Sergio Zelada Conde", "sufijo": "y flia.", "cupos": 2, "grupo": "ZELADA", "codigo": "4682", "enviado": false}, {"nombre": "Gloria", "apellido": "Zelada Conde", "sufijo": "y flia.", "cupos": 4, "grupo": "ZELADA", "codigo": "4233", "enviado": false}, {"nombre": "Fátima", "apellido": "Zelada Conde", "sufijo": "y flia.", "cupos": 3, "grupo": "ZELADA", "codigo": "7935", "enviado": false}, {"nombre": "Mary", "apellido": "Cruz Zelada Conde", "sufijo": "y flia.", "cupos": 3, "grupo": "ZELADA", "codigo": "7347", "enviado": false}, {"nombre": "Bryan", "apellido": "Alanz", "sufijo": "", "cupos": 1, "grupo": "CABALLERO", "codigo": "4355", "enviado": false}, {"nombre": "Oliver", "apellido": "Ramos", "sufijo": "", "cupos": 1, "grupo": "CABALLERO", "codigo": "7413", "enviado": false}, {"nombre": "Edson", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "2314", "enviado": false}, {"nombre": "Diego", "apellido": "Barrantes y Sra", "sufijo": "", "cupos": 2, "grupo": "TALLER", "codigo": "7169", "enviado": false}, {"nombre": "Alan", "apellido": "Lahor", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "6861", "enviado": false}, {"nombre": "Fernando", "apellido": "Rodríguez", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "6098", "enviado": false}, {"nombre": "Miguel", "apellido": "Angel Nogales", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "7592", "enviado": false}, {"nombre": "Paola", "apellido": "Guzmán", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "8308", "enviado": false}, {"nombre": "Aldo", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "2374", "enviado": false}, {"nombre": "Helen", "apellido": "Rivera", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "7711", "enviado": false}, {"nombre": "Alvaro", "apellido": "Guzmán y Sra", "sufijo": "", "cupos": 2, "grupo": "CALDERO", "codigo": "7578", "enviado": false}, {"nombre": "Rafael", "apellido": "Montevilla", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "9104", "enviado": false}, {"nombre": "Pamela", "apellido": "y Sr", "sufijo": "", "cupos": 2, "grupo": "CALDERO", "codigo": "3134", "enviado": false}, {"nombre": "Dylan", "apellido": "Garfias y Sra", "sufijo": "", "cupos": 2, "grupo": "CALDERO", "codigo": "1069", "enviado": false}, {"nombre": "Nicol", "apellido": "Prado", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "1956", "enviado": false}, {"nombre": "Walter", "apellido": "Hamachi", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "7593", "enviado": false}, {"nombre": "Alan", "apellido": "Guzman", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "5160", "enviado": false}, {"nombre": "Jhosmar", "apellido": "Ticona y Sra", "sufijo": "", "cupos": 2, "grupo": "OTROS", "codigo": "1114", "enviado": false}, {"nombre": "Blas", "apellido": "", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "3510", "enviado": false}, {"nombre": "Maciel", "apellido": "Arrieta", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "3983", "enviado": false}, {"nombre": "Alvaro", "apellido": "Villegas", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "9607", "enviado": false}, {"nombre": "José", "apellido": "Andrade", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "5538", "enviado": false}, {"nombre": "Alex", "apellido": "Torrico", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "2862", "enviado": false}, {"nombre": "Andrés", "apellido": "", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "9811", "enviado": false}, {"nombre": "Daniela", "apellido": "Cortez", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "4227", "enviado": false}, {"nombre": "Alejandro", "apellido": "Vélez", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "6803", "enviado": false}, {"nombre": "Miguel", "apellido": "Moreira", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "5088", "enviado": false}, {"nombre": "Claudia", "apellido": "y Sr", "sufijo": "", "cupos": 2, "grupo": "7 REINOS", "codigo": "7787", "enviado": false}, {"nombre": "Keila", "apellido": "Vasquez y Sr", "sufijo": "", "cupos": 2, "grupo": "CABALLERO", "codigo": "8103", "enviado": false}, {"nombre": "Yocelin", "apellido": "Cornejo", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "6999", "enviado": false}, {"nombre": "Reyna", "apellido": "Mamani", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "7319", "enviado": false}, {"nombre": "Maya", "apellido": "Cahua y Sr", "sufijo": "", "cupos": 2, "grupo": "COMPA", "codigo": "5924", "enviado": false}, {"nombre": "Camila", "apellido": "Cox", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "9972", "enviado": false}, {"nombre": "Mauricio", "apellido": "Sempertegui", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "5827", "enviado": false}, {"nombre": "Reynaldo", "apellido": "Céspedes y Sra", "sufijo": "", "cupos": 2, "grupo": "COMPA", "codigo": "2338", "enviado": false}, {"nombre": "Nayra", "apellido": "Limachi", "sufijo": "y Sr.", "cupos": 2, "grupo": "COMPA", "codigo": "9503", "enviado": false}, {"nombre": "Lucero", "apellido": "Yujra", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "3758", "enviado": false}, {"nombre": "Luis", "apellido": "Castillo", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "4003", "enviado": false}, {"nombre": "Martin", "apellido": "Carazas", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "4131", "enviado": false}, {"nombre": "Daniel", "apellido": "Fernández y Sra", "sufijo": "", "cupos": 2, "grupo": "OTROS", "codigo": "9222", "enviado": false}, {"nombre": "Daniel", "apellido": "Pacheco", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "9899", "enviado": false}, {"nombre": "Orlando", "apellido": "Flores", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "4179", "enviado": false}, {"nombre": "Javier", "apellido": "Poma", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "2471", "enviado": false}, {"nombre": "Emanuel", "apellido": "Gutiérrez", "sufijo": "", "cupos": 2, "grupo": "COMPA", "codigo": "8999", "enviado": false}, {"nombre": "Juanjosé", "apellido": "Mamani", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "8481", "enviado": false}, {"nombre": "David", "apellido": "Medrano", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "4290", "enviado": false}, {"nombre": "Lisa", "apellido": "Cardenas", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "2154", "enviado": false}, {"nombre": "Fabricio", "apellido": "Padilla", "sufijo": "y Sra.", "cupos": 2, "grupo": "MARIÑO", "codigo": "9473", "enviado": false}, {"nombre": "Milena", "apellido": "", "sufijo": "y Sra.", "cupos": 2, "grupo": "COSPLAY", "codigo": "1791", "enviado": false}, {"nombre": "Ignacio", "apellido": "", "sufijo": "y cía.", "cupos": 2, "grupo": "COSPLAY", "codigo": "1606", "enviado": false}, {"nombre": "Mayra", "apellido": "Miranda", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "5438", "enviado": false}, {"nombre": "Alejandra", "apellido": "Carrillo", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "7141", "enviado": false}, {"nombre": "Martin", "apellido": "Candia", "sufijo": "y Sra.", "cupos": 2, "grupo": "COSPLAY", "codigo": "7061", "enviado": false}, {"nombre": "Mery", "apellido": "Limachi", "sufijo": "y flia.", "cupos": 4, "grupo": "CEREMONIA", "codigo": "6600", "enviado": false}, {"nombre": "Israel", "apellido": "Limachi", "sufijo": "", "cupos": 1, "grupo": "CEREMONIA", "codigo": "5564", "enviado": false}, {"nombre": "Bárbara", "apellido": "Tecito", "sufijo": "", "cupos": 1, "grupo": "CEREMONIA", "codigo": "2616", "enviado": false}, {"nombre": "Ronald", "apellido": "Mariño y Sra", "sufijo": "", "cupos": 2, "grupo": "CEREMONIA", "codigo": "5307", "enviado": false}, {"nombre": "Hernán", "apellido": "Mariño", "sufijo": "y flia.", "cupos": 3, "grupo": "CEREMONIA", "codigo": "4012", "enviado": false}, {"nombre": "Sonia", "apellido": "Mariño", "sufijo": "y flia.", "cupos": 3, "grupo": "CEREMONIA", "codigo": "6439", "enviado": false},{"nombre":"Ivan","apellido":"Zelada","sufijo":"","cupos":1,"grupo":"Novios","codigo":"2118","enviado":false},{"nombre":"Narda","apellido":"Arze","sufijo":"","cupos":1,"grupo":"Novios","codigo":"0000","enviado":false}];
+
+/* ══════════════════════════════════════
+   STATE — uses localStorage to persist
+══════════════════════════════════════ */
+function loadGuests() {
+  const saved = localStorage.getItem('ni-guests');
+  return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(INITIAL_GUESTS));
+}
+function saveGuests(g) { localStorage.setItem('ni-guests', JSON.stringify(g)); }
+
+function loadMesas() {
+  const saved = localStorage.getItem('ni-mesas');
+  if (saved) return JSON.parse(saved);
+  const ms = [{num:1, nombre:'Mesa Principal', grupo:'Novios', personas:0, maxPersonas:12}];
+  for(let i=2;i<=29;i++) ms.push({num:i, nombre:`Mesa ${i}`, grupo:'', personas:0, maxPersonas:10});
+  return ms;
+}
+function saveMesas(m) { localStorage.setItem('ni-mesas', JSON.stringify(m)); }
+
+function loadSent() { return JSON.parse(localStorage.getItem('ni-sent')||'{}'); }
+function saveSent(s) { localStorage.setItem('ni-sent', JSON.stringify(s)); }
+
+function loadMesaAssigns() { return JSON.parse(localStorage.getItem('ni-mesa-assigns')||'{}'); }
+function saveMesaAssigns(a) { localStorage.setItem('ni-mesa-assigns', JSON.stringify(a)); }
+
+let guests = loadGuests();
+let mesas  = loadMesas();
+let sent   = loadSent();
+let mesaAssigns = loadMesaAssigns(); // {codigo: mesaNum}
+let rsvpRows = [];
+let rsvpFilter = 'all';
+let waCurrentIdx = -1;
+
+/* ══════════════════════════════════════
+   TABS
+══════════════════════════════════════ */
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='mesas') renderMesas();
+  if(name==='guests') renderGuests();
+}
+
+/* ══════════════════════════════════════
+   RSVP
+══════════════════════════════════════ */
+async function refreshRSVP() {
+  const icon = document.getElementById('ri');
   icon.classList.add('spin');
-
   try {
     const res  = await fetch(SHEETS_URL + '?action=read&t=' + Date.now());
     const data = await res.json();
-    allRows = data.rows || [];
-    renderStats();
-    renderTable();
-    document.getElementById('loading').style.display     = 'none';
-    document.getElementById('data-table').style.display  = 'table';
+    rsvpRows = data.rows || [];
+    renderRSVP();
+    updateStats();
   } catch(e) {
-    document.getElementById('loading').innerHTML =
-      '<p style="color:var(--red);font-size:.85rem;">Error al cargar datos. Verifica que el script de Google esté publicado correctamente.</p>';
+    console.log('Error:', e);
   }
   icon.classList.remove('spin');
 }
 
-function renderStats() {
-  const confirmed = allRows.filter(r => r.asistencia && r.asistencia !== 'no');
-  const no        = allRows.filter(r => r.asistencia === 'no');
-  // Total invited = all codes in valid list (approximate from loaded)
-  const total = allRows.length;
-  const people = confirmed.reduce((acc, r) => acc + 1 + (parseInt(r['acompañantes']) || 0), 0);
-
-  document.getElementById('s-total').textContent     = total;
-  document.getElementById('s-confirmed').textContent = confirmed.length;
-  document.getElementById('s-no').textContent        = no.length;
-  document.getElementById('s-pending').textContent   = '—'; // from external list
-  document.getElementById('s-people').textContent    = people;
+function updateStats() {
+  const conf  = rsvpRows.filter(r=>r.asistencia && r.asistencia!=='no');
+  const no    = rsvpRows.filter(r=>r.asistencia==='no');
+  const ppl   = conf.reduce((a,r)=>a+1+(parseInt(r['acompañantes'])||0),0);
+  document.getElementById('s-inv').textContent  = guests.length;
+  document.getElementById('s-conf').textContent = conf.length;
+  document.getElementById('s-no').textContent   = no.length;
+  document.getElementById('s-pend').textContent = guests.length - rsvpRows.length;
+  document.getElementById('s-ppl').textContent  = ppl;
 }
 
-function renderTable() {
-  const q      = document.getElementById('search').value.toLowerCase();
-  const tbody  = document.getElementById('tbody');
-  const empty  = document.getElementById('empty-state');
+function setRSVPFilter(f, btn) {
+  rsvpFilter = f;
+  document.querySelectorAll('#tab-rsvp .btn-ghost').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRSVP();
+}
 
-  let rows = allRows.filter(r => {
+function renderRSVP() {
+  const q = document.getElementById('rsvp-search').value.toLowerCase();
+  const tbody = document.getElementById('rsvp-tbody');
+  const empty = document.getElementById('rsvp-empty');
+  const attLabel = {both:'💍 Ambos',ceremony:'🎩 Ceremonia',reception:'🍽️ Recepción',no:'❌ No asiste','':`<span class="badge b-pending">⏳ Pendiente</span>`};
+
+  let rows = rsvpRows.filter(r=>{
     const name = `${r.nombre||''} ${r.apellido||''}`.toLowerCase();
     const code = (r.codigo||'').toLowerCase();
     const matchQ = !q || name.includes(q) || code.includes(q);
-
     let matchF = true;
-    if (currentFilter === 'confirmed') matchF = r.asistencia && r.asistencia !== 'no';
-    if (currentFilter === 'no')        matchF = r.asistencia === 'no';
-    if (currentFilter === 'pending')   matchF = !r.asistencia;
-    if (currentFilter === 'allergy')   matchF = r.alergia === 'yes';
-
+    if(rsvpFilter==='confirmed') matchF = r.asistencia && r.asistencia!=='no';
+    if(rsvpFilter==='no')        matchF = r.asistencia==='no';
+    if(rsvpFilter==='pending')   matchF = !r.asistencia;
     return matchQ && matchF;
   });
 
-  if (rows.length === 0) {
-    tbody.innerHTML = '';
-    document.getElementById('data-table').style.display = 'none';
-    empty.style.display = 'block';
-    return;
-  }
-  document.getElementById('data-table').style.display = 'table';
-  empty.style.display = 'none';
+  if(!rows.length){ tbody.innerHTML=''; empty.style.display='block'; document.getElementById('rsvp-table').style.display='none'; return; }
+  empty.style.display='none'; document.getElementById('rsvp-table').style.display='table';
 
-  const attendanceLabel = {
-    both:      '<span class="badge badge-confirmed">💍 Ambos</span>',
-    ceremony:  '<span class="badge badge-confirmed">🎩 Ceremonia</span>',
-    reception: '<span class="badge badge-confirmed">🍽️ Recepción</span>',
-    no:        '<span class="badge badge-no">❌ No asiste</span>',
-    '':        '<span class="badge badge-pending">⏳ Pendiente</span>',
-  };
+  tbody.innerHTML = rows.map(r=>{
+    const code = r.codigo||r.confirmation_code||'—';
+    const name = `${r.nombre||''} ${r.apellido||''}`.trim()||'—';
+    const phone= r.telefono||'—';
+    const att  = r.asistencia ? `<span class="badge ${r.asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[r.asistencia]||r.asistencia}</span>` : attLabel[''];
+    const ppl  = r.asistencia&&r.asistencia!=='no' ? 1+(parseInt(r['acompañantes'])||0) : '—';
+    const mesaNum = mesaAssigns[code] || '—';
+    const mesaBtn = `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;" onclick="openMesaModal('${code}','${name}')">${mesaNum==='—'?'Asignar':mesaNum}</button>`;
+    const alergia = r.alergia==='yes' ? `<span style="color:#e07070;">⚠️ ${r.detalle_alergia||''}</span>` : '—';
+    const msg = r.mensaje ? `<span style="cursor:pointer;color:var(--euca);" title="${r.mensaje}">💬</span>` : '—';
+    const fecha = (r.fecha||r.submitted_at||'').split('T')[0]||'—';
+    return `<tr><td class="td-name">${name}</td><td class="td-code">${code}</td><td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱${phone}</a></td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${mesaBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${fecha}</td></tr>`;
+  }).join('');
+}
 
-  tbody.innerHTML = rows.map((r, i) => {
-    const code    = r.codigo || '—';
-    const name    = `${r.nombre||''} ${r.apellido||''}`.trim() || '—';
-    const phone   = r.telefono || '—';
-    const att     = attendanceLabel[r.asistencia] || attendanceLabel[''];
-    const companions = parseInt(r['acompañantes']) || 0;
-    const people  = r.asistencia && r.asistencia !== 'no' ? 1 + companions : '—';
-    const allergy = r.alergia === 'yes'
-      ? `<span class="allergy-icon" title="${r.detalle_alergia||''}">⚠️</span>`
-      : '<span style="color:#ccc">—</span>';
-    const msg     = r.mensaje
-      ? `<span class="td-msg" onclick="openModal('${name}','${(r.mensaje||'').replace(/'/g,"\\'")}')">💬 Ver</span>`
-      : '<span style="color:#ccc">—</span>';
-    const fecha   = r.fecha ? r.fecha.split('T')[0] : (r.submitted_at||'').split('T')[0] || '—';
+/* ══════════════════════════════════════
+   GUEST LIST
+══════════════════════════════════════ */
+function totalCupos() { return guests.reduce((a,g)=>a+g.cupos,0); }
 
-    const isSent  = sentMap[code] || false;
-    const sentBtn = `<button class="sent-toggle ${isSent?'sent':'not-sent'}"
-      onclick="toggleSent('${code}',this)">${isSent?'✓ Enviado':'Marcar'}</button>`;
+function updateCuposBar() {
+  const total = totalCupos();
+  const pct   = Math.min(100, (total/MAX_CUPOS)*100);
+  const fill  = document.getElementById('cupos-fill');
+  fill.style.width = pct+'%';
+  fill.className = 'cupos-fill' + (pct>=100?' full':pct>=85?' warn':'');
+  document.getElementById('cupos-num').textContent = `${total} / ${MAX_CUPOS}`;
+}
 
+function renderGuests() {
+  const q = document.getElementById('guest-search').value.toLowerCase();
+  const tbody = document.getElementById('guests-tbody');
+  updateCuposBar();
+
+  const filtered = guests.filter((_,i)=>{
+    const g = guests[i];
+    const name = `${g.nombre} ${g.apellido}`.toLowerCase();
+    return !q || name.includes(q) || g.grupo.toLowerCase().includes(q) || g.codigo.includes(q);
+  });
+
+  tbody.innerHTML = filtered.map((g,fi)=>{
+    const i = guests.indexOf(g);
+    const isSent = sent[g.codigo]||false;
     return `<tr>
-      <td class="td-name">${name}</td>
-      <td class="td-code">${code}</td>
-      <td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱 ${phone}</a></td>
-      <td>${att}</td>
-      <td style="text-align:center;font-weight:500;">${people}</td>
-      <td style="text-align:center;">${allergy}</td>
-      <td>${msg}</td>
-      <td>${sentBtn}</td>
-      <td style="font-size:.7rem;color:var(--ink-lt);">${fecha}</td>
+      <td style="color:var(--ink-lt);font-size:.72rem;">${i+1}</td>
+      <td><input class="edit-input" value="${g.nombre}" onchange="updateGuest(${i},'nombre',this.value)" style="min-width:80px;"></td>
+      <td><input class="edit-input" value="${g.apellido}" onchange="updateGuest(${i},'apellido',this.value)" style="min-width:80px;"></td>
+      <td>
+        <select class="edit-input" onchange="updateGuest(${i},'sufijo',this.value)" style="min-width:90px;">
+          <option value="" ${!g.sufijo?'selected':''}>—</option>
+          <option value="y Sr." ${g.sufijo==='y Sr.'?'selected':''}>y Sr.</option>
+          <option value="y Sra." ${g.sufijo==='y Sra.'?'selected':''}>y Sra.</option>
+          <option value="y flia." ${g.sufijo==='y flia.'?'selected':''}>y flia.</option>
+          <option value="y cia." ${g.sufijo==='y cia.'?'selected':''}>y cia.</option>
+        </select>
+      </td>
+      <td><input class="edit-input" type="number" min="1" max="10" value="${g.cupos}" onchange="updateGuest(${i},'cupos',parseInt(this.value)||1)" style="width:50px;text-align:center;"></td>
+      <td><input class="edit-input" value="${g.grupo}" onchange="updateGuest(${i},'grupo',this.value)" style="min-width:70px;"></td>
+      <td class="td-code">${g.codigo}</td>
+      <td><button class="wa-btn" onclick="openWAModal(${i})">📱 WhatsApp</button></td>
+      <td><button class="sent-btn ${isSent?'sent':'not-sent'}" id="sb-${g.codigo}" onclick="toggleSent('${g.codigo}')">${isSent?'✓ Enviado':'Marcar'}</button></td>
+      <td><button class="icon-btn" onclick="deleteGuest(${i})" title="Eliminar">🗑️</button></td>
     </tr>`;
   }).join('');
 }
 
-function toggleSent(code, btn) {
-  sentMap[code] = !sentMap[code];
-  localStorage.setItem('sent-map', JSON.stringify(sentMap));
-  btn.className = `sent-toggle ${sentMap[code]?'sent':'not-sent'}`;
-  btn.textContent = sentMap[code] ? '✓ Enviado' : 'Marcar';
+function updateGuest(i, field, val) {
+  if(field==='cupos'){
+    const diff = val - guests[i].cupos;
+    if(totalCupos()+diff > MAX_CUPOS){ alert(`⚠️ No puedes superar ${MAX_CUPOS} cupos totales.`); renderGuests(); return; }
+  }
+  guests[i][field] = val;
+  saveGuests(guests);
+  updateCuposBar();
 }
 
-function setFilter(f, btn) {
-  currentFilter = f;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTable();
+function deleteGuest(i) {
+  if(!confirm(`¿Eliminar a ${guests[i].nombre} ${guests[i].apellido}?`)) return;
+  guests.splice(i,1);
+  saveGuests(guests);
+  renderGuests();
 }
 
-function openModal(name, msg) {
-  document.getElementById('modal-name').textContent = name;
-  document.getElementById('modal-msg').textContent  = msg;
-  document.getElementById('msg-modal').classList.add('open');
+function openAddGuest() {
+  document.getElementById('modal-title').textContent = 'Agregar invitado';
+  document.getElementById('edit-idx').value = '-1';
+  document.getElementById('f-nombre').value = '';
+  document.getElementById('f-apellido').value = '';
+  document.getElementById('f-sufijo').value = '';
+  document.getElementById('f-cupos').value = '1';
+  document.getElementById('f-grupo').value = '';
+  // Assign next available code
+  const usedCodes = new Set(guests.map(g=>g.codigo));
+  const nextCode = AVAILABLE_CODES.find(c=>!usedCodes.has(c)) || '—';
+  document.getElementById('f-codigo').value = nextCode;
+  document.getElementById('modal-error').style.display='none';
+  document.getElementById('modal-overlay').classList.add('open');
 }
-function closeModal() {
-  document.getElementById('msg-modal').classList.remove('open');
+
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+
+function saveGuest() {
+  const nombre   = document.getElementById('f-nombre').value.trim();
+  const apellido = document.getElementById('f-apellido').value.trim();
+  const sufijo   = document.getElementById('f-sufijo').value;
+  const cupos    = parseInt(document.getElementById('f-cupos').value)||1;
+  const grupo    = document.getElementById('f-grupo').value.trim();
+  const codigo   = document.getElementById('f-codigo').value;
+  const errEl    = document.getElementById('modal-error');
+
+  if(!nombre||!apellido||!grupo){ errEl.textContent='Nombre, apellido y grupo son obligatorios.'; errEl.style.display='block'; return; }
+  if(cupos>1 && !sufijo){ errEl.textContent='El campo & es obligatorio cuando cupos > 1.'; errEl.style.display='block'; return; }
+  if(totalCupos()+cupos > MAX_CUPOS){ errEl.textContent=`⚠️ No puedes superar ${MAX_CUPOS} cupos. Solo quedan ${MAX_CUPOS-totalCupos()} disponibles.`; errEl.style.display='block'; return; }
+
+  guests.push({nombre,apellido,sufijo,cupos,grupo,codigo,enviado:false});
+  saveGuests(guests);
+  closeModal();
+  renderGuests();
 }
-document.getElementById('msg-modal').addEventListener('click', e => {
-  if (e.target === document.getElementById('msg-modal')) closeModal();
-});
 
-document.getElementById('search').addEventListener('input', renderTable);
+/* ══════════════════════════════════════
+   WHATSAPP
+══════════════════════════════════════ */
+function openWAModal(i) {
+  waCurrentIdx = i;
+  const g = guests[i];
+  const fullName = [g.nombre, g.apellido, g.sufijo].filter(Boolean).join(' ');
+  document.getElementById('wa-guest-name').textContent = fullName;
+  document.getElementById('wa-text').value = WA_MESSAGE_TEMPLATE(g.nombre, g.codigo);
+  document.getElementById('wa-modal-overlay').classList.add('open');
+}
 
-// Initial load
-loadData();
+function closeWAModal() { document.getElementById('wa-modal-overlay').classList.remove('open'); }
+
+function markSent() {
+  if(waCurrentIdx<0) return;
+  const g = guests[waCurrentIdx];
+  // Update WA link
+  const msg = document.getElementById('wa-text').value;
+  document.getElementById('wa-send-btn').href = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+  // Mark as sent
+  sent[g.codigo] = true;
+  saveSent(sent);
+  setTimeout(()=>{ closeWAModal(); renderGuests(); }, 300);
+}
+
+function toggleSent(codigo) {
+  sent[codigo] = !sent[codigo];
+  saveSent(sent);
+  const btn = document.getElementById('sb-'+codigo);
+  if(btn){ btn.className='sent-btn '+(sent[codigo]?'sent':'not-sent'); btn.textContent=sent[codigo]?'✓ Enviado':'Marcar'; }
+}
+
+/* ══════════════════════════════════════
+   MESAS
+══════════════════════════════════════ */
+function renderMesas() {
+  const grid = document.getElementById('mesas-grid');
+  // Count people per mesa from rsvp assigns
+  const mesaCounts = {};
+  Object.entries(mesaAssigns).forEach(([codigo, mesaNum])=>{
+    const row = rsvpRows.find(r=>(r.codigo||r.confirmation_code)===codigo);
+    if(row && row.asistencia && row.asistencia!=='no'){
+      const ppl = 1+(parseInt(row['acompañantes'])||0);
+      mesaCounts[mesaNum] = (mesaCounts[mesaNum]||0)+ppl;
+    }
+  });
+
+  let totalAsignadas=0, totalDisponibles=0;
+  grid.innerHTML = mesas.map((m,i)=>{
+    const count = mesaCounts[m.num]||0;
+    const maxM = m.maxPersonas||MAX_MESA; const pct = Math.min(100,(count/maxM)*100);
+    const fillClass = pct>=100?'full':pct>=80?'warn':'';
+    totalAsignadas  += count;
+    totalDisponibles+= (m.maxPersonas||MAX_MESA)-count;
+    return `<div class="mesa-card">
+      <div class="mesa-num">Mesa ${m.num}</div>
+      <input class="mesa-name-input" value="${m.nombre}" placeholder="Nombre de la mesa" 
+        onchange="updateMesa(${i},'nombre',this.value)">
+      <input class="mesa-grupo-input" value="${m.grupo}" placeholder="Grupo asignado"
+        onchange="updateMesa(${i},'grupo',this.value)">
+      <div class="mesa-count"><span>${count} personas</span><span>${(m.maxPersonas||MAX_MESA)-count} disponibles</span></div>
+      <div class="mesa-track"><div class="mesa-fill ${fillClass}" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('mesas-resumen').textContent = 
+    `${totalAsignadas} personas asignadas · ${totalDisponibles} lugares disponibles`;
+}
+
+function updateMesa(i, field, val) {
+  mesas[i][field] = val;
+  saveMesas(mesas);
+}
+
+function openMesaModal(codigo, nombre) {
+  document.getElementById('mesa-guest-codigo').value = codigo;
+  document.getElementById('mesa-guest-name').value   = nombre;
+  // Populate mesa options
+  const sel = document.getElementById('mesa-select');
+  const mesaCounts = {};
+  Object.entries(mesaAssigns).forEach(([c,n])=>{
+    const row = rsvpRows.find(r=>(r.codigo||r.confirmation_code)===c);
+    if(row&&row.asistencia&&row.asistencia!=='no'){
+      mesaCounts[n]=(mesaCounts[n]||0)+1+(parseInt(row['acompañantes'])||0);
+    }
+  });
+  sel.innerHTML = '<option value="">— Selecciona —</option>' + 
+    mesas.map(m=>{
+      const cnt = mesaCounts[m.num]||0;
+      const avail = (m.maxPersonas||MAX_MESA)-cnt;
+      const disabled = avail<=0 ? 'disabled' : '';
+      const current = mesaAssigns[codigo]===m.num ? 'selected' : '';
+      return `<option value="${m.num}" ${disabled} ${current}>${m.nombre} (${cnt}/${m.maxPersonas||MAX_MESA})</option>`;
+    }).join('');
+  document.getElementById('mesa-warn').style.display='none';
+  document.getElementById('mesa-modal-overlay').style.display='flex';
+}
+function closeMesaModal(){ document.getElementById('mesa-modal-overlay').style.display='none'; }
+// Fix overlay init
+document.getElementById('mesa-modal-overlay').style.display='none';
+document.getElementById('mesa-modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('mesa-modal-overlay'))closeMesaModal();});
+
+function saveMesaAssign() {
+  const codigo   = document.getElementById('mesa-guest-codigo').value;
+  const mesaNum  = parseInt(document.getElementById('mesa-select').value);
+  if(!mesaNum){ alert('Selecciona una mesa'); return; }
+  mesaAssigns[codigo] = mesaNum;
+  saveMesaAssigns(mesaAssigns);
+  closeMesaModal();
+  renderRSVP();
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+updateStats();
+renderGuests();
+refreshRSVP();
 </script>
 </body>
 </html>
