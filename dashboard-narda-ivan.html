@@ -523,8 +523,8 @@ function renderRSVP() {
     const nombre = r.nombre||r.first_name||r['Nombre']||'';
     const apellido = r.apellido||r.last_name||r['Apellido']||'';
     const name = `${nombre} ${apellido}`.trim()||'—';
-    const phone = String(r.telefono||r.phone||r['telefono']||r['Telefono']||'').trim();
-    const phoneDisplay = phone && phone!=='' ? phone : '—';
+    const phone = String(r.telefono||r.phone||r['telefono']||r['Telefono']||'').replace(/\D/g,'').trim();
+    const phoneDisplay = phone ? `<a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;" title="Enviar WhatsApp">📱 ${phone}</a>` : '—';
     const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
     const att  = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : attLabel[''];
     const numAcomp = parseInt(r['acompañantes']||r.acompanantes||r.companion_count||0)||0;
@@ -759,9 +759,10 @@ function renderMesas() {
   // Count people per mesa from rsvp assigns
   const mesaCounts = {};
   Object.entries(mesaAssigns).forEach(function(entry){
-    var codigo = entry[0]; var mesaNum = entry[1];
+    var codigo = String(entry[0]).trim();
+    var mesaNum = entry[1];
     var row = rsvpRows.find(function(r){ 
-      return String(r.codigo||r.confirmation_code||'').trim() === String(codigo).trim(); 
+      return String(r.codigo||r.confirmation_code||'').trim() === codigo; 
     });
     if(row){
       var asist = row.asistencia||row.attendance||'';
@@ -769,8 +770,10 @@ function renderMesas() {
         var ppl = 1+(parseInt(row['acompañantes']||row.acompanantes||0)||0);
         mesaCounts[mesaNum] = (mesaCounts[mesaNum]||0)+ppl;
       }
+    } else {
+      // Guest assigned but hasn't confirmed yet - count as 1
+      mesaCounts[mesaNum] = (mesaCounts[mesaNum]||0)+1;
     }
-    // Only count from RSVP confirmations, not from localStorage alone
   });
 
   let totalAsignadas=0, totalDisponibles=0;
@@ -784,11 +787,20 @@ function renderMesas() {
     const mesaPeople = Object.entries(mesaAssigns)
       .filter(function(e){ return e[1]===m.num; })
       .map(function(e){
-        var row = rsvpRows.find(function(r){ return String(r.codigo||'').trim()===String(e[0]).trim(); });
-        if(row) return (row.nombre||'')+' '+(row.apellido||'');
-        var g = guests.find(function(g){ return g.codigo===e[0]; });
-        return g ? g.nombre+' '+g.apellido : e[0];
-      }).filter(Boolean);
+        var cod = String(e[0]).trim();
+        // Try rsvp rows first
+        var row = rsvpRows.find(function(r){ 
+          return String(r.codigo||r.confirmation_code||'').trim()===cod; 
+        });
+        if(row && (row.nombre||row.first_name)){
+          var n = ((row.nombre||row.first_name||'')+' '+(row.apellido||row.last_name||'')).trim();
+          var ac = parseInt(row['acompañantes']||row.acompanantes||0)||0;
+          return n + (ac>0 ? ' + '+ac+' acomp.' : '');
+        }
+        // Try guest list
+        var g = guests.find(function(g){ return String(g.codigo).trim()===cod; });
+        return g ? (g.nombre+' '+g.apellido).trim() : null;
+      }).filter(function(p){ return p && p.trim() && p!=='—'; });
 
     return `<div class="mesa-card">
       <div class="mesa-num">Mesa ${m.num}</div>
