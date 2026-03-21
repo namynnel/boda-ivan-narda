@@ -427,10 +427,10 @@ function updateStats() {
   const conf  = rsvpRows.filter(r=>(r.asistencia||r.attendance) && (r.asistencia||r.attendance)!=='no');
   const no    = rsvpRows.filter(r=>(r.asistencia||r.attendance)==='no');
   const ppl   = conf.reduce((a,r)=>a+1+(parseInt(r['acompañantes']||r.companion_count)||0),0);
-  document.getElementById('s-inv').textContent  = guests.length;
+  document.getElementById('s-inv').textContent  = totalCupos();
   document.getElementById('s-conf').textContent = conf.length;
   document.getElementById('s-no').textContent   = no.length;
-  document.getElementById('s-pend').textContent = guests.length - rsvpRows.length;
+  // sin respuesta calculated below
   document.getElementById('s-ppl').textContent  = ppl;
 }
 
