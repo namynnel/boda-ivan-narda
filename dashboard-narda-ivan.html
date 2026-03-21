@@ -480,14 +480,16 @@ async function refreshRSVP() {
 }
 
 function updateStats() {
-  const conf  = rsvpRows.filter(r=>(r.asistencia||r.attendance) && (r.asistencia||r.attendance)!=='no');
-  const no    = rsvpRows.filter(r=>(r.asistencia||r.attendance)==='no');
-  const ppl   = conf.reduce((a,r)=>a+1+(parseInt(r['acompañantes']||r.companion_count)||0),0);
-  document.getElementById('s-inv').textContent  = totalCupos();
-  document.getElementById('s-conf').textContent = conf.length;
-  document.getElementById('s-no').textContent   = no.length;
-  // sin respuesta calculated below
-  document.getElementById('s-ppl').textContent  = ppl;
+  const conf = rsvpRows.filter(r=>(r.asistencia||r.attendance) && (r.asistencia||r.attendance)!=='no');
+  const no   = rsvpRows.filter(r=>(r.asistencia||r.attendance)==='no');
+  const pplConf = conf.reduce((a,r)=>a+1+(parseInt(r['acompañantes']||r.acompanantes||0)||0),0);
+  const pplNo   = no.reduce((a,r)=>a+1+(parseInt(r['acompañantes']||r.acompanantes||0)||0),0);
+  const totalCup = totalCupos();
+  const sinResp = Math.max(0, totalCup - pplConf - pplNo);
+  document.getElementById('s-inv').textContent  = totalCup;
+  document.getElementById('s-conf').textContent = pplConf;
+  document.getElementById('s-no').textContent   = pplNo;
+  document.getElementById('s-pend').textContent = sinResp;
 }
 
 function setRSVPFilter(f, btn) {
