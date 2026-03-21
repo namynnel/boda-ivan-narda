@@ -547,11 +547,12 @@
         };
         
         // Save to Google Sheets
-        await fetch('https://script.google.com/macros/s/AKfycby_fbtXj5K5Rd4QbQdY1xYVzQLpm_piwyeIHj7p6MiuSD3cTl7LaisFsTVi0VL91QLzJw/exec', {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(record)
+        // Send via URL params (works with no-cors)
+        const params = new URLSearchParams();
+        Object.entries(record).forEach(([k,v]) => params.append(k, v));
+        await fetch('https://script.google.com/macros/s/AKfycbwmXfgHQNWdlivPx5fUUBh46mFRLi1xNGZoifLn_yprVFh1eIcrMmsQO_6WXZYyrRgHTQ/exec?' + params.toString(), {
+          method: 'GET',
+          mode: 'no-cors'
         });
         
         // Update success message based on attendance
