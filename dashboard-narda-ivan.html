@@ -226,6 +226,10 @@ select.edit-input{cursor:pointer;}
     <div class="cupos-track"><div class="cupos-fill" id="cupos-fill" style="width:0%"></div></div>
     <span class="cupos-num" id="cupos-num">0 / 300</span>
     <button class="btn btn-olive" onclick="openAddGuest()">+ Agregar invitado</button>
+    <button class="btn btn-ghost" onclick="syncGuests()" id="sync-btn" style="border-color:var(--euca);color:var(--euca);">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      Sincronizar con Sheets
+    </button>
     <input type="text" class="search-input" id="guest-search" placeholder="Buscar..." oninput="renderGuests()" style="max-width:180px;">
   </div>
 
@@ -376,7 +380,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw4KkzTyzhbWj8rY47Dx-8KwPj9RI4Zkl4D2KltC9g76HqHy1C-I0zWv6fZXEHcqdltWw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwNlTAptRTGBq1mQpfglKfHm3CGFsiFgSKtTHmILDY_7LMTZNakz0ZeLHS8HF8CZ2sAQg/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -985,6 +989,30 @@ function renderArchived() {
 /* ══════════════════════════════════════
    RESET
 ══════════════════════════════════════ */
+function syncGuests() {
+  const btn = document.getElementById('sync-btn');
+  const orig = btn.innerHTML;
+  btn.textContent = 'Sincronizando...';
+  btn.disabled = true;
+
+  const params = new URLSearchParams();
+  params.append('action', 'syncGuests');
+  params.append('data', JSON.stringify(guests));
+
+  fetch(SHEETS_URL + '?' + params.toString(), { mode: 'no-cors' })
+    .then(() => {
+      btn.textContent = '✓ Sincronizado';
+      btn.style.color = 'var(--green)';
+      btn.style.borderColor = 'var(--green)';
+      setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; btn.style.color = ''; btn.style.borderColor = ''; }, 3000);
+    })
+    .catch(() => {
+      btn.textContent = 'Error — intenta de nuevo';
+      btn.disabled = false;
+      setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 3000);
+    });
+}
+
 function resetGuests() {
   if(!confirm('¿Resetear la lista de invitados? Se perderán cambios locales (enviados, ediciones). Las confirmaciones de Google Sheets NO se borran.')) return;
   localStorage.removeItem('ni-guests');

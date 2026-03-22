@@ -443,9 +443,33 @@
         
 
         
-        // Code is valid
+        // Code is valid - check cupos from Sheets
         codeError.classList.add('hidden');
         this.classList.remove('border-red-300', 'bg-red-50');
+        this.classList.add('border-green-400', 'bg-green-50');
+        // Fetch cupos for this code
+        fetch('https://script.google.com/macros/s/AKfycbwNlTAptRTGBq1mQpfglKfHm3CGFsiFgSKtTHmILDY_7LMTZNakz0ZeLHS8HF8CZ2sAQg/exec?action=checkCode&codigo=' + code, {mode:'cors'})
+          .then(r => r.json())
+          .then(data => {
+            if(data.ok) {
+              window._maxCupos = data.cupos;
+              // Update companion count max
+              const compSel = document.getElementById('companion-count');
+              if(compSel) {
+                const maxAcomp = Math.max(0, data.cupos - 1);
+                compSel.innerHTML = '<option value="">Selecciona...</option>';
+                for(let i=1; i<=maxAcomp; i++) {
+                  compSel.innerHTML += '<option value="'+i+'">'+i+'</option>';
+                }
+                if(maxAcomp === 0) {
+                  // Hide companion question if only 1 cupo
+                  document.querySelectorAll('input[name="has_companion"]').forEach(r => {
+                    r.parentElement.parentElement.style.display = maxAcomp===0 ? 'none' : '';
+                  });
+                }
+              }
+            }
+          }).catch(() => {});
         this.classList.add('border-eucalyptus-light/50', 'bg-white/50');
       } else if (code.length > 0 && code.length < 4) {
         // Code incomplete, hide error
@@ -550,7 +574,7 @@
         // Send via URL params (works with no-cors)
         const params = new URLSearchParams();
         Object.entries(record).forEach(([k,v]) => params.append(k, v));
-        await fetch('https://script.google.com/macros/s/AKfycbw4KkzTyzhbWj8rY47Dx-8KwPj9RI4Zkl4D2KltC9g76HqHy1C-I0zWv6fZXEHcqdltWw/exec?' + params.toString(), {
+        await fetch('https://script.google.com/macros/s/AKfycbwNlTAptRTGBq1mQpfglKfHm3CGFsiFgSKtTHmILDY_7LMTZNakz0ZeLHS8HF8CZ2sAQg/exec?' + params.toString(), {
           method: 'GET',
           mode: 'no-cors'
         });
