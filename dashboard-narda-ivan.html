@@ -525,8 +525,8 @@ function renderRSVP() {
     const nombre = r.nombre||r.first_name||r['Nombre']||'';
     const apellido = r.apellido||r.last_name||r['Apellido']||'';
     const name = `${nombre} ${apellido}`.trim()||'—';
-    const phone = String(r.telefono||r.phone||r['telefono']||r['Telefono']||'').replace(/\D/g,'').trim();
-    const phoneDisplay = phone ? `<a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;" title="Enviar WhatsApp">📱 ${phone}</a>` : '—';
+    const phone = String(r.telefono||r.phone||r['telefono']||r['Telefono']||'').trim();
+    const phoneDisplay = phone || '—';
     const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
     const att  = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : attLabel[''];
     const numAcomp = parseInt(r['acompañantes']||r.acompanantes||r.companion_count||0)||0;
