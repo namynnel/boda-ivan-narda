@@ -498,6 +498,12 @@ async function refreshRSVP() {
     const res  = await fetch(SHEETS_URL + '?action=read&t=' + Date.now());
     const data = await res.json();
     rsvpRows = data.rows || [];
+    // Apply manual status overrides
+    const overrides = JSON.parse(localStorage.getItem('ni-status-overrides')||'{}');
+    rsvpRows.forEach(r => {
+      const code = String(r.codigo||r.confirmation_code||'').trim();
+      if(overrides[code]) r.asistencia = overrides[code];
+    });
     renderRSVP();
     updateStats();
     // Auto-archive guests who confirmed "no"
@@ -522,21 +528,18 @@ function updateStats() {
 }
 
 function updateRSVPStatus(codigo, newStatus) {
-  // Update locally
+  // Update locally only - don't create duplicate rows in Sheets
   const row = rsvpRows.find(r => String(r.codigo||r.confirmation_code||'').trim() === String(codigo).trim());
   if(row) {
     row.asistencia = newStatus;
   } else {
-    // Add new row if not exists
     rsvpRows.push({ codigo: codigo, asistencia: newStatus });
   }
+  // Save overrides locally
+  const overrides = JSON.parse(localStorage.getItem('ni-status-overrides')||'{}');
+  overrides[codigo] = newStatus;
+  localStorage.setItem('ni-status-overrides', JSON.stringify(overrides));
   
-  // Update in Google Sheets via GET
-  const params = 'action=updateStatus&codigo=' + encodeURIComponent(codigo) + '&asistencia=' + encodeURIComponent(newStatus);
-  const img = new Image();
-  img.src = SHEETS_URL + '?' + params;
-  
-  // Auto-archive if no
   autoArchiveNoShows();
   updateStats();
   renderRSVP();
