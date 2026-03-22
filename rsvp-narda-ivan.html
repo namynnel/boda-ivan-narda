@@ -565,13 +565,11 @@
           apellido: lastName,
           telefono: phone,
           asistencia: attendance,
-
-          detalle_alergia: formData.get('dietary_restrictions') || '',
-          'acompañantes': companionCount,
-          nombres_acompañantes: companionNames,
+          acompanantes: companionCount,
+          nombres_acompanantes: companionNames,
           alergia: formData.get('has_allergy') || 'no',
-          mensaje: formData.get('message') || '',
-          submitted_at: new Date().toISOString()
+          detalle_alergia: formData.get('dietary_restrictions') || '',
+          mensaje: formData.get('message') || ''
         };
         
         // Save to Google Sheets
