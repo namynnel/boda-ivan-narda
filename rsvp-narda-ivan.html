@@ -453,20 +453,35 @@
           .then(data => {
             if(data.ok) {
               window._maxCupos = data.cupos;
-              // Update companion count max
+              const maxAcomp = Math.max(0, data.cupos - 1);
               const compSel = document.getElementById('companion-count');
+              // Update companion count options
               if(compSel) {
-                const maxAcomp = Math.max(0, data.cupos - 1);
                 compSel.innerHTML = '<option value="">Selecciona...</option>';
                 for(let i=1; i<=maxAcomp; i++) {
                   compSel.innerHTML += '<option value="'+i+'">'+i+'</option>';
                 }
-                if(maxAcomp === 0) {
-                  // Hide companion question if only 1 cupo
-                  document.querySelectorAll('input[name="has_companion"]').forEach(r => {
-                    r.parentElement.parentElement.style.display = maxAcomp===0 ? 'none' : '';
-                  });
+              }
+              // Hide companion section entirely if only 1 cupo
+              const compSection = document.querySelectorAll('input[name="has_companion"]');
+              compSection.forEach(r => {
+                r.required = maxAcomp > 0;
+              });
+              // Find and hide/show the companion question div
+              const compYes = document.getElementById('comp-yes');
+              if(compYes) {
+                const compWrapper = compYes.closest('.space-y-3') || compYes.parentElement.parentElement.parentElement;
+                if(compWrapper) compWrapper.style.display = maxAcomp === 0 ? 'none' : '';
+              }
+              // If 0 companions allowed, auto-set to no
+              if(maxAcomp === 0) {
+                const compNo = document.getElementById('comp-no');
+                if(compNo) {
+                  compNo.checked = true;
+                  compNo.dispatchEvent(new Event('change'));
                 }
+                document.getElementById('companion-count-field').classList.add('hidden');
+                document.getElementById('companion-names').classList.add('hidden');
               }
             }
           }).catch(() => {});
