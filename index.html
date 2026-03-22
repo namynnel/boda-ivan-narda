@@ -132,6 +132,10 @@ body{
   position:relative;overflow:hidden;
   background:var(--olive-dk);
 }
+@media(min-width:900px){
+  #hero{ height:100vh; }
+  .slide-ph img{ object-position:center 30%; }
+}
 
 @media(min-width:768px){
   .slide-ph img{object-position:center center;}
@@ -156,8 +160,8 @@ body{
 .hero-veil{
   position:absolute;inset:0;pointer-events:none;z-index:2;
   background:linear-gradient(to bottom,
-    rgba(30,36,16,.15) 0%,transparent 18%,
-    transparent 42%,rgba(30,36,16,.6) 72%,rgba(30,36,16,.97) 100%);
+    rgba(30,36,16,.3) 0%,rgba(30,36,16,.1) 20%,
+    rgba(30,36,16,.1) 40%,rgba(30,36,16,.7) 72%,rgba(30,36,16,.97) 100%);
 }
 .hero-text{
   position:absolute;bottom:54px;left:0;right:0;

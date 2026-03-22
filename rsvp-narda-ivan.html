@@ -422,7 +422,14 @@ async function verifyCode() {
     return;
   }
 
-  // If preloaded, check locally
+  // Always refresh data before verifying to catch recent submissions
+  btnText.classList.add('hidden');
+  btnLoad.classList.remove('hidden');
+  await preloadData();
+  btnText.classList.remove('hidden');
+  btnLoad.classList.add('hidden');
+
+  // Check locally with fresh data
   if (serverData.loaded) {
     if (serverData.usedCodes.has(code)) {
       errEl.textContent = 'Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.';
@@ -631,6 +638,9 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
     var params = new URLSearchParams();
     Object.keys(record).forEach(function(k) { params.append(k, record[k]); });
     await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+
+    // Mark code as used locally
+    serverData.usedCodes.add(code);
 
     // Success
     var titulo  = attendance === 'no' ? 'Lamentamos que no puedas acompanarnos' : 'Tu asistencia ha sido confirmada';
