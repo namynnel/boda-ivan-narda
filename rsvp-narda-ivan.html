@@ -111,7 +111,7 @@
         <label class="block font-sans text-olive font-medium text-sm text-center mb-3">Ingresa tu codigo</label>
         <input type="text" id="verify-code-input" inputmode="numeric" maxlength="4" placeholder="0000"
           class="w-full px-4 py-4 border-2 border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 text-center text-3xl tracking-[0.5em] font-medium outline-none focus:border-eucalyptus transition-all"
-          oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+          oninput="this.value=this.value.replace(/[^0-9]/g,''); this.classList.remove('border-red-400'); document.getElementById('verify-error').classList.add('hidden');" >
         <p id="verify-error" class="hidden text-red-500 text-sm text-center mt-3 font-sans leading-relaxed"></p>
         <button type="button" onclick="verifyCode()"
           class="w-full mt-4 py-4 bg-gradient-to-r from-olive to-olive-dark text-white font-sans font-medium tracking-wide rounded-lg hover:from-olive-dark hover:to-olive transition-all duration-300 shadow-md">
@@ -284,7 +284,7 @@ async function verifyCode() {
 
   try {
     // Check with server: valid + not used + get cupos
-    const res  = await fetch('https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?action=validateCode&codigo=' + code);
+    const res  = await fetch('https://script.google.com/macros/s/AKfycbyFA93by8_aMbpxBaqvF2Bl-Iku1nN8RY9Qgz35B_hxV4DOrr6Y1ohXBJBsHLQMS6BYCw/exec?action=validateCode&codigo=' + code);
     const data = await res.json();
 
     if(!data.ok) {
@@ -357,7 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
 let usedCodes = new Set();
 async function loadUsedCodes() {
   try {
-    const res = await fetch('https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?action=getUsedCodes');
+    const res = await fetch('https://script.google.com/macros/s/AKfycbyFA93by8_aMbpxBaqvF2Bl-Iku1nN8RY9Qgz35B_hxV4DOrr6Y1ohXBJBsHLQMS6BYCw/exec?action=getUsedCodes');
     const data = await res.json();
     if(data.ok && data.codes) {
       usedCodes = new Set(data.codes.map(c => String(c).trim()));
@@ -582,7 +582,7 @@ const VALID_CODES = new Set([
         this.classList.remove('border-red-300', 'bg-red-50');
         this.classList.add('border-green-400', 'bg-green-50');
         // Fetch cupos for this code (best effort - won't block form)
-        fetch('https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?action=checkCode&codigo=' + code)
+        fetch('https://script.google.com/macros/s/AKfycbyFA93by8_aMbpxBaqvF2Bl-Iku1nN8RY9Qgz35B_hxV4DOrr6Y1ohXBJBsHLQMS6BYCw/exec?action=checkCode&codigo=' + code)
           .then(r => r.json())
           .then(data => {
             if(data && data.ok) {
@@ -717,7 +717,7 @@ const VALID_CODES = new Set([
         // Send via URL params (works with no-cors)
         const params = new URLSearchParams();
         Object.entries(record).forEach(([k,v]) => params.append(k, v));
-        await fetch('https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?' + params.toString(), {
+        await fetch('https://script.google.com/macros/s/AKfycbyFA93by8_aMbpxBaqvF2Bl-Iku1nN8RY9Qgz35B_hxV4DOrr6Y1ohXBJBsHLQMS6BYCw/exec?' + params.toString(), {
           method: 'GET',
           mode: 'no-cors'
         });
@@ -813,4 +813,87 @@ ${companionCount > 0 ? `👨‍👩‍👧 *Nombres:* ${companionNames}` : ''}
     });
   </script>
 </body>
-</html>
+</html/* STEP 1 VERIFY */
+var serverData = { loaded: false, usedCodes: new Set(), guestMap: {}, loadedAt: null };
+var INACTIVITY_MS = 30 * 60 * 1000; // 30 minutes
+
+async function preloadServerData() {
+  try {
+    var res  = await fetch('https://script.google.com/macros/s/AKfycbyFA93by8_aMbpxBaqvF2Bl-Iku1nN8RY9Qgz35B_hxV4DOrr6Y1ohXBJBsHLQMS6BYCw/exec?action=preloadData');
+    var data = await res.json();
+    if(data.ok) {
+      serverData.usedCodes = new Set((data.usedCodes||[]).map(function(c){ return String(c).trim(); }));
+      serverData.guestMap  = data.guestMap || {};
+      serverData.loaded    = true;
+      serverData.loadedAt  = Date.now();
+    }
+  } catch(e) {
+    console.log('Preload failed:', e);
+  }
+}
+preloadServerData();
+
+function isExpired() {
+  return serverData.loadedAt && (Date.now() - serverData.loadedAt) > INACTIVITY_MS;
+}
+
+async function verifyCode() {
+  var input   = document.getElementById('verify-code-input');
+  var btnText = document.getElementById('verify-btn-text');
+  var btnLoad = document.getElementById('verify-btn-loading');
+  var errEl   = document.getElementById('verify-error');
+  var code    = input.value.trim();
+
+  // Check inactivity
+  if(isExpired()) {
+    errEl.innerHTML = 'Por inactividad, tu sesion ha expirado. Por favor <a href="" style="text-decoration:underline;color:var(--olive);">recarga la pagina</a> para continuar con tu confirmacion.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  if(!/^[0-9]{4}$/.test(code)) {
+    errEl.textContent = 'Por favor ingresa un codigo de 4 digitos.';
+    errEl.classList.remove('hidden'); return;
+  }
+  if(!VALID_CODES.has(code)) {
+    errEl.textContent = 'Este codigo no es valido. Verifica que lo hayas escrito correctamente.';
+    errEl.classList.remove('hidden');
+    input.classList.add('border-red-400'); return;
+  }
+
+  // If preloaded data available, verify locally
+  if(serverData.loaded) {
+    if(serverData.usedCodes.has(code)) {
+      errEl.textContent = 'Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.';
+      errEl.classList.remove('hidden');
+      input.classList.add('border-red-400'); return;
+    }
+    var guest = serverData.guestMap[code] || {};
+    showForm(code, guest.cupos||1, guest.nombre||'');
+    return;
+  }
+
+  // Fallback: check server directly
+  btnText.classList.add('hidden');
+  btnLoad.classList.remove('hidden');
+  errEl.classList.add('hidden');
+  try {
+    var res  = await fetch('https://script.google.com/macros/s/AKfycbyFA93by8_aMbpxBaqvF2Bl-Iku1nN8RY9Qgz35B_hxV4DOrr6Y1ohXBJBsHLQMS6BYCw/exec?action=validateCode&codigo=' + code, {redirect:'follow'});
+    var data = await res.json();
+    if(!data.ok) {
+      btnText.classList.remove('hidden'); btnLoad.classList.add('hidden');
+      errEl.textContent = data.error === 'ya_usado'
+        ? 'Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.'
+        : 'Codigo no valido. Verifica que lo hayas escrito correctamente.';
+      errEl.classList.remove('hidden');
+      input.classList.add('border-red-400'); return;
+    }
+    showForm(code, data.cupos||1, data.nombre||'');
+  } catch(e) {
+    btnText.classList.remove('hidden'); btnLoad.classList.add('hidden');
+    errEl.textContent = 'No se pudo conectar con el servidor. Por favor intenta de nuevo.';
+    errEl.classList.remove('hidden');
+  }
+}
+
+>

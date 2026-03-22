@@ -132,6 +132,9 @@ body{
   position:relative;overflow:hidden;
   background:var(--olive-dk);
 }
+@media(min-width:768px){
+  .slide-ph img{object-position:center center;}
+}
 .car-track{display:flex;height:100%;transition:transform .95s cubic-bezier(.4,0,.2,1);}
 .car-slide{min-width:100%;height:100%;position:relative;flex-shrink:0;}
 .slide-ph{
@@ -147,7 +150,7 @@ body{
 .slide-ph.s4{background:linear-gradient(135deg,#283A40,#182428,#101818);}
 .slide-ph svg{opacity:.15;}
 .slide-ph p{color:rgba(168,120,40,.4);}
-.slide-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.slide-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;}
 
 .hero-veil{
   position:absolute;inset:0;pointer-events:none;z-index:2;
