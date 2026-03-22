@@ -448,7 +448,7 @@
         this.classList.remove('border-red-300', 'bg-red-50');
         this.classList.add('border-green-400', 'bg-green-50');
         // Fetch cupos for this code (best effort - won't block form)
-        fetch('https://script.google.com/macros/s/AKfycbzFHFP7rvQUouSFtrQh38eQc1Tqoa2MiFUwGamqguf4n8Q46AfcoMKY8jsauw9JssaPxg/exec?action=checkCode&codigo=' + code)
+        fetch('https://script.google.com/macros/s/AKfycbz3ucz7SEMNocq506qs0K0f1cP6a2V7gAWASTYTh5grQ3kDj0l8I7z4yFIUleLCfl09jA/exec?action=checkCode&codigo=' + code)
           .then(r => r.json())
           .then(data => {
             if(data && data.ok) {
@@ -576,7 +576,7 @@
         // Send via URL params (works with no-cors)
         const params = new URLSearchParams();
         Object.entries(record).forEach(([k,v]) => params.append(k, v));
-        await fetch('https://script.google.com/macros/s/AKfycbzFHFP7rvQUouSFtrQh38eQc1Tqoa2MiFUwGamqguf4n8Q46AfcoMKY8jsauw9JssaPxg/exec?' + params.toString(), {
+        await fetch('https://script.google.com/macros/s/AKfycbz3ucz7SEMNocq506qs0K0f1cP6a2V7gAWASTYTh5grQ3kDj0l8I7z4yFIUleLCfl09jA/exec?' + params.toString(), {
           method: 'GET',
           mode: 'no-cors'
         });
