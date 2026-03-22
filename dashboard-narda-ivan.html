@@ -380,7 +380,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwNlTAptRTGBq1mQpfglKfHm3CGFsiFgSKtTHmILDY_7LMTZNakz0ZeLHS8HF8CZ2sAQg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz7PxUjqMe2gCs_Lc6u91uMdfzpOK587KbIQAC_d7a3QFZ0sBZzuGoWVBI8lksdctaUeg/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -521,6 +521,27 @@ function updateStats() {
   document.getElementById('s-pend').textContent = sinResp;
 }
 
+function updateRSVPStatus(codigo, newStatus) {
+  // Update locally
+  const row = rsvpRows.find(r => String(r.codigo||r.confirmation_code||'').trim() === String(codigo).trim());
+  if(row) {
+    row.asistencia = newStatus;
+  } else {
+    // Add new row if not exists
+    rsvpRows.push({ codigo: codigo, asistencia: newStatus });
+  }
+  
+  // Update in Google Sheets via GET
+  const params = 'action=updateStatus&codigo=' + encodeURIComponent(codigo) + '&asistencia=' + encodeURIComponent(newStatus);
+  const img = new Image();
+  img.src = SHEETS_URL + '?' + params;
+  
+  // Auto-archive if no
+  autoArchiveNoShows();
+  updateStats();
+  renderRSVP();
+}
+
 function setRSVPFilter(f, btn) {
   rsvpFilter = f;
   document.querySelectorAll('#tab-rsvp .btn-ghost').forEach(b=>b.classList.remove('active'));
@@ -557,7 +578,15 @@ function renderRSVP() {
     const phone = String(r['teléfono']||r.telefono||r.phone||'').trim();
     const phoneDisplay = phone || '—';
     const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
-    const att  = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : attLabel[''];
+    const attBadge = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : `<span class="badge b-pending">⏳ Pendiente</span>`;
+    const attSelect = `<select onchange="updateRSVPStatus('${code}',this.value)" style="font-size:.68rem;border:1px solid rgba(168,197,176,.4);border-radius:4px;padding:.15rem .3rem;background:#fff;color:var(--ink);cursor:pointer;margin-top:.3rem;width:100%;">
+      <option value="both" ${asistencia==='both'?'selected':''}>💍 Ambos</option>
+      <option value="ceremony" ${asistencia==='ceremony'?'selected':''}>🎩 Ceremonia</option>
+      <option value="reception" ${asistencia==='reception'?'selected':''}>🍽️ Recepción</option>
+      <option value="no" ${asistencia==='no'?'selected':''}>❌ No asiste</option>
+      <option value="" ${!asistencia?'selected':''}>⏳ Pendiente</option>
+    </select>`;
+    const att = `<div>${attBadge}${attSelect}</div>`;
     const numAcomp = parseInt(r['acompañantes']||r.acompanantes||r.companion_count||0)||0;
     const ppl  = asistencia&&asistencia!=='no' ? 1+numAcomp : '—';
     const mesaNum = code !== '—' ? (mesaAssigns[String(code).trim()] || '—') : '—';
@@ -991,26 +1020,26 @@ function renderArchived() {
 ══════════════════════════════════════ */
 function syncGuests() {
   const btn = document.getElementById('sync-btn');
-  const orig = btn.innerHTML;
   btn.textContent = 'Sincronizando...';
   btn.disabled = true;
 
-  const params = new URLSearchParams();
-  params.append('action', 'syncGuests');
-  params.append('data', JSON.stringify(guests));
+  // Build URL with params - send each guest as individual row
+  const guestData = guests.map(g => g.codigo + '|' + g.nombre + '|' + g.apellido + '|' + g.cupos + '|' + g.grupo).join(';;');
+  const url = 'https://script.google.com/macros/s/AKfycbz7PxUjqMe2gCs_Lc6u91uMdfzpOK587KbIQAC_d7a3QFZ0sBZzuGoWVBI8lksdctaUeg/exec?action=syncGuests&data=' + encodeURIComponent(guestData);
 
-  fetch(SHEETS_URL + '?' + params.toString(), { mode: 'no-cors' })
-    .then(() => {
-      btn.textContent = '✓ Sincronizado';
-      btn.style.color = 'var(--green)';
-      btn.style.borderColor = 'var(--green)';
-      setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; btn.style.color = ''; btn.style.borderColor = ''; }, 3000);
-    })
-    .catch(() => {
-      btn.textContent = 'Error — intenta de nuevo';
-      btn.disabled = false;
-      setTimeout(() => { btn.innerHTML = orig; btn.style.color = ''; btn.style.borderColor = ''; }, 3000);
-    });
+  // Use image trick to bypass CORS
+  const img = new Image();
+  img.onload = img.onerror = function() {
+    btn.textContent = '✓ Sincronizado — verifica en Sheets';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    btn.disabled = false;
+    setTimeout(() => {
+      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Sincronizar con Sheets';
+      btn.style.color = ''; btn.style.borderColor = '';
+    }, 4000);
+  };
+  img.src = url;
 }
 
 function resetGuests() {
