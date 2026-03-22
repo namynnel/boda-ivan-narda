@@ -91,23 +91,43 @@
      </div>
     </header><!-- Main Card -->
     <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
-     <!-- Card Header -->
      <div class="bg-gradient-to-r from-olive/5 via-eucalyptus/10 to-olive/5 px-6 sm:px-10 py-8 border-b border-eucalyptus-light/20">
-      <h1 id="main-title" class="font-serif text-3xl sm:text-4xl text-olive text-center font-semibold tracking-wide">Confirmación de Asistencia</h1>
+      <h1 class="font-serif text-3xl sm:text-4xl text-olive text-center font-semibold tracking-wide">Confirmacion de Asistencia</h1>
       <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-4 mb-6"></div>
-      <p class="font-sans text-olive/80 text-center text-sm leading-relaxed max-w-lg mx-auto">Nos encantaría contar con tu presencia en este día tan especial. Por favor, completa este formulario para confirmar tu asistencia y ayudarnos a preparar cada detalle de tu experiencia.</p>
-     </div><!-- Deadline Notice -->
-     <div class="bg-gold/5 px-6 sm:px-10 py-4 border-b border-gold/20">
-      <p class="font-sans text-center text-sm"><span class="text-olive font-medium">Confirmación obligatoria hasta el </span> <span id="deadline-date" class="text-gold font-semibold">30 de octubre de 2026</span></p>
-      <p class="font-sans text-olive/60 text-center text-xs mt-1">Después de esta fecha, la disponibilidad no podrá ser garantizada.</p>
-     </div><!-- Form -->
-     <form id="rsvp-form" class="px-6 sm:px-10 py-8 space-y-6">
-      <!-- Confirmation Code -->
-      <div class="space-y-2">
-       <label for="confirmation-code" class="block font-sans text-olive font-medium text-sm"> Código de confirmación <span class="text-gold">*</span> </label> <input type="text" id="confirmation-code" name="confirmation_code" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required placeholder="0000" class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200 text-center text-2xl tracking-[0.5em] font-medium">
-       <p class="font-sans text-olive/60 text-xs leading-relaxed">Este código se encuentra en tu pase digital y es necesario para confirmar tu asistencia.</p>
-       <p id="code-error" class="hidden font-sans text-red-500 text-xs leading-relaxed">Código inválido. Verifica el código en tu pase digital. Solo es permitido el uso del número de código una sola vez.</p>
-      </div><!-- Name Fields -->
+      <p class="font-sans text-olive/80 text-center text-sm leading-relaxed max-w-lg mx-auto">Nos encantaria contar con tu presencia en este dia tan especial.</p>
+     </div>
+     <div id="step-codigo" class="px-6 sm:px-10 py-10">
+      <div class="text-center mb-8">
+        <span class="text-5xl mb-4 block">&#127807;</span>
+        <h2 class="font-serif text-2xl sm:text-3xl text-olive font-semibold mb-4">Bienvenido/a</h2>
+        <p class="font-sans text-olive font-medium text-base leading-relaxed max-w-sm mx-auto mb-3">
+          Para confirmar tu asistencia, necesitas tu <span class="text-gold font-semibold">codigo de invitacion personal</span>.
+        </p>
+        <p class="font-sans text-olive/60 text-sm leading-relaxed max-w-sm mx-auto">
+          Lo encontraras en el mensaje que te enviamos por WhatsApp y en tu pase digital de invitacion. Si tienes alguna duda, comunicarte con nosotros.
+        </p>
+      </div>
+      <div class="max-w-xs mx-auto">
+        <label class="block font-sans text-olive font-medium text-sm text-center mb-3">Ingresa tu codigo</label>
+        <input type="text" id="verify-code-input" inputmode="numeric" maxlength="4" placeholder="0000"
+          class="w-full px-4 py-4 border-2 border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 text-center text-3xl tracking-[0.5em] font-medium outline-none focus:border-eucalyptus transition-all"
+          oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+        <p id="verify-error" class="hidden text-red-500 text-sm text-center mt-3 font-sans leading-relaxed"></p>
+        <button type="button" onclick="verifyCode()"
+          class="w-full mt-4 py-4 bg-gradient-to-r from-olive to-olive-dark text-white font-sans font-medium tracking-wide rounded-lg hover:from-olive-dark hover:to-olive transition-all duration-300 shadow-md">
+          <span id="verify-btn-text">Verificar codigo</span>
+          <span id="verify-btn-loading" class="hidden">Verificando...</span>
+        </button>
+      </div>
+     </div>
+     <div id="deadline-bar" style="display:none;" class="bg-gold/5 px-6 sm:px-10 py-4 border-b border-gold/20">
+      <p class="font-sans text-center text-sm"><span class="text-olive font-medium">Confirmacion obligatoria hasta el </span><span class="text-gold font-semibold">30 de octubre de 2026</span></p>
+      <p class="font-sans text-olive/60 text-center text-xs mt-1">Despues de esta fecha, la disponibilidad no podra ser garantizada.</p>
+     </div>
+     <form id="rsvp-form" class="px-6 sm:px-10 py-8 space-y-6" style="display:none;">
+            <input type="hidden" id="confirmation-code" name="confirmation_code">
+      <p id="code-error" class="hidden font-sans text-red-500 text-xs"></p>
+      <!-- Name Fields -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
        <div class="space-y-2">
         <label for="first-name" class="block font-sans text-olive font-medium text-sm"> Nombre <span class="text-gold">*</span> </label> <input type="text" id="first-name" name="first_name" required placeholder="Tu nombre" class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
