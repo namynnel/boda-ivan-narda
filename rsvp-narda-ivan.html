@@ -811,10 +811,8 @@ ${companionCount > 0 ? `👨‍👩‍👧 *Nombres:* ${companionNames}` : ''}
         setTimeout(() => errorDiv.remove(), 5000);
       }
     });
-  </script>
-</body>
-</html/* STEP 1 VERIFY */
-var serverData = { loaded: false, usedCodes: new Set(), guestMap: {}, loadedAt: null };
+
+/* STEP 1 VERIFY */var serverData = { loaded: false, usedCodes: new Set(), guestMap: {}, loadedAt: null };
 var INACTIVITY_MS = 30 * 60 * 1000; // 30 minutes
 
 async function preloadServerData() {
@@ -897,3 +895,6 @@ async function verifyCode() {
 }
 
 >
+  </script>
+</body>
+</html>

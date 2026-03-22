@@ -528,18 +528,13 @@ function updateStats() {
 }
 
 function updateRSVPStatus(codigo, newStatus) {
-  // Update locally only - don't create duplicate rows in Sheets
-  const row = rsvpRows.find(r => String(r.codigo||r.confirmation_code||'').trim() === String(codigo).trim());
-  if(row) {
-    row.asistencia = newStatus;
-  } else {
-    rsvpRows.push({ codigo: codigo, asistencia: newStatus });
-  }
-  // Save overrides locally
+  // Save override locally
   const overrides = JSON.parse(localStorage.getItem('ni-status-overrides')||'{}');
-  overrides[codigo] = newStatus;
+  overrides[String(codigo).trim()] = newStatus;
   localStorage.setItem('ni-status-overrides', JSON.stringify(overrides));
-  
+  // Update in memory without adding new rows
+  const row = rsvpRows.find(r => String(r.codigo||r.confirmation_code||'').trim() === String(codigo).trim());
+  if(row) row.asistencia = newStatus;
   autoArchiveNoShows();
   updateStats();
   renderRSVP();
