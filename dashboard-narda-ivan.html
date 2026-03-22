@@ -144,6 +144,16 @@ select.edit-input{cursor:pointer;}
 .group-header-name{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--olive-dk);}
 .group-header-count{font-size:.65rem;color:var(--ink-lt);}
 
+/* ARCHIVED */
+.archived-section{margin:1rem 1.5rem;border:1px solid rgba(220,107,107,.2);border-radius:8px;overflow:hidden;}
+.archived-header{padding:.7rem 1.2rem;background:rgba(220,107,107,.06);display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.archived-header-title{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--red);}
+.archived-row{display:flex;align-items:center;gap:.8rem;padding:.6rem 1.2rem;border-top:1px solid rgba(220,107,107,.1);font-size:.78rem;}
+.archived-name{flex:1;font-weight:500;}
+.archived-cupos{color:var(--ink-lt);font-size:.72rem;}
+.restore-btn{padding:.2rem .6rem;border-radius:4px;border:1px solid var(--green);color:var(--green);background:transparent;font-size:.62rem;cursor:pointer;font-family:'Montserrat',sans-serif;}
+.restore-btn:hover{background:var(--green);color:#fff;}
+
 /* EMPTY */
 .empty{text-align:center;padding:3rem;font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--ink-lt);font-style:italic;}
 
@@ -238,6 +248,15 @@ select.edit-input{cursor:pointer;}
       </tr></thead>
       <tbody id="guests-tbody"></tbody>
     </table>
+  </div>
+
+  <!-- Archived section -->
+  <div class="archived-section" id="archived-section">
+    <div class="archived-header" onclick="toggleArchived()">
+      <span class="archived-header-title">📦 Archivados — <span id="archived-count">0</span> personas · <span id="archived-cupos">0</span> cupos liberados</span>
+      <span id="archived-arrow" style="color:var(--red);font-size:.8rem;">▼</span>
+    </div>
+    <div id="archived-list" style="display:none;"></div>
   </div>
 </div>
 
@@ -441,7 +460,11 @@ function saveSent(s) { localStorage.setItem('ni-sent', JSON.stringify(s)); }
 function loadMesaAssigns() { return JSON.parse(localStorage.getItem('ni-mesa-assigns')||'{}'); }
 function saveMesaAssigns(a) { localStorage.setItem('ni-mesa-assigns', JSON.stringify(a)); }
 
-let guests = loadGuests();
+function loadArchived() { return JSON.parse(localStorage.getItem('ni-archived')||'[]'); }
+function saveArchived(a) { localStorage.setItem('ni-archived', JSON.stringify(a)); }
+
+let guests   = loadGuests();
+let archived = loadArchived();
 let mesas  = loadMesas();
 let sent   = loadSent();
 let mesaAssigns = loadMesaAssigns(); // {codigo: mesaNum}
@@ -473,6 +496,8 @@ async function refreshRSVP() {
     rsvpRows = data.rows || [];
     renderRSVP();
     updateStats();
+    // Auto-archive guests who confirmed "no"
+    autoArchiveNoShows();
   } catch(e) {
     console.log('Error:', e);
   }
@@ -525,7 +550,7 @@ function renderRSVP() {
     const nombre = r.nombre||r.first_name||r['Nombre']||'';
     const apellido = r.apellido||r.last_name||r['Apellido']||'';
     const name = `${nombre} ${apellido}`.trim()||'—';
-    const phone = String(r.telefono||r.phone||r['telefono']||r['Telefono']||'').trim();
+    const phone = String(r['teléfono']||r.telefono||r.phone||'').trim();
     const phoneDisplay = phone || '—';
     const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
     const att  = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : attLabel[''];
@@ -582,7 +607,10 @@ function guestRow(g, i) {
     <td class="td-code">${g.codigo}</td>
     <td><button class="wa-btn" onclick="openWAModal(${i})">📱 WhatsApp</button></td>
     <td><button class="sent-btn ${isSent?'sent':'not-sent'}" id="sb-${g.codigo}" onclick="toggleSent('${g.codigo}')">${isSent?'✓ Enviado':'Marcar'}</button></td>
-    <td><button class="icon-btn" onclick="deleteGuest(${i})" title="Eliminar">🗑️</button></td>
+    <td style="display:flex;gap:.3rem;">
+    <button class="icon-btn" onclick="archiveGuest(${i})" title="Archivar (libera cupos)">📦</button>
+    <button class="icon-btn" onclick="deleteGuest(${i})" title="Eliminar permanente">🗑️</button>
+  </td>
   </tr>`;
 }
 
@@ -864,6 +892,92 @@ function saveMesaAssign() {
 }
 
 /* ══════════════════════════════════════
+   ARCHIVE
+══════════════════════════════════════ */
+function autoArchiveNoShows() {
+  let changed = false;
+  rsvpRows.forEach(function(r) {
+    if((r.asistencia||r.attendance)==='no') {
+      const codigo = String(r.codigo||r.confirmation_code||'').trim();
+      const idx = guests.findIndex(function(g){ return String(g.codigo).trim()===codigo; });
+      if(idx>=0) {
+        const g = guests[idx];
+        const alreadyArchived = archived.some(function(a){ return String(a.codigo).trim()===codigo; });
+        if(!alreadyArchived) {
+          archived.push({...g, archivedAt: new Date().toLocaleDateString('es-BO'), reason:'No asistirá'});
+          guests.splice(idx,1);
+          changed = true;
+        }
+      }
+    }
+  });
+  if(changed) {
+    saveGuests(guests);
+    saveArchived(archived);
+    renderGuests();
+    renderArchived();
+  }
+}
+
+function archiveGuest(i) {
+  const g = guests[i];
+  if(!confirm('¿Archivar a ' + g.nombre + ' ' + g.apellido + '? Sus ' + g.cupos + ' cupos se liberarán.')) return;
+  archived.push({...g, archivedAt: new Date().toLocaleDateString('es-BO')});
+  saveArchived(archived);
+  guests.splice(i, 1);
+  saveGuests(guests);
+  renderGuests();
+  renderArchived();
+  updateStats();
+}
+
+function restoreGuest(i) {
+  const g = archived[i];
+  if(totalCupos() + g.cupos > MAX_CUPOS) {
+    alert('No hay suficientes cupos disponibles para restaurar a ' + g.nombre + '.');
+    return;
+  }
+  const {archivedAt, ...guest} = g;
+  guests.push(guest);
+  saveGuests(guests);
+  archived.splice(i, 1);
+  saveArchived(archived);
+  renderGuests();
+  renderArchived();
+  updateStats();
+}
+
+function toggleArchived() {
+  const list  = document.getElementById('archived-list');
+  const arrow = document.getElementById('archived-arrow');
+  const open  = list.style.display === 'none';
+  list.style.display = open ? 'block' : 'none';
+  arrow.textContent  = open ? '▲' : '▼';
+}
+
+function renderArchived() {
+  const count = document.getElementById('archived-count');
+  const cupos = document.getElementById('archived-cupos');
+  const list  = document.getElementById('archived-list');
+  const sec   = document.getElementById('archived-section');
+
+  const totalArchivedCupos = archived.reduce((a,g)=>a+g.cupos, 0);
+  if(count) count.textContent = archived.length;
+  if(cupos) cupos.textContent = totalArchivedCupos;
+  if(sec)   sec.style.display = archived.length ? 'block' : 'none';
+
+  if(list) {
+    list.innerHTML = archived.length ? archived.map((g,i)=>`
+      <div class="archived-row">
+        <span class="archived-name">${g.nombre} ${g.apellido} ${g.sufijo||''}</span>
+        <span class="archived-cupos">${g.cupos} cupo${g.cupos>1?'s':''} · ${g.grupo}</span>
+        <span style="font-size:.65rem;color:var(--ink-lt);">${g.archivedAt||''}</span>
+        <button class="restore-btn" onclick="restoreGuest(${i})">↩ Restaurar</button>
+      </div>`).join('') : '';
+  }
+}
+
+/* ══════════════════════════════════════
    RESET
 ══════════════════════════════════════ */
 function resetGuests() {
@@ -879,6 +993,7 @@ function resetGuests() {
 ══════════════════════════════════════ */
 updateStats();
 renderGuests();
+renderArchived();
 refreshRSVP();
 </script>
 </body>
