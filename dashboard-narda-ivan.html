@@ -380,7 +380,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz3ucz7SEMNocq506qs0K0f1cP6a2V7gAWASTYTh5grQ3kDj0l8I7z4yFIUleLCfl09jA/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -1031,7 +1031,7 @@ function syncGuests() {
 
   // Build URL with params - send each guest as individual row
   const guestData = guests.map(g => g.codigo + '|' + g.nombre + '|' + g.apellido + '|' + g.cupos + '|' + g.grupo).join(';;');
-  const url = 'https://script.google.com/macros/s/AKfycbz3ucz7SEMNocq506qs0K0f1cP6a2V7gAWASTYTh5grQ3kDj0l8I7z4yFIUleLCfl09jA/exec?action=syncGuests&data=' + encodeURIComponent(guestData);
+  const url = 'https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?action=syncGuests&data=' + encodeURIComponent(guestData);
 
   // Use image trick to bypass CORS
   const img = new Image();

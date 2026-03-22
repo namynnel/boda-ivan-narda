@@ -232,7 +232,121 @@
     };
 
     // Valid invitation codes (cleaned, without duplicates)
-    const VALID_CODES = new Set([
+    // ══ STEP 1: CODE VERIFICATION ══
+async function verifyCode() {
+  const input   = document.getElementById('verify-code-input');
+  const btn     = document.getElementById('verify-btn');
+  const btnText = document.getElementById('verify-btn-text');
+  const btnLoad = document.getElementById('verify-btn-loading');
+  const errEl   = document.getElementById('verify-error');
+  const code    = input.value.trim();
+
+  // Basic format check
+  if(!/^\d{4}$/.test(code)) {
+    errEl.textContent = 'Por favor ingresa un código de 4 dígitos.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  // Check if in valid list
+  if(!VALID_CODES.has(code)) {
+    errEl.textContent = 'Este código no es válido. Verifica que lo hayas escrito correctamente.';
+    errEl.classList.remove('hidden');
+    input.classList.add('border-red-400');
+    return;
+  }
+
+  // Show loading
+  btnText.classList.add('hidden');
+  btnLoad.classList.remove('hidden');
+  btn.disabled = true;
+  errEl.classList.add('hidden');
+
+  try {
+    // Check with server: valid + not used + get cupos
+    const res  = await fetch('https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?action=validateCode&codigo=' + code);
+    const data = await res.json();
+
+    if(!data.ok) {
+      btnText.classList.remove('hidden');
+      btnLoad.classList.add('hidden');
+      btn.disabled = false;
+      if(data.error === 'ya_usado') {
+        errEl.textContent = 'Este código ya fue utilizado. Cada código solo puede usarse una vez.';
+      } else {
+        errEl.textContent = 'Código inválido. Verifica que lo hayas escrito correctamente.';
+      }
+      errEl.classList.remove('hidden');
+      input.classList.add('border-red-400');
+      return;
+    }
+
+    // Code is valid! Show form
+    window._verifiedCode  = code;
+    window._maxCupos      = data.cupos || 1;
+    document.getElementById('confirmation-code').value = code;
+
+    // Show/hide companion based on cupos
+    const maxAcomp = Math.max(0, window._maxCupos - 1);
+    const compSel  = document.getElementById('companion-count');
+    if(compSel) {
+      compSel.innerHTML = '<option value="">Selecciona...</option>';
+      for(let i=1; i<=maxAcomp; i++) compSel.innerHTML += '<option value="'+i+'">'+i+'</option>';
+    }
+    const compYes = document.getElementById('comp-yes');
+    if(compYes) {
+      const compWrapper = compYes.closest('.space-y-3') || compYes.parentElement.parentElement.parentElement;
+      if(compWrapper) compWrapper.style.display = maxAcomp === 0 ? 'none' : '';
+    }
+    if(maxAcomp === 0) {
+      const compNo = document.getElementById('comp-no');
+      if(compNo) { compNo.checked = true; compNo.dispatchEvent(new Event('change')); }
+    }
+
+    // Show greeting with name if available
+    if(data.nombre) {
+      const greet = document.getElementById('guest-greeting');
+      const greetName = document.getElementById('guest-name-display');
+      if(greet && greetName) {
+        greetName.textContent = data.nombre;
+        greet.classList.remove('hidden');
+      }
+    }
+
+    // Transition to form
+    document.getElementById('step-codigo').style.display  = 'none';
+    document.getElementById('deadline-bar').style.display = 'block';
+    document.getElementById('rsvp-form').style.display    = 'block';
+
+  } catch(e) {
+    btnText.classList.remove('hidden');
+    btnLoad.classList.add('hidden');
+    btn.disabled = false;
+    errEl.textContent = 'Error de conexión. Por favor intenta de nuevo.';
+    errEl.classList.remove('hidden');
+  }
+}
+
+// Allow Enter key on code input
+document.addEventListener('DOMContentLoaded', function() {
+  const inp = document.getElementById('verify-code-input');
+  if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') verifyCode(); });
+});
+
+// Load used codes from Sheets on page load
+let usedCodes = new Set();
+async function loadUsedCodes() {
+  try {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?action=getUsedCodes');
+    const data = await res.json();
+    if(data.ok && data.codes) {
+      usedCodes = new Set(data.codes.map(c => String(c).trim()));
+    }
+  } catch(e) { console.log('Could not load used codes:', e); }
+}
+loadUsedCodes();
+
+const VALID_CODES = new Set([
       "1906", "5095", "4041", "9500", "8623", "7319", "2016", "9607", "3510", "9811",
       "1044", "9979", "4610", "4234", "4082", "8748", "8289", "5564", "8582", "6775",
       "4012", "5307", "9135", "8198", "7935", "6144", "5038", "7686", "7383", "6995",
@@ -448,7 +562,7 @@
         this.classList.remove('border-red-300', 'bg-red-50');
         this.classList.add('border-green-400', 'bg-green-50');
         // Fetch cupos for this code (best effort - won't block form)
-        fetch('https://script.google.com/macros/s/AKfycbz3ucz7SEMNocq506qs0K0f1cP6a2V7gAWASTYTh5grQ3kDj0l8I7z4yFIUleLCfl09jA/exec?action=checkCode&codigo=' + code)
+        fetch('https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?action=checkCode&codigo=' + code)
           .then(r => r.json())
           .then(data => {
             if(data && data.ok) {
@@ -512,7 +626,14 @@
       
       // Validate code is in valid codes list
       if (!VALID_CODES.has(code)) {
-        codeError.textContent = "Código inválido o ya utilizado.";
+        codeError.textContent = "Código inválido. Verifica el código en tu pase digital.";
+        codeError.classList.remove('hidden');
+        document.getElementById('confirmation-code').focus();
+        return;
+      }
+      // Check if already used
+      if(usedCodes.has(code)) {
+        codeError.textContent = "Este código ya fue utilizado. Cada código solo puede usarse una vez.";
         codeError.classList.remove('hidden');
         document.getElementById('confirmation-code').focus();
         return;
@@ -576,7 +697,7 @@
         // Send via URL params (works with no-cors)
         const params = new URLSearchParams();
         Object.entries(record).forEach(([k,v]) => params.append(k, v));
-        await fetch('https://script.google.com/macros/s/AKfycbz3ucz7SEMNocq506qs0K0f1cP6a2V7gAWASTYTh5grQ3kDj0l8I7z4yFIUleLCfl09jA/exec?' + params.toString(), {
+        await fetch('https://script.google.com/macros/s/AKfycbwdXUDId3WWoJTR0Agj7OpFHKg3tmQe-jU-azyWOROuBvrVTFVeLrx1QyeDEG8kcsVkvQ/exec?' + params.toString(), {
           method: 'GET',
           mode: 'no-cors'
         });
