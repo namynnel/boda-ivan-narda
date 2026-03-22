@@ -447,44 +447,33 @@
         codeError.classList.add('hidden');
         this.classList.remove('border-red-300', 'bg-red-50');
         this.classList.add('border-green-400', 'bg-green-50');
-        // Fetch cupos for this code
-        fetch('https://script.google.com/macros/s/AKfycbz7PxUjqMe2gCs_Lc6u91uMdfzpOK587KbIQAC_d7a3QFZ0sBZzuGoWVBI8lksdctaUeg/exec?action=checkCode&codigo=' + code, {mode:'cors'})
+        // Fetch cupos for this code (best effort - won't block form)
+        fetch('https://script.google.com/macros/s/AKfycbzFHFP7rvQUouSFtrQh38eQc1Tqoa2MiFUwGamqguf4n8Q46AfcoMKY8jsauw9JssaPxg/exec?action=checkCode&codigo=' + code)
           .then(r => r.json())
           .then(data => {
-            if(data.ok) {
+            if(data && data.ok) {
               window._maxCupos = data.cupos;
               const maxAcomp = Math.max(0, data.cupos - 1);
               const compSel = document.getElementById('companion-count');
-              // Update companion count options
               if(compSel) {
                 compSel.innerHTML = '<option value="">Selecciona...</option>';
                 for(let i=1; i<=maxAcomp; i++) {
                   compSel.innerHTML += '<option value="'+i+'">'+i+'</option>';
                 }
               }
-              // Hide companion section entirely if only 1 cupo
-              const compSection = document.querySelectorAll('input[name="has_companion"]');
-              compSection.forEach(r => {
-                r.required = maxAcomp > 0;
-              });
-              // Find and hide/show the companion question div
               const compYes = document.getElementById('comp-yes');
               if(compYes) {
                 const compWrapper = compYes.closest('.space-y-3') || compYes.parentElement.parentElement.parentElement;
                 if(compWrapper) compWrapper.style.display = maxAcomp === 0 ? 'none' : '';
               }
-              // If 0 companions allowed, auto-set to no
               if(maxAcomp === 0) {
                 const compNo = document.getElementById('comp-no');
-                if(compNo) {
-                  compNo.checked = true;
-                  compNo.dispatchEvent(new Event('change'));
-                }
+                if(compNo) { compNo.checked = true; compNo.dispatchEvent(new Event('change')); }
                 document.getElementById('companion-count-field').classList.add('hidden');
                 document.getElementById('companion-names').classList.add('hidden');
               }
             }
-          }).catch(() => {});
+          }).catch(() => { /* Si falla, el formulario igual funciona sin restricción de cupos */ });
         this.classList.add('border-eucalyptus-light/50', 'bg-white/50');
       } else if (code.length > 0 && code.length < 4) {
         // Code incomplete, hide error
@@ -589,7 +578,7 @@
         // Send via URL params (works with no-cors)
         const params = new URLSearchParams();
         Object.entries(record).forEach(([k,v]) => params.append(k, v));
-        await fetch('https://script.google.com/macros/s/AKfycbz7PxUjqMe2gCs_Lc6u91uMdfzpOK587KbIQAC_d7a3QFZ0sBZzuGoWVBI8lksdctaUeg/exec?' + params.toString(), {
+        await fetch('https://script.google.com/macros/s/AKfycbzFHFP7rvQUouSFtrQh38eQc1Tqoa2MiFUwGamqguf4n8Q46AfcoMKY8jsauw9JssaPxg/exec?' + params.toString(), {
           method: 'GET',
           mode: 'no-cors'
         });

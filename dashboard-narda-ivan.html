@@ -380,7 +380,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbz7PxUjqMe2gCs_Lc6u91uMdfzpOK587KbIQAC_d7a3QFZ0sBZzuGoWVBI8lksdctaUeg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzFHFP7rvQUouSFtrQh38eQc1Tqoa2MiFUwGamqguf4n8Q46AfcoMKY8jsauw9JssaPxg/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -597,7 +597,10 @@ function renderRSVP() {
     const msgText = r.mensaje||r.message||'';
     const msg = msgText ? `<span style="cursor:pointer;color:var(--euca);text-decoration:underline;font-size:.72rem;" onclick="alert('${msgText.replace(/'/g,"\'")}')">💬 Ver</span>` : '—';
     const fecha = (r.fecha||r.submitted_at||'').split('T')[0]||'—';
-    return `<tr><td class="td-name">${name}</td><td class="td-code">${code}</td><td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱${phone}</a></td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${mesaBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${fecha}</td></tr>`;
+    const excedido = r.excedido === 'EXCEDIDO' || r['excedido'] === 'EXCEDIDO';
+    const rowStyle = excedido ? 'background:rgba(220,107,107,.08);border-left:3px solid var(--red);' : '';
+    const excBadge = excedido ? '<span style="font-size:.6rem;color:var(--red);font-weight:600;display:block;">⚠️ Cupos excedidos</span>' : '';
+    return `<tr style="${rowStyle}"><td class="td-name">${name}${excBadge}</td><td class="td-code">${code}</td><td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱${phone}</a></td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${mesaBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${fecha}</td></tr>`;
   }).join('');
 }
 
@@ -1025,7 +1028,7 @@ function syncGuests() {
 
   // Build URL with params - send each guest as individual row
   const guestData = guests.map(g => g.codigo + '|' + g.nombre + '|' + g.apellido + '|' + g.cupos + '|' + g.grupo).join(';;');
-  const url = 'https://script.google.com/macros/s/AKfycbz7PxUjqMe2gCs_Lc6u91uMdfzpOK587KbIQAC_d7a3QFZ0sBZzuGoWVBI8lksdctaUeg/exec?action=syncGuests&data=' + encodeURIComponent(guestData);
+  const url = 'https://script.google.com/macros/s/AKfycbzFHFP7rvQUouSFtrQh38eQc1Tqoa2MiFUwGamqguf4n8Q46AfcoMKY8jsauw9JssaPxg/exec?action=syncGuests&data=' + encodeURIComponent(guestData);
 
   // Use image trick to bypass CORS
   const img = new Image();
