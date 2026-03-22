@@ -702,8 +702,10 @@ function updateGuest(i, field, val) {
 
 function deleteGuest(i) {
   if(!confirm(`¿Eliminar a ${guests[i].nombre} ${guests[i].apellido}?`)) return;
+  const deletedCodigo = guests[i].codigo;
   guests.splice(i,1);
   saveGuests(guests);
+  if(mesaAssigns[deletedCodigo]) { delete mesaAssigns[deletedCodigo]; saveMesaAssigns(mesaAssigns); }
   renderGuests();
 }
 
@@ -905,6 +907,7 @@ function autoArchiveNoShows() {
         const alreadyArchived = archived.some(function(a){ return String(a.codigo).trim()===codigo; });
         if(!alreadyArchived) {
           archived.push({...g, archivedAt: new Date().toLocaleDateString('es-BO'), reason:'No asistirá'});
+          if(mesaAssigns[g.codigo]) { delete mesaAssigns[g.codigo]; saveMesaAssigns(mesaAssigns); }
           guests.splice(idx,1);
           changed = true;
         }
@@ -926,6 +929,8 @@ function archiveGuest(i) {
   saveArchived(archived);
   guests.splice(i, 1);
   saveGuests(guests);
+  // Remove mesa assignment
+  if(mesaAssigns[g.codigo]) { delete mesaAssigns[g.codigo]; saveMesaAssigns(mesaAssigns); }
   renderGuests();
   renderArchived();
   updateStats();
@@ -937,7 +942,7 @@ function restoreGuest(i) {
     alert('No hay suficientes cupos disponibles para restaurar a ' + g.nombre + '.');
     return;
   }
-  const {archivedAt, ...guest} = g;
+  const {archivedAt, reason, ...guest} = g;
   guests.push(guest);
   saveGuests(guests);
   archived.splice(i, 1);
