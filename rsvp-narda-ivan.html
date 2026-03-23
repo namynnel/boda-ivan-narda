@@ -329,7 +329,7 @@
 </div>
 
 <script>
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyFA93by8_aMbpxBaqvF2Bl-Iku1nN8RY9Qgz35B_hxV4DOrr6Y1ohXBJBsHLQMS6BYCw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzWjzgpuTg2W3EnXIdjkT-wwoUrV8MDptvoLvE9gAjxis8iH_AEtPDsBHA3lRaLigM35g/exec';
 const TELEGRAM_TOKEN   = '8343723747:AAHIVAZiSsqGqAG8NqwomJfi0WkscNgMjcQ';
 const TELEGRAM_CHAT_ID = '1366498288';
 const INACTIVITY_MS    = 30 * 60 * 1000;
@@ -375,16 +375,39 @@ const VALID_CODES = new Set([
 var serverData = { loaded: false, usedCodes: new Set(), guestMap: {}, loadedAt: null };
 
 async function preloadData() {
-  try {
-    var res  = await fetch(SHEETS_URL + '?action=preloadData');
-    var data = await res.json();
-    if (data.ok) {
-      serverData.usedCodes = new Set((data.usedCodes || []).map(function(c){ return String(c).trim(); }));
-      serverData.guestMap  = data.guestMap || {};
-      serverData.loaded    = true;
-      serverData.loadedAt  = Date.now();
-    }
-  } catch(e) { console.log('Preload failed:', e); }
+  return new Promise(function(resolve) {
+    // Use JSONP-style script tag to bypass CORS
+    var callbackName = 'rsvpCallback_' + Date.now();
+    var script = document.createElement('script');
+    var timeout = setTimeout(function() {
+      document.head.removeChild(script);
+      delete window[callbackName];
+      console.log('Preload timed out');
+      resolve();
+    }, 8000);
+
+    window[callbackName] = function(data) {
+      clearTimeout(timeout);
+      document.head.removeChild(script);
+      delete window[callbackName];
+      if (data && data.ok) {
+        serverData.usedCodes = new Set((data.usedCodes || []).map(function(c){ return String(c).trim(); }));
+        serverData.guestMap  = data.guestMap || {};
+        serverData.loaded    = true;
+        serverData.loadedAt  = Date.now();
+      }
+      resolve();
+    };
+
+    script.src = SHEETS_URL + '?action=preloadData&callback=' + callbackName;
+    script.onerror = function() {
+      clearTimeout(timeout);
+      try { document.head.removeChild(script); } catch(e) {}
+      delete window[callbackName];
+      resolve();
+    };
+    document.head.appendChild(script);
+  });
 }
 preloadData();
 
@@ -635,9 +658,16 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
   };
 
   try {
+    // Send data via image trick - works from any domain
     var params = new URLSearchParams();
     Object.keys(record).forEach(function(k) { params.append(k, record[k]); });
-    await fetch(SHEETS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+    
+    await new Promise(function(resolve) {
+      var img = new Image();
+      img.onload = img.onerror = function() { resolve(); };
+      img.src = SHEETS_URL + '?' + params.toString();
+      setTimeout(resolve, 5000); // timeout after 5s
+    });
 
     // Mark code as used locally
     serverData.usedCodes.add(code);
