@@ -161,18 +161,55 @@ body{
   display: block;
 }
 
-/* ── GALERÍA DESKTOP (≥900px) ── */
-#hero-gallery{display:none;}
-@media(min-width:900px){
-  /* Ocultar carrusel y mostrar galería */
-  #hero-carousel-wrap{display:none !important;}
-  #hero-gallery{ 
-.hg-item{
+/* ====== HERO: CARRUSEL (solo móvil, oculto en escritorio) ====== */
+#hero-carousel-wrap {
+  display: block;
+}
+@media (min-width: 900px) {
+  #hero-carousel-wrap {
+    display: none !important;
+  }
+}
+
+/* ====== HERO: GALERÍA (solo escritorio) ====== */
+#hero-gallery {
+  display: none;
+}
+@media (min-width: 900px) {
+  #hero-gallery {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 340px 340px;
+    gap: 3px;
+    width: 100%;
+  }
+}
+
+.hg-item {
+  position: relative;
+  overflow: hidden;
+  background: var(--olive-dk);
+}
+.hg-item:first-child {
+  grid-row: 1/3;
+}
+.hg-item img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: contain;  /* <--- Así no se cortan */
   background: #3A4520;
   transition: transform .6s ease;
+  display: block;
+}
+.hg-item:hover img {
+  transform: scale(1.04);
+}
+
+.slide-ph img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;  /* <--- También para el carrusel */
+  background: #3A4520;
   display: block;
 }
   }
