@@ -329,7 +329,7 @@
 </div>
 
 <script>
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzWjzgpuTg2W3EnXIdjkT-wwoUrV8MDptvoLvE9gAjxis8iH_AEtPDsBHA3lRaLigM35g/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxrl2qI58AqHqq23hfDIzxH-9bsuhZjYDqdM4Zaj_cDGC2FjAe8Xa_qETHyb9QHFdoiZw/exec';
 const TELEGRAM_TOKEN   = '8343723747:AAHIVAZiSsqGqAG8NqwomJfi0WkscNgMjcQ';
 const TELEGRAM_CHAT_ID = '1366498288';
 const INACTIVITY_MS    = 30 * 60 * 1000;
@@ -423,39 +423,42 @@ async function verifyCode() {
   var btnLoad = document.getElementById('verify-loading');
   var code    = input.value.trim();
 
-  // Check inactivity
-  if (serverData.loadedAt && (Date.now() - serverData.loadedAt) > INACTIVITY_MS) {
-    errEl.innerHTML = 'Por inactividad, tu sesion ha expirado. <a href="" style="text-decoration:underline;">Recarga la pagina</a> para continuar.';
-    errEl.classList.remove('hidden');
-    return;
-  }
+  // Limpiar error previo
+  errEl.classList.add('hidden');
+  input.classList.remove('border-red-400');
 
-  // Format check
+  // 1. Formato
   if (!/^[0-9]{4}$/.test(code)) {
     errEl.textContent = 'Por favor ingresa un codigo de 4 digitos.';
     errEl.classList.remove('hidden');
     return;
   }
 
-  // Valid codes check
+  // 2. El codigo existe en la lista de validos?
   if (!VALID_CODES.has(code)) {
-    errEl.textContent = 'Este codigo no es valido. Verifica que lo hayas escrito correctamente.';
+    errEl.innerHTML = '❌ Este codigo no existe. Verifica que lo hayas escrito correctamente o <a href="https://wa.me/59170000000" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>.';
     errEl.classList.remove('hidden');
     input.classList.add('border-red-400');
     return;
   }
 
-  // Always refresh data before verifying to catch recent submissions
+  // 3. Verificar con el servidor (siempre refrescar para detectar duplicados recientes)
   btnText.classList.add('hidden');
   btnLoad.classList.remove('hidden');
+
+  // Check inactivity
+  if (serverData.loadedAt && (Date.now() - serverData.loadedAt) > INACTIVITY_MS) {
+    serverData.loaded = false; // forzar recarga
+  }
+
   await preloadData();
   btnText.classList.remove('hidden');
   btnLoad.classList.add('hidden');
 
-  // Check locally with fresh data
+  // 4. Con datos frescos: verificar si ya fue usado
   if (serverData.loaded) {
     if (serverData.usedCodes.has(code)) {
-      errEl.textContent = 'Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.';
+      errEl.innerHTML = '⚠️ Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.<br><span style="font-size:.8em;opacity:.8;">Si crees que es un error, <a href="https://wa.me/59170000000" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>.</span>';
       errEl.classList.remove('hidden');
       input.classList.add('border-red-400');
       return;
@@ -465,7 +468,7 @@ async function verifyCode() {
     return;
   }
 
-  // Fallback: server check
+  // 5. Fallback directo al servidor si preload falló
   btnText.classList.add('hidden');
   btnLoad.classList.remove('hidden');
   try {
@@ -474,9 +477,11 @@ async function verifyCode() {
     btnText.classList.remove('hidden');
     btnLoad.classList.add('hidden');
     if (!data.ok) {
-      errEl.textContent = data.error === 'ya_usado'
-        ? 'Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.'
-        : 'Codigo no valido. Verifica que lo hayas escrito correctamente.';
+      if (data.error === 'ya_usado') {
+        errEl.innerHTML = '⚠️ Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.<br><span style="font-size:.8em;opacity:.8;">Si crees que es un error, contactanos por WhatsApp.</span>';
+      } else {
+        errEl.innerHTML = '❌ Este codigo no es valido. Verifica que lo hayas copiado correctamente.';
+      }
       errEl.classList.remove('hidden');
       input.classList.add('border-red-400');
       return;
@@ -485,7 +490,7 @@ async function verifyCode() {
   } catch(e) {
     btnText.classList.remove('hidden');
     btnLoad.classList.add('hidden');
-    errEl.textContent = 'No se pudo conectar. Por favor intenta de nuevo.';
+    errEl.innerHTML = '⚠️ No pudimos verificar tu codigo. Revisa tu conexion e intenta de nuevo.';
     errEl.classList.remove('hidden');
   }
 }

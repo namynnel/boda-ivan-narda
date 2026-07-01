@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tu Pase Digital · Ivan & Narda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Cormorant+Garamond:ital@0;1&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      background: #1a1e12;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .card {
+      max-width: 480px;
+      width: 100%;
+      background: linear-gradient(160deg, #f5ede0, #e8dcc8);
+      border-radius: 24px;
+      padding: 40px 32px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(201, 169, 98, 0.3);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #5C6B4D, #C9A962, #5C6B4D);
+    }
+    .card-badge {
+      display: inline-block;
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: #C9A962;
+      border: 1px solid rgba(201, 169, 98, 0.3);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      background: rgba(201, 169, 98, 0.05);
+    }
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.2em;
+      color: #5C6B4D;
+      margin-bottom: 4px;
+      font-weight: 400;
+    }
+    .card-names {
+      font-family: 'Cinzel', serif;
+      font-size: 32px;
+      font-weight: 600;
+      color: #3A4520;
+      letter-spacing: 0.06em;
+      line-height: 1.2;
+    }
+    .card-names span {
+      display: inline-block;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      color: #C9A962;
+      font-size: 28px;
+      margin: 0 6px;
+    }
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #C9A962, transparent);
+      margin: 18px auto;
+    }
+    .guest-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 38px;
+      font-weight: 600;
+      color: #3A4520;
+      line-height: 1.2;
+      margin-top: 8px;
+    }
+    .guest-code-wrap {
+      margin: 16px auto 10px;
+      display: inline-block;
+      background: rgba(92, 107, 77, 0.08);
+      padding: 8px 24px;
+      border-radius: 40px;
+      border: 1px dashed rgba(92, 107, 77, 0.3);
+    }
+    .guest-code {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      letter-spacing: 0.3em;
+      color: #3A4520;
+      font-weight: 600;
+    }
+    .guest-code-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #6A7848;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .card-date {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      letter-spacing: 0.2em;
+      color: #5C6B4D;
+      margin: 16px 0 8px;
+    }
+    .card-place {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 12px;
+      font-weight: 300;
+      color: #6A7848;
+      letter-spacing: 0.1em;
+    }
+    .card-hint {
+      margin-top: 24px;
+      font-size: 13px;
+      color: #5C6B4D;
+      font-style: italic;
+      opacity: 0.7;
+    }
+    .btn-rsvp {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 16px 36px;
+      background: linear-gradient(135deg, #3A4520, #5C6B4D);
+      color: #FDFBF7;
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 40px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(58, 69, 32, 0.3);
+      width: 100%;
+      text-align: center;
+    }
+    .btn-rsvp:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(58, 69, 32, 0.4);
+      background: linear-gradient(135deg, #4A5830, #5C6B4D);
+    }
+    .loading {
+      color: #6A7848;
+      font-size: 14px;
+      padding: 40px 0;
+      font-style: italic;
+      text-align: center;
+    }
+    .error {
+      color: #B04A4A;
+      font-size: 15px;
+      padding: 30px 0;
+      text-align: center;
+    }
+    .error a {
+      color: #3A4520;
+      text-decoration: underline;
+    }
+    .footer-brand {
+      margin-top: 24px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      color: #5C6B4D;
+      opacity: 0.5;
+      letter-spacing: 0.1em;
+    }
+    /* Animación de entrada */
+    .fade-in {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Flores decorativas */
+    .flower {
+      position: absolute;
+      opacity: 0.08;
+      font-size: 60px;
+      pointer-events: none;
+    }
+    .f1 { top: -10px; right: -10px; transform: rotate(25deg); }
+    .f2 { bottom: -20px; left: -20px; transform: rotate(-20deg); }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card-container">
+  <div class="flower f1">🌿</div>
+  <div class="flower f2">🌿</div>
+
+  <!-- Estado: Cargando -->
+  <div id="loading-state" class="loading fade-in">
+    <p>Cargando tu pase personalizado...</p>
+    <div style="width:30px;height:30px;border:3px solid #e0d0b0;border-top-color:#5C6B4D;border-radius:50%;margin:16px auto;animation:spin 0.8s linear infinite;"></div>
+    <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+  </div>
+
+  <!-- Estado: Error -->
+  <div id="error-state" class="error" style="display:none;">
+    <p>⚠️ No pudimos encontrar tu invitación.</p>
+    <p style="font-size:14px;margin-top:8px;">Verifica el enlace o <a href="https://wa.me/59170000000">contáctanos</a>.</p>
+  </div>
+
+  <!-- Estado: Tarjeta (oculta hasta que carguen los datos) -->
+  <div id="card-content" style="display:none;" class="fade-in">
+    <div class="card-badge">✦ Pase Digital ✦</div>
+    <p class="card-title">Tienes una invitación especial para</p>
+    <div class="card-names">
+      Ivan <span>&amp;</span> Narda
+    </div>
+    <div class="divider"></div>
+
+    <!-- Nombre del invitado -->
+    <div class="guest-name" id="guest-full-name">—</div>
+
+    <!-- Código -->
+    <div class="guest-code-wrap">
+      <span class="guest-code-label">Tu código de acceso</span>
+      <div class="guest-code" id="guest-code">—</div>
+    </div>
+
+    <div class="card-date">05 · Diciembre · 2026</div>
+    <div class="card-place">La Paz, Bolivia</div>
+    <p class="card-hint">✧ Este pase es personal e intransferible ✧</p>
+
+    <!-- Botón para confirmar asistencia (redirige al RSVP con el código) -->
+    <a href="#" id="rsvp-link" class="btn-rsvp">📋 Confirmar mi asistencia</a>
+    <div class="footer-brand">Ivan &amp; Narda · #ZeladaArze2026</div>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // 1. Obtener el código de la URL (?codigo=XXXX)
+  // ============================================================
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigo = urlParams.get('codigo') || urlParams.get('code') || '';
+
+  // ============================================================
+  // 2. Referencias a los elementos
+  // ============================================================
+  const loadingEl = document.getElementById('loading-state');
+  const errorEl   = document.getElementById('error-state');
+  const contentEl = document.getElementById('card-content');
+
+  const guestNameEl = document.getElementById('guest-full-name');
+  const guestCodeEl = document.getElementById('guest-code');
+  const rsvpLinkEl  = document.getElementById('rsvp-link');
+
+  // ============================================================
+  // 3. URL de tu Google Apps Script 
+  // ============================================================
+  const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyitWYhj_J4UitiBBT0bDvUp199v7TwxunXd1fwFx4FcyUr30JY8kG40qSqyI1ryb5JLw/exec';
+
+  // ============================================================
+  // 4. Función para obtener los datos del invitado
+  // ============================================================
+  async function fetchGuestData(code) {
+    if (!code || code.length !== 4) {
+      throw new Error('Código inválido');
+    }
+    const url = SHEETS_URL + '?action=getGuest&codigo=' + encodeURIComponent(code);
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Error de red');
+    }
+    const data = await response.json();
+    if (!data.ok) {
+      throw new Error(data.error || 'Invitado no encontrado');
+    }
+    return data.guest;
+  }
+
+  // ============================================================
+  // 5. Cargar y mostrar los datos
+  // ============================================================
+  async function loadCard() {
+    // Si no hay código en la URL, mostrar error
+    if (!codigo || codigo.length !== 4) {
+      loadingEl.style.display = 'none';
+      errorEl.style.display = 'block';
+      errorEl.innerHTML = '<p>⚠️ No se encontró un código válido en el enlace.</p><p style="font-size:14px;margin-top:8px;">Asegúrate de usar el enlace que te enviamos por WhatsApp.</p>';
+      return;
+    }
+
+    try {
+      const guest = await fetchGuestData(codigo);
+      
+      // Mostrar la tarjeta
+      loadingEl.style.display = 'none';
+      contentEl.style.display = 'block';
+
+      // Llenar los datos
+      const fullName = (guest.nombre + ' ' + guest.apellido).trim() || 'Invitado Especial';
+      guestNameEl.textContent = fullName;
+      guestCodeEl.textContent = guest.codigo;
+
+      // Configurar el botón de RSVP (redirige al formulario con el código)
+      rsvpLinkEl.href = 'rsvp-narda-ivan.html?codigo=' + guest.codigo;
+
+    } catch (error) {
+      console.error(error);
+      loadingEl.style.display = 'none';
+      errorEl.style.display = 'block';
+      errorEl.innerHTML = `
+        <p>⚠️ Ups, no pudimos cargar tus datos.</p>
+        <p style="font-size:14px;margin-top:8px;">Verifica tu conexión o <a href="https://wa.me/59170000000">contáctanos</a>.</p>
+        <p style="font-size:12px;color:#6A7848;margin-top:12px;">Código: ${codigo}</p>
+      `;
+    }
+  }
+
+  // ============================================================
+  // 6. Ejecutar
+  // ============================================================
+  loadCard();
+</script>
+</body>
+</html>

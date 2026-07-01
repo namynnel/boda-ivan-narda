@@ -380,7 +380,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzWjzgpuTg2W3EnXIdjkT-wwoUrV8MDptvoLvE9gAjxis8iH_AEtPDsBHA3lRaLigM35g/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyitWYhj_J4UitiBBT0bDvUp199v7TwxunXd1fwFx4FcyUr30JY8kG40qSqyI1ryb5JLw/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -391,11 +391,10 @@ Por fin podemos compartir contigo esta noticia tan especial —
 el 5 de diciembre de 2026 nos casamos,
 y queremos que seas parte de ese momento.
 
-Aquí encontrarás todos los detalles:
-${INVITE_URL}
+🎟️ Aquí tienes tu pase digital personalizado:
+${INVITE_URL}${codigo}
 
-Tu código de confirmación: ${codigo}
-(Lo necesitarás para confirmar tu asistencia)
+(Solo tienes que abrirlo y desde allí acceder a la invitación)
 
 Con cariño,
 Ivan & Narda 💍`;
@@ -407,8 +406,32 @@ const AVAILABLE_CODES = ["1906", "4041", "9500", "8623", "4610", "4234", "4082",
 const INITIAL_GUESTS = [{"nombre": "Victor", "apellido": "Aguirre", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "4238", "enviado": false}, {"nombre": "Wara", "apellido": "Aiza", "sufijo": "y Sr.", "cupos": 2, "grupo": "KPOP", "codigo": "5999", "enviado": false}, {"nombre": "Alancito", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "2090", "enviado": false}, {"nombre": "Darlyn", "apellido": "Alanez", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "6608", "enviado": false}, {"nombre": "Silvio", "apellido": "Alcozer", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "1204", "enviado": false}, {"nombre": "Ariana", "apellido": "Antezana", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "3002", "enviado": false}, {"nombre": "Rosario", "apellido": "Arze", "sufijo": "", "cupos": 1, "grupo": "ARZE", "codigo": "6912", "enviado": false}, {"nombre": "Katherine", "apellido": "Arze", "sufijo": "y Sr.", "cupos": 2, "grupo": "ARZE", "codigo": "2438", "enviado": false}, {"nombre": "Marianela", "apellido": "Arze", "sufijo": "y flia.", "cupos": 5, "grupo": "ARZE", "codigo": "7457", "enviado": false}, {"nombre": "Jose", "apellido": "Arze", "sufijo": "y Sra.", "cupos": 2, "grupo": "ARZE", "codigo": "3990", "enviado": false}, {"nombre": "Tatiana", "apellido": "Arze", "sufijo": "y Sr.", "cupos": 2, "grupo": "ARZE", "codigo": "9979", "enviado": false}, {"nombre": "Aneliz", "apellido": "Arze", "sufijo": "y Sra.", "cupos": 2, "grupo": "ARZE", "codigo": "7495", "enviado": false}, {"nombre": "Justo", "apellido": "Javier Arze Ramos", "sufijo": "", "cupos": 1, "grupo": "ARZE", "codigo": "4572", "enviado": false}, {"nombre": "Carola", "apellido": "Avalos", "sufijo": "y cia.", "cupos": 2, "grupo": "CETI", "codigo": "6162", "enviado": false}, {"nombre": "Shirley", "apellido": "Barrientos", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "2190", "enviado": false}, {"nombre": "Florentina", "apellido": "Conde Benito", "sufijo": "", "cupos": 1, "grupo": "ZELADA", "codigo": "9349", "enviado": false}, {"nombre": "Lucero", "apellido": "Borda", "sufijo": "", "cupos": 1, "grupo": "ABOG", "codigo": "6659", "enviado": false}, {"nombre": "Lizbeth", "apellido": "Cadena", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "5367", "enviado": false}, {"nombre": "Karencita", "apellido": "Candia", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "8880", "enviado": false}, {"nombre": "Erika", "apellido": "Quispe", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6775", "enviado": false}, {"nombre": "Maira", "apellido": "Aliaga Castro", "sufijo": "", "cupos": 1, "grupo": "DAMA", "codigo": "4118", "enviado": false}, {"nombre": "Leo", "apellido": "Chirino", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "9404", "enviado": false}, {"nombre": "Fatima", "apellido": "Zelada Conde", "sufijo": "y cia.", "cupos": 2, "grupo": "ZELADA", "codigo": "1289", "enviado": false}, {"nombre": "Gloria", "apellido": "Zelada Conde", "sufijo": "y cia.", "cupos": 2, "grupo": "ZELADA", "codigo": "5213", "enviado": false}, {"nombre": "Jazmin", "apellido": "Cruz", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "5383", "enviado": false}, {"nombre": "Bianca", "apellido": "Davalos", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6794", "enviado": false}, {"nombre": "Marianne", "apellido": "Mariel Duran", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "7492", "enviado": false}, {"nombre": "Walter", "apellido": "Flores", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "4215", "enviado": false}, {"nombre": "Alcides", "apellido": "Flores", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "9759", "enviado": false}, {"nombre": "Ricard", "apellido": "Fontanillas", "sufijo": "y Sra.", "cupos": 2, "grupo": "COSPLAY", "codigo": "3057", "enviado": false}, {"nombre": "Rodrigo", "apellido": "Goyzueta", "sufijo": "y Sra.", "cupos": 2, "grupo": "COSPLAY", "codigo": "3240", "enviado": false}, {"nombre": "Heidy", "apellido": "Gutierrez", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "4875", "enviado": false}, {"nombre": "Carla", "apellido": "Vargas", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6320", "enviado": false}, {"nombre": "Araceli", "apellido": "Gutierrez", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "1928", "enviado": false}, {"nombre": "Honey", "apellido": "OwO", "sufijo": "y Sr.", "cupos": 2, "grupo": "KPOP", "codigo": "5175", "enviado": false}, {"nombre": "Yenny", "apellido": "Huanca", "sufijo": "y Sr.", "cupos": 2, "grupo": "OTROS", "codigo": "2151", "enviado": false}, {"nombre": "Ida", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "1969", "enviado": false}, {"nombre": "Amanda", "apellido": "Carvajal", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6288", "enviado": false}, {"nombre": "Katherine", "apellido": "Loza", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "9738", "enviado": false}, {"nombre": "Juls", "apellido": "M", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "7010", "enviado": false}, {"nombre": "David", "apellido": "Maldonado", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "9600", "enviado": false}, {"nombre": "Nataly", "apellido": "Gutierrez Mamani", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "9731", "enviado": false}, {"nombre": "Noemi", "apellido": "Tola", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "2688", "enviado": false}, {"nombre": "Feli", "apellido": "Apaza", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "8582", "enviado": false}, {"nombre": "Viviana", "apellido": "Gonzales", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "9881", "enviado": false}, {"nombre": "Alber", "apellido": "Mamani", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "5590", "enviado": false}, {"nombre": "Luz", "apellido": "Narda Mariño Munguia", "sufijo": "", "cupos": 1, "grupo": "MARIÑO", "codigo": "5670", "enviado": false}, {"nombre": "Alejandra", "apellido": "Mendoza", "sufijo": "", "cupos": 2, "grupo": "MARIÑO", "codigo": "7575", "enviado": false}, {"nombre": "Sandra", "apellido": "Mariño", "sufijo": "", "cupos": 1, "grupo": "MARIÑO", "codigo": "3604", "enviado": false}, {"nombre": "Marlon", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "8988", "enviado": false}, {"nombre": "Mayumi", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "8105", "enviado": false}, {"nombre": "Bianca", "apellido": "Mendoza", "sufijo": "y cia.", "cupos": 2, "grupo": "KPOP", "codigo": "6144", "enviado": false}, {"nombre": "Adrian", "apellido": "Merino", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "6187", "enviado": false}, {"nombre": "MIkumi", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "9171", "enviado": false}, {"nombre": "Patricia", "apellido": "Choque Miranda", "sufijo": "", "cupos": 1, "grupo": "DAMA", "codigo": "4184", "enviado": false}, {"nombre": "Carlos", "apellido": "Monroy", "sufijo": "y Sra.", "cupos": 2, "grupo": "ABOG", "codigo": "5038", "enviado": false}, {"nombre": "Maya", "apellido": "Callisaya", "sufijo": "y Sr.", "cupos": 2, "grupo": "OTROS", "codigo": "1044", "enviado": false}, {"nombre": "Emilia", "apellido": "Munguia", "sufijo": "", "cupos": 1, "grupo": "MARIÑO", "codigo": "6778", "enviado": false}, {"nombre": "Geraldine", "apellido": "Palenque", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "4558", "enviado": false}, {"nombre": "Daynor", "apellido": "Murillo", "sufijo": "", "cupos": 1, "grupo": "CETI", "codigo": "7058", "enviado": false}, {"nombre": "Niyeon", "apellido": "OwO", "sufijo": "", "cupos": 2, "grupo": "KPOP", "codigo": "1480", "enviado": false}, {"nombre": "Uriel", "apellido": "(opc) OwO", "sufijo": "", "cupos": 2, "grupo": "COSPLAY", "codigo": "9856", "enviado": false}, {"nombre": "Pam", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "2139", "enviado": false}, {"nombre": "Nataly", "apellido": "Paredes", "sufijo": "y Sra.", "cupos": 2, "grupo": "KPOP", "codigo": "5095", "enviado": false}, {"nombre": "Saul", "apellido": "Peñaranda", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "9771", "enviado": false}, {"nombre": "Mayerly", "apellido": "Quelca", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "5477", "enviado": false}, {"nombre": "Fabiola", "apellido": "Torrez", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "9591", "enviado": false}, {"nombre": "Cristian", "apellido": "Quispe", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "4067", "enviado": false}, {"nombre": "Monica", "apellido": "Quispe Quispe", "sufijo": "y cia.", "cupos": 2, "grupo": "OTROS", "codigo": "3622", "enviado": false}, {"nombre": "Carol", "apellido": "Quispe Quispe", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "5156", "enviado": false}, {"nombre": "Mayte", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "ABOG", "codigo": "7672", "enviado": false}, {"nombre": "Alvaro", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "2970", "enviado": false}, {"nombre": "Paola", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "5459", "enviado": false}, {"nombre": "Jacqueline", "apellido": "Arze y Sr", "sufijo": "", "cupos": 2, "grupo": "ARZE", "codigo": "4269", "enviado": false}, {"nombre": "Rogelia", "apellido": "Ramos", "sufijo": "", "cupos": 1, "grupo": "ARZE", "codigo": "3499", "enviado": false}, {"nombre": "Edward", "apellido": "Rocabado", "sufijo": "y cia.", "cupos": 2, "grupo": "CETI", "codigo": "7768", "enviado": false}, {"nombre": "Ian", "apellido": "Rojas", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "4562", "enviado": false}, {"nombre": "Mary", "apellido": "Seiyunime", "sufijo": "", "cupos": 1, "grupo": "COSPLAY", "codigo": "5925", "enviado": false}, {"nombre": "Cielo", "apellido": "Shawol", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "7489", "enviado": false}, {"nombre": "Darlen", "apellido": "Shawol", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "4198", "enviado": false}, {"nombre": "Andry", "apellido": "OwO", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "8763", "enviado": false}, {"nombre": "Milo", "apellido": "", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "6241", "enviado": false}, {"nombre": "Rodolfo", "apellido": "Cabrera", "sufijo": "y cia.", "cupos": 2, "grupo": "ABOG", "codigo": "8836", "enviado": false}, {"nombre": "Karla", "apellido": "Sofia Tellez", "sufijo": "", "cupos": 1, "grupo": "DAMA", "codigo": "2838", "enviado": false}, {"nombre": "Toshy", "apellido": "Garfías", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "5738", "enviado": false}, {"nombre": "Paola", "apellido": "Vargas", "sufijo": "y Sr.", "cupos": 2, "grupo": "KPOP", "codigo": "5705", "enviado": false}, {"nombre": "Amanda", "apellido": "Veizaga", "sufijo": "y Sr.", "cupos": 2, "grupo": "COSPLAY", "codigo": "2016", "enviado": false}, {"nombre": "Marce", "apellido": "Verastegui", "sufijo": "y Sra.", "cupos": 2, "grupo": "KPOP", "codigo": "5033", "enviado": false}, {"nombre": "Ada", "apellido": "Pinedo", "sufijo": "", "cupos": 1, "grupo": "ABOG", "codigo": "2553", "enviado": false}, {"nombre": "Carola", "apellido": "Zelada Conde", "sufijo": "", "cupos": 1, "grupo": "ZELADA", "codigo": "8945", "enviado": false}, {"nombre": "Katalina", "apellido": "Thelma Zelada Conde", "sufijo": "y flia.", "cupos": 3, "grupo": "ZELADA", "codigo": "6499", "enviado": false}, {"nombre": "Nieves", "apellido": "Blanca Zelada Conde", "sufijo": "y flia.", "cupos": 2, "grupo": "ZELADA", "codigo": "7655", "enviado": false}, {"nombre": "Abrahan", "apellido": "Antonio Zelada Conde", "sufijo": "", "cupos": 1, "grupo": "ZELADA", "codigo": "9061", "enviado": false}, {"nombre": "Adrian", "apellido": "Sergio Zelada Conde", "sufijo": "y flia.", "cupos": 2, "grupo": "ZELADA", "codigo": "4682", "enviado": false}, {"nombre": "Gloria", "apellido": "Zelada Conde", "sufijo": "y flia.", "cupos": 4, "grupo": "ZELADA", "codigo": "4233", "enviado": false}, {"nombre": "Fátima", "apellido": "Zelada Conde", "sufijo": "y flia.", "cupos": 3, "grupo": "ZELADA", "codigo": "7935", "enviado": false}, {"nombre": "Mary", "apellido": "Cruz Zelada Conde", "sufijo": "y flia.", "cupos": 3, "grupo": "ZELADA", "codigo": "7347", "enviado": false}, {"nombre": "Bryan", "apellido": "Alanz", "sufijo": "", "cupos": 1, "grupo": "CABALLERO", "codigo": "4355", "enviado": false}, {"nombre": "Oliver", "apellido": "Ramos", "sufijo": "", "cupos": 1, "grupo": "CABALLERO", "codigo": "7413", "enviado": false}, {"nombre": "Edson", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "2314", "enviado": false}, {"nombre": "Diego", "apellido": "Barrantes y Sra", "sufijo": "", "cupos": 2, "grupo": "TALLER", "codigo": "7169", "enviado": false}, {"nombre": "Alan", "apellido": "Lahor", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "6861", "enviado": false}, {"nombre": "Fernando", "apellido": "Rodríguez", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "6098", "enviado": false}, {"nombre": "Miguel", "apellido": "Angel Nogales", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "7592", "enviado": false}, {"nombre": "Paola", "apellido": "Guzmán", "sufijo": "", "cupos": 1, "grupo": "TALLER", "codigo": "8308", "enviado": false}, {"nombre": "Aldo", "apellido": "Quispe", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "2374", "enviado": false}, {"nombre": "Helen", "apellido": "Rivera", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "7711", "enviado": false}, {"nombre": "Alvaro", "apellido": "Guzmán y Sra", "sufijo": "", "cupos": 2, "grupo": "CALDERO", "codigo": "7578", "enviado": false}, {"nombre": "Rafael", "apellido": "Montevilla", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "9104", "enviado": false}, {"nombre": "Pamela", "apellido": "y Sr", "sufijo": "", "cupos": 2, "grupo": "CALDERO", "codigo": "3134", "enviado": false}, {"nombre": "Dylan", "apellido": "Garfias y Sra", "sufijo": "", "cupos": 2, "grupo": "CALDERO", "codigo": "1069", "enviado": false}, {"nombre": "Nicol", "apellido": "Prado", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "1956", "enviado": false}, {"nombre": "Walter", "apellido": "Hamachi", "sufijo": "", "cupos": 1, "grupo": "CALDERO", "codigo": "7593", "enviado": false}, {"nombre": "Alan", "apellido": "Guzman", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "5160", "enviado": false}, {"nombre": "Jhosmar", "apellido": "Ticona y Sra", "sufijo": "", "cupos": 2, "grupo": "OTROS", "codigo": "1114", "enviado": false}, {"nombre": "Blas", "apellido": "", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "3510", "enviado": false}, {"nombre": "Maciel", "apellido": "Arrieta", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "3983", "enviado": false}, {"nombre": "Alvaro", "apellido": "Villegas", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "9607", "enviado": false}, {"nombre": "José", "apellido": "Andrade", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "5538", "enviado": false}, {"nombre": "Alex", "apellido": "Torrico", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "2862", "enviado": false}, {"nombre": "Andrés", "apellido": "", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "9811", "enviado": false}, {"nombre": "Daniela", "apellido": "Cortez", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "4227", "enviado": false}, {"nombre": "Alejandro", "apellido": "Vélez", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "6803", "enviado": false}, {"nombre": "Miguel", "apellido": "Moreira", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "5088", "enviado": false}, {"nombre": "Claudia", "apellido": "y Sr", "sufijo": "", "cupos": 2, "grupo": "7 REINOS", "codigo": "7787", "enviado": false}, {"nombre": "Keila", "apellido": "Vasquez y Sr", "sufijo": "", "cupos": 2, "grupo": "CABALLERO", "codigo": "8103", "enviado": false}, {"nombre": "Yocelin", "apellido": "Cornejo", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "6999", "enviado": false}, {"nombre": "Reyna", "apellido": "Mamani", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "7319", "enviado": false}, {"nombre": "Maya", "apellido": "Cahua y Sr", "sufijo": "", "cupos": 2, "grupo": "COMPA", "codigo": "5924", "enviado": false}, {"nombre": "Camila", "apellido": "Cox", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "9972", "enviado": false}, {"nombre": "Mauricio", "apellido": "Sempertegui", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "5827", "enviado": false}, {"nombre": "Reynaldo", "apellido": "Céspedes y Sra", "sufijo": "", "cupos": 2, "grupo": "COMPA", "codigo": "2338", "enviado": false}, {"nombre": "Nayra", "apellido": "Limachi", "sufijo": "y Sr.", "cupos": 2, "grupo": "COMPA", "codigo": "9503", "enviado": false}, {"nombre": "Lucero", "apellido": "Yujra", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "3758", "enviado": false}, {"nombre": "Luis", "apellido": "Castillo", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "4003", "enviado": false}, {"nombre": "Martin", "apellido": "Carazas", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "4131", "enviado": false}, {"nombre": "Daniel", "apellido": "Fernández y Sra", "sufijo": "", "cupos": 2, "grupo": "OTROS", "codigo": "9222", "enviado": false}, {"nombre": "Daniel", "apellido": "Pacheco", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "9899", "enviado": false}, {"nombre": "Orlando", "apellido": "Flores", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "4179", "enviado": false}, {"nombre": "Javier", "apellido": "Poma", "sufijo": "", "cupos": 1, "grupo": "OTROS", "codigo": "2471", "enviado": false}, {"nombre": "Emanuel", "apellido": "Gutiérrez", "sufijo": "", "cupos": 2, "grupo": "COMPA", "codigo": "8999", "enviado": false}, {"nombre": "Juanjosé", "apellido": "Mamani", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "8481", "enviado": false}, {"nombre": "David", "apellido": "Medrano", "sufijo": "", "cupos": 1, "grupo": "7 REINOS", "codigo": "4290", "enviado": false}, {"nombre": "Lisa", "apellido": "Cardenas", "sufijo": "", "cupos": 1, "grupo": "COMPA", "codigo": "2154", "enviado": false}, {"nombre": "Fabricio", "apellido": "Padilla", "sufijo": "y Sra.", "cupos": 2, "grupo": "MARIÑO", "codigo": "9473", "enviado": false}, {"nombre": "Milena", "apellido": "", "sufijo": "y Sra.", "cupos": 2, "grupo": "COSPLAY", "codigo": "1791", "enviado": false}, {"nombre": "Ignacio", "apellido": "", "sufijo": "y cía.", "cupos": 2, "grupo": "COSPLAY", "codigo": "1606", "enviado": false}, {"nombre": "Mayra", "apellido": "Miranda", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "5438", "enviado": false}, {"nombre": "Alejandra", "apellido": "Carrillo", "sufijo": "", "cupos": 1, "grupo": "KPOP", "codigo": "7141", "enviado": false}, {"nombre": "Martin", "apellido": "Candia", "sufijo": "y Sra.", "cupos": 2, "grupo": "COSPLAY", "codigo": "7061", "enviado": false}, {"nombre": "Mery", "apellido": "Limachi", "sufijo": "y flia.", "cupos": 4, "grupo": "CEREMONIA", "codigo": "6600", "enviado": false}, {"nombre": "Israel", "apellido": "Limachi", "sufijo": "", "cupos": 1, "grupo": "CEREMONIA", "codigo": "5564", "enviado": false}, {"nombre": "Bárbara", "apellido": "Tecito", "sufijo": "", "cupos": 1, "grupo": "CEREMONIA", "codigo": "2616", "enviado": false}, {"nombre": "Ronald", "apellido": "Mariño y Sra", "sufijo": "", "cupos": 2, "grupo": "CEREMONIA", "codigo": "5307", "enviado": false}, {"nombre": "Hernán", "apellido": "Mariño", "sufijo": "y flia.", "cupos": 3, "grupo": "CEREMONIA", "codigo": "4012", "enviado": false}, {"nombre": "Sonia", "apellido": "Mariño", "sufijo": "y flia.", "cupos": 3, "grupo": "CEREMONIA", "codigo": "6439", "enviado": false},{"nombre":"Ivan","apellido":"Zelada","sufijo":"","cupos":1,"grupo":"Novios","codigo":"2118","enviado":false},{"nombre":"Narda","apellido":"Arze","sufijo":"","cupos":1,"grupo":"Novios","codigo":"1906","enviado":false}];
 
 /* ══════════════════════════════════════
-   STATE — uses localStorage to persist
+   STATE — localStorage + Sheets sync
 ══════════════════════════════════════ */
+
+// ── SYNC STATUS UI ──
+function showSyncStatus(msg, type) {
+  // type: 'loading' | 'ok' | 'error'
+  let bar = document.getElementById('sync-status-bar');
+  if(!bar) {
+    bar = document.createElement('div');
+    bar.id = 'sync-status-bar';
+    bar.style.cssText = 'position:fixed;bottom:14px;right:14px;z-index:9999;padding:.5rem 1rem;border-radius:6px;font-family:Montserrat,sans-serif;font-size:.7rem;letter-spacing:.05em;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .4s;max-width:280px;';
+    document.body.appendChild(bar);
+  }
+  const colors = {
+    loading: 'background:rgba(58,69,32,.95);color:#D4BA7A;border:1px solid rgba(201,169,98,.3);',
+    ok:      'background:rgba(30,80,50,.95);color:#A8D4B0;border:1px solid rgba(92,158,122,.3);',
+    error:   'background:rgba(80,30,30,.95);color:#E8A0A0;border:1px solid rgba(220,107,107,.3);'
+  };
+  bar.style.cssText += colors[type] || colors.loading;
+  bar.textContent = msg;
+  bar.style.opacity = '1';
+  if(type !== 'loading') {
+    setTimeout(()=>{ bar.style.opacity='0'; }, 3500);
+  }
+}
+
 function loadGroups() {
   const saved = localStorage.getItem('ni-groups');
   if(saved) return JSON.parse(saved);
@@ -447,7 +470,66 @@ function loadGuests() {
   const saved = localStorage.getItem('ni-guests');
   return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(INITIAL_GUESTS));
 }
-function saveGuests(g) { localStorage.setItem('ni-guests', JSON.stringify(g)); }
+function saveGuests(g) {
+  localStorage.setItem('ni-guests', JSON.stringify(g));
+  // Persistir en Sheets en segundo plano (sin bloquear)
+  pushGuestsToSheets(g);
+}
+
+// ── PUSH invitados a Sheets (no bloqueante) ──
+function pushGuestsToSheets(guestList) {
+  try {
+    const guestData = guestList.map(g =>
+      [g.codigo, g.nombre, g.apellido, g.sufijo||'', g.cupos, g.grupo].join('|')
+    ).join(';;');
+    const url = SHEETS_URL + '?action=syncGuests&data=' + encodeURIComponent(guestData);
+    const img = new Image();
+    img.src = url; // fire and forget
+  } catch(e) { /* silencioso */ }
+}
+
+// ── PULL invitados desde Sheets al iniciar ──
+async function pullGuestsFromSheets() {
+  showSyncStatus('⏳ Sincronizando lista de invitados...', 'loading');
+  return new Promise(function(resolve) {
+    const callbackName = 'guestsCb_' + Date.now();
+    const script = document.createElement('script');
+    const timeout = setTimeout(function() {
+      try { document.head.removeChild(script); } catch(e) {}
+      delete window[callbackName];
+      showSyncStatus('⚠️ Sin conexión — usando datos locales', 'error');
+      resolve(false);
+    }, 8000);
+
+    window[callbackName] = function(data) {
+      clearTimeout(timeout);
+      try { document.head.removeChild(script); } catch(e) {}
+      delete window[callbackName];
+      if (data && data.ok && Array.isArray(data.guests) && data.guests.length > 0) {
+        // Sheets tiene datos: actualizar localStorage y memoria
+        const remoteGuests = data.guests;
+        localStorage.setItem('ni-guests', JSON.stringify(remoteGuests));
+        guests = remoteGuests;
+        showSyncStatus('✓ Lista actualizada desde la nube (' + remoteGuests.length + ' invitados)', 'ok');
+        resolve(true);
+      } else {
+        // Sheets vacío o error: conservar datos locales
+        showSyncStatus('ℹ️ Usando lista local (Sheets sin datos de invitados)', 'ok');
+        resolve(false);
+      }
+    };
+
+    script.src = SHEETS_URL + '?action=getGuests&callback=' + callbackName;
+    script.onerror = function() {
+      clearTimeout(timeout);
+      try { document.head.removeChild(script); } catch(e) {}
+      delete window[callbackName];
+      showSyncStatus('⚠️ Sin conexión — usando datos locales', 'error');
+      resolve(false);
+    };
+    document.head.appendChild(script);
+  });
+}
 
 function loadMesas() {
   const saved = localStorage.getItem('ni-mesas');
@@ -495,7 +577,7 @@ async function refreshRSVP() {
   const icon = document.getElementById('ri');
   icon.classList.add('spin');
   try {
-    const res  = await fetch(SHEETS_URL + '?action=read&t=' + Date.now());
+    const res  = await fetch(SHEETS_URL + '?t=' + Date.now());
     const data = await res.json();
     rsvpRows = data.rows || [];
     // Apply manual status overrides
@@ -517,8 +599,8 @@ async function refreshRSVP() {
 function updateStats() {
   const conf = rsvpRows.filter(r=>(r.asistencia||r.attendance) && (r.asistencia||r.attendance)!=='no');
   const no   = rsvpRows.filter(r=>(r.asistencia||r.attendance)==='no');
-  const pplConf = conf.reduce((a,r)=>a+1+(parseInt(r['acompañantes']||r.acompanantes||0)||0),0);
-  const pplNo   = no.reduce((a,r)=>a+1+(parseInt(r['acompañantes']||r.acompanantes||0)||0),0);
+  const pplConf = conf.reduce((a,r)=>a+1+(parseInt(r['acompanantes']||r['acompañantes']||0)||0),0);
+  const pplNo   = no.reduce((a,r)=>a+1+(parseInt(r['acompanantes']||r['acompañantes']||0)||0),0);
   const totalCup = totalCupos();
   const sinResp = Math.max(0, totalCup - pplConf - pplNo);
   document.getElementById('s-inv').textContent  = totalCup;
@@ -577,14 +659,14 @@ function renderRSVP() {
     const phoneDisplay = phone || '—';
     const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
     const attBadge = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : `<span class="badge b-pending">⏳ Pendiente</span>`;
-    const attSelect = `<select onchange="updateRSVPStatus('${code}',this.value)" style="font-size:.68rem;border:1px solid rgba(168,197,176,.4);border-radius:4px;padding:.15rem .3rem;background:#fff;color:var(--ink);cursor:pointer;margin-top:.3rem;width:100%;">
-      <option value="both" ${asistencia==='both'?'selected':''}>💍 Ambos</option>
-      <option value="ceremony" ${asistencia==='ceremony'?'selected':''}>🎩 Ceremonia</option>
-      <option value="reception" ${asistencia==='reception'?'selected':''}>🍽️ Recepción</option>
-      <option value="no" ${asistencia==='no'?'selected':''}>❌ No asiste</option>
-      <option value="" ${!asistencia?'selected':''}>⏳ Pendiente</option>
+    const attSelect = `<select onchange="updateRSVPStatus('${code}',this.value)" onclick="event.stopPropagation()" style="font-size:.68rem;border:1px solid rgba(168,197,176,.4);border-radius:4px;padding:.15rem .3rem;background:#fff;color:var(--ink);cursor:pointer;margin-top:.3rem;width:100%;display:block;">
+      <option value="both" ${asistencia==='both'?'selected':''}>Ambos</option>
+      <option value="ceremony" ${asistencia==='ceremony'?'selected':''}>Ceremonia</option>
+      <option value="reception" ${asistencia==='reception'?'selected':''}>Recepcion</option>
+      <option value="no" ${asistencia==='no'?'selected':''}>No asiste</option>
+      <option value="" ${!asistencia?'selected':''}>Pendiente</option>
     </select>`;
-    const att = `<div>${attBadge}${attSelect}</div>`;
+    const att = '<div>' + attBadge + attSelect + '</div>';
     const numAcomp = parseInt(r['acompañantes']||r.acompanantes||r.companion_count||0)||0;
     const ppl  = asistencia&&asistencia!=='no' ? 1+numAcomp : '—';
     const mesaNum = code !== '—' ? (mesaAssigns[String(code).trim()] || '—') : '—';
@@ -1019,26 +1101,30 @@ function renderArchived() {
 /* ══════════════════════════════════════
    RESET
 ══════════════════════════════════════ */
-function syncGuests() {
+async function syncGuests() {
   const btn = document.getElementById('sync-btn');
-  btn.textContent = 'Sincronizando...';
+  btn.innerHTML = '<svg class="spin" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Sincronizando...';
   btn.disabled = true;
+  showSyncStatus('⏳ Sincronizando con Google Sheets...', 'loading');
 
-  // Build URL with params - send each guest as individual row
-  const guestData = guests.map(g => g.codigo + '|' + g.nombre + '|' + g.apellido + '|' + g.cupos + '|' + g.grupo).join(';;');
-  const url = 'https://script.google.com/macros/s/AKfycbzWjzgpuTg2W3EnXIdjkT-wwoUrV8MDptvoLvE9gAjxis8iH_AEtPDsBHA3lRaLigM35g/exec?action=syncGuests&data=' + encodeURIComponent(guestData);
+  // Primero PULL: jalar desde Sheets
+  const pulled = await pullGuestsFromSheets();
+  if (pulled) {
+    renderGuests();
+    updateStats();
+  }
 
-  // Use image trick to bypass CORS
+  // Luego PUSH: enviar lo que tenemos
+  const guestData = guests.map(g =>
+    [g.codigo, g.nombre, g.apellido, g.sufijo||'', g.cupos, g.grupo].join('|')
+  ).join(';;');
+  const url = SHEETS_URL + '?action=syncGuests&data=' + encodeURIComponent(guestData);
   const img = new Image();
   img.onload = img.onerror = function() {
-    btn.textContent = '✓ Sincronizado — verifica en Sheets';
-    btn.style.color = 'var(--green)';
-    btn.style.borderColor = 'var(--green)';
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Sincronizar con Sheets';
+    btn.style.color = ''; btn.style.borderColor = '';
     btn.disabled = false;
-    setTimeout(() => {
-      btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg> Sincronizar con Sheets';
-      btn.style.color = ''; btn.style.borderColor = '';
-    }, 4000);
+    showSyncStatus('✓ Lista enviada a Sheets correctamente', 'ok');
   };
   img.src = url;
 }
@@ -1058,6 +1144,26 @@ updateStats();
 renderGuests();
 renderArchived();
 refreshRSVP();
+
+// Al cargar: intentar sincronizar lista de invitados desde Sheets
+// Solo si hay conexión y han pasado más de 5 minutos desde la última sync
+(async function initSync() {
+  const lastSync = parseInt(localStorage.getItem('ni-last-sync') || '0');
+  const SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutos
+  if (Date.now() - lastSync > SYNC_INTERVAL) {
+    const pulled = await pullGuestsFromSheets();
+    if (pulled) {
+      renderGuests();
+      updateStats();
+      renderArchived();
+    }
+    localStorage.setItem('ni-last-sync', String(Date.now()));
+  } else {
+    // Sin Pull: mostrar datos locales con nota de cuándo fue la última sync
+    const mins = Math.round((Date.now() - lastSync) / 60000);
+    showSyncStatus('ℹ️ Datos de hace ' + mins + ' min — presiona Sincronizar para actualizar', 'ok');
+  }
+})();
 </script>
 </body>
 </html>

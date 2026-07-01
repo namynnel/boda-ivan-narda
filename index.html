@@ -133,14 +133,11 @@ body{
   background:var(--olive-dk);
 }
 @media(min-width:900px){
-  #hero{ height:85vh; }
-  .slide-ph img{ object-position:center 25%; }
+  #hero{ height:auto;min-height:0; }
   .hero-names{ font-size:clamp(28px,5vw,60px); }
 }
 
-@media(min-width:768px){
-  .slide-ph img{object-position:center center;}
-}
+/* ── CARRUSEL (móvil) ── */
 .car-track{display:flex;height:100%;transition:transform .95s cubic-bezier(.4,0,.2,1);}
 .car-slide{min-width:100%;height:100%;position:relative;flex-shrink:0;}
 .slide-ph{
@@ -156,13 +153,72 @@ body{
 .slide-ph.s4{background:linear-gradient(135deg,#283A40,#182428,#101818);}
 .slide-ph svg{opacity:.15;}
 .slide-ph p{color:rgba(168,120,40,.4);}
-.slide-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;}
+.slide-ph img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #3A4520;
+  display: block;
+}
+
+/* ── GALERÍA DESKTOP (≥900px) ── */
+#hero-gallery{display:none;}
+@media(min-width:900px){
+  /* Ocultar carrusel y mostrar galería */
+  #hero-carousel-wrap{display:none !important;}
+  #hero-gallery{ 
+.hg-item{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #3A4520;
+  transition: transform .6s ease;
+  display: block;
+}
+  }
+  .hg-item{position:relative;overflow:hidden;background:var(--olive-dk);}
+  /* Foto 1 ocupa la columna izquierda completa */
+  .hg-item:first-child{grid-row:1/3;}
+  .hg-item img{
+    width:100%;height:100%;object-fit:cover;
+    object-position:center center;
+    transition:transform .6s ease;
+    display:block;
+  }
+  .hg-item:hover img{transform:scale(1.04);}
+  /* Placeholder si la imagen no carga */
+  .hg-ph{
+    width:100%;height:100%;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:10px;
+    font-family:'Cinzel',serif;font-size:8px;
+    letter-spacing:.25em;text-transform:uppercase;
+  }
+  .hg-ph.h1{background:linear-gradient(135deg,#4A5828,#2E3818);}
+  .hg-ph.h2{background:linear-gradient(135deg,#3A5040,#243428);}
+  .hg-ph.h3{background:linear-gradient(135deg,#504A28,#343018);}
+  .hg-ph.h4{background:linear-gradient(135deg,#283A40,#182428);}
+  .hg-ph p{color:rgba(168,120,40,.35);}
+  .hg-ph svg{opacity:.12;}
+  /* Overlay oscuro en cada foto */
+  .hg-item::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to bottom,rgba(30,36,16,.15),rgba(30,36,16,.45));
+  }
+}
 
 .hero-veil{
   position:absolute;inset:0;pointer-events:none;z-index:2;
   background:linear-gradient(to bottom,
     rgba(30,36,16,.3) 0%,rgba(30,36,16,.1) 20%,
     rgba(30,36,16,.1) 40%,rgba(30,36,16,.7) 72%,rgba(30,36,16,.97) 100%);
+}
+@media(min-width:900px){
+  .hero-veil{
+    background:linear-gradient(to bottom,
+      rgba(30,36,16,.1) 0%,rgba(30,36,16,.05) 30%,
+      rgba(30,36,16,.55) 72%,rgba(30,36,16,.97) 100%);
+  }
 }
 .hero-text{
   position:absolute;bottom:54px;left:0;right:0;
@@ -711,45 +767,79 @@ footer{
 
 <!-- HERO -->
 <section id="hero">
-  <div class="car-track" id="car-track">
-    <div class="car-slide">
-      <div class="slide-ph s1">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        <p>Foto 1 — reemplaza con tu imagen</p>
+
+  <!-- CARRUSEL (solo móvil) -->
+  <div id="hero-carousel-wrap">
+    <div class="car-track" id="car-track">
+      <div class="car-slide">
+        <div class="slide-ph s1">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          <p>Foto 1 — reemplaza con tu imagen</p>
+        </div>
+      </div>
+      <div class="car-slide">
+        <div class="slide-ph s2">
+          <img src="invitacion-2.png" alt="Ivan & Narda - Les Luthiers">
+        </div>
+      </div>
+      <div class="car-slide">
+        <div class="slide-ph s3">
+          <img src="invitacion-3.jpg" alt="Ivan & Narda - San Juan">
+        </div>
+      </div>
+      <div class="car-slide">
+        <div class="slide-ph s4">
+          <img src="invitacion-4.png" alt="Ivan & Narda - Primera foto">
+        </div>
       </div>
     </div>
-    <div class="car-slide">
-      <div class="slide-ph s2">
-        <img src="invitacion-2.png" alt="Ivan & Narda - Les Luthiers">
+    <button class="car-arrow prev" onclick="prevSlide()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="car-arrow next" onclick="nextSlide()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="car-dots">
+      <div class="cdot on" onclick="goSlide(0)"></div>
+      <div class="cdot" onclick="goSlide(1)"></div>
+      <div class="cdot" onclick="goSlide(2)"></div>
+      <div class="cdot" onclick="goSlide(3)"></div>
+    </div>
+  </div>
+
+  <!-- GALERÍA (solo desktop ≥900px) -->
+  <div id="hero-gallery">
+    <!-- Foto 1: columna izquierda entera -->
+    <div class="hg-item">
+      <div class="hg-ph h1">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        <p>Foto 1</p>
+      </div>
+      <!-- Descomenta cuando tengas la imagen: -->
+      <!-- <img src="invitacion-1.jpg" alt="Ivan & Narda"> -->
+    </div>
+    <!-- Foto 2: columna derecha, fila arriba -->
+    <div class="hg-item">
+      <img src="invitacion-2.png" alt="Ivan & Narda - Les Luthiers"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="hg-ph h2" style="display:none;position:absolute;inset:0;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p>invitacion-2.png</p>
       </div>
     </div>
-    <div class="car-slide">
-      <div class="slide-ph s3">
-        <img src="invitacion-3.jpg" alt="Ivan & Narda - San Juan">
+    <!-- Foto 3: columna derecha fila centro -->
+    <div class="hg-item">
+      <img src="invitacion-3.jpg" alt="Ivan & Narda - San Juan"
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="hg-ph h3" style="display:none;position:absolute;inset:0;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <p>invitacion-3.jpg</p>
       </div>
     </div>
-    <div class="car-slide">
-      <div class="slide-ph s4">
-        <img src="invitacion-4.png" alt="Ivan & Narda - Primera foto">
-      </div>
-    </div>
+    <!-- Foto 4 no entra en el grid de 2x2 — se puede agregar como 4ta celda si quieres -->
   </div>
 
   <div class="hero-veil"></div>
-
-  <button class="car-arrow prev" onclick="prevSlide()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-  </button>
-  <button class="car-arrow next" onclick="nextSlide()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-  </button>
-
-  <div class="car-dots">
-    <div class="cdot on" onclick="goSlide(0)"></div>
-    <div class="cdot" onclick="goSlide(1)"></div>
-    <div class="cdot" onclick="goSlide(2)"></div>
-    <div class="cdot" onclick="goSlide(3)"></div>
-  </div>
 
   <div class="hero-text">
     <p class="hero-pre">Con amor, los invitamos</p>
@@ -762,6 +852,12 @@ footer{
     <div class="hero-hint">
       🎵 Te compartimos un poquito de nosotros a través de esta canción — toca el vinilo
     </div>
+<!-- Saludo personalizado -->
+<div id="saludo-personalizado" style="display:none; margin-top: 20px; text-align:center; z-index:3; position:relative; padding: 12px 20px; background: rgba(30,36,16,0.7); backdrop-filter:blur(4px); border-radius: 8px; border: 1px solid rgba(201,169,98,0.3); max-width: 600px; margin-left: auto; margin-right: auto;">
+  <p id="saludo-texto" style="font-family: 'Cormorant Garamond', serif; font-size: clamp(18px, 3vw, 24px); color: #FDFBF7; font-style: italic; text-shadow: 0 2px 10px rgba(0,0,0,0.6);">
+    <!-- Se llena con JavaScript -->
+  </p>
+</div>
   </div>
 </section>
 
@@ -1042,7 +1138,7 @@ footer{
     </p>
     <div class="deadline reveal d1">📅 Confirma antes del 30 de octubre de 2026</div>
     <br>
-    <a href="https://namynnel.github.io/boda-ivan-narda/rsvp-narda-ivan.html" target="_blank" class="rsvp-cta reveal d2">
+    <a href="https://boda-ivan-narda.pages.dev/rsvp-narda-ivan.html" target="_blank" class="rsvp-cta reveal d2">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012 .95h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.77a16 16 0 006.29 6.29l1.18-1.18a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
       </svg>
@@ -1237,6 +1333,31 @@ function addToCalendar(){
 }
 function openQR(){document.getElementById('qr-modal').style.display='flex';document.body.style.overflow='hidden';}
 function closeQR(){document.getElementById('qr-modal').style.display='none';document.body.style.overflow='auto';}
+// ====== SALUDO PERSONALIZADO ======
+(async function mostrarSaludo() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigo = urlParams.get('codigo') || urlParams.get('code') || '';
+
+  if (!codigo || codigo.length !== 4) return;
+
+  try {
+    const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyitWYhj_J4UitiBBT0bDvUp199v7TwxunXd1fwFx4FcyUr30JY8kG40qSqyI1ryb5JLw/exec'; // 
+    const response = await fetch(SHEETS_URL + '?action=getGuest&codigo=' + encodeURIComponent(codigo));
+    const data = await response.json();
+
+    if (data.ok && data.guest) {
+      const nombre = data.guest.nombre || 'Invitado';
+      const apellido = data.guest.apellido || '';
+      const nombreCompleto = (nombre + ' ' + apellido).trim();
+      const saludoEl = document.getElementById('saludo-personalizado');
+      const textoEl = document.getElementById('saludo-texto');
+      textoEl.textContent = `Querida(o) ${nombreCompleto}, sería un honor que nos acompañes este 5 de diciembre. ✨`;
+      saludoEl.style.display = 'block';
+    }
+  } catch (error) {
+    console.log('No se pudo cargar el saludo:', error);
+  }
+})();
 </script>
 </body>
 </html>
