@@ -179,7 +179,6 @@
       opacity: 0.5;
       letter-spacing: 0.1em;
     }
-    /* Animación de entrada */
     .fade-in {
       animation: fadeIn 0.8s ease-out forwards;
     }
@@ -187,7 +186,6 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Flores decorativas */
     .flower {
       position: absolute;
       opacity: 0.08;
@@ -217,7 +215,7 @@
     <p style="font-size:14px;margin-top:8px;">Verifica el enlace o <a href="https://wa.me/59170000000">contáctanos</a>.</p>
   </div>
 
-  <!-- Estado: Tarjeta (oculta hasta que carguen los datos) -->
+  <!-- Estado: Tarjeta -->
   <div id="card-content" style="display:none;" class="fade-in">
     <div class="card-badge">✦ Pase Digital ✦</div>
     <p class="card-title">Tienes una invitación especial para</p>
@@ -226,10 +224,8 @@
     </div>
     <div class="divider"></div>
 
-    <!-- Nombre del invitado -->
     <div class="guest-name" id="guest-full-name">—</div>
 
-    <!-- Código -->
     <div class="guest-code-wrap">
       <span class="guest-code-label">Tu código de acceso</span>
       <div class="guest-code" id="guest-code">—</div>
@@ -239,97 +235,92 @@
     <div class="card-place">La Paz, Bolivia</div>
     <p class="card-hint">✧ Este pase es personal e intransferible ✧</p>
 
-    <!-- Botón para confirmar asistencia (redirige al RSVP con el código) -->
-    <a href="#" id="rsvp-link" class="btn-rsvp">📋 Confirmar mi asistencia</a>
+    <!-- Botón para ver invitación -->
+    <a href="#" id="invite-link" class="btn-rsvp">🎟️ Ver invitación completa</a>
     <div class="footer-brand">Ivan &amp; Narda · #ZeladaArze2026</div>
   </div>
 </div>
 
 <script>
   // ============================================================
-  // 1. Obtener el código de la URL (?codigo=XXXX)
+  // Obtener el código de la URL
   // ============================================================
   const urlParams = new URLSearchParams(window.location.search);
   const codigo = urlParams.get('codigo') || urlParams.get('code') || '';
+  const errorParam = urlParams.get('error');
 
   // ============================================================
-  // 2. Referencias a los elementos
+  // Referencias
   // ============================================================
   const loadingEl = document.getElementById('loading-state');
   const errorEl   = document.getElementById('error-state');
   const contentEl = document.getElementById('card-content');
-
   const guestNameEl = document.getElementById('guest-full-name');
   const guestCodeEl = document.getElementById('guest-code');
-  const rsvpLinkEl  = document.getElementById('rsvp-link');
+  const inviteLinkEl = document.getElementById('invite-link');
 
   // ============================================================
-  // 3. URL de tu Google Apps Script 
+  // URL del script
   // ============================================================
   const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyitWYhj_J4UitiBBT0bDvUp199v7TwxunXd1fwFx4FcyUr30JY8kG40qSqyI1ryb5JLw/exec';
 
   // ============================================================
-  // 4. Función para obtener los datos del invitado
+  // Si hay error en URL, mostrar mensaje
   // ============================================================
-  async function fetchGuestData(code) {
-    if (!code || code.length !== 4) {
-      throw new Error('Código inválido');
+  if (errorParam === '1') {
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'none';
+    errorEl.style.display = 'block';
+    errorEl.innerHTML = `
+      <p>⚠️ El código que usaste no es válido o ya no está disponible.</p>
+      <p style="font-size:14px;margin-top:8px;">Por favor, verifica el enlace o <a href="https://wa.me/59170000000">contáctanos</a>.</p>
+    `;
+  } else if (!codigo || codigo.length !== 4) {
+    loadingEl.style.display = 'none';
+    contentEl.style.display = 'none';
+    errorEl.style.display = 'block';
+    errorEl.innerHTML = `
+      <p>⚠️ No se encontró un código válido en el enlace.</p>
+      <p style="font-size:14px;margin-top:8px;">Asegúrate de usar el enlace que te enviamos por WhatsApp.</p>
+    `;
+  } else {
+    // ============================================================
+    // Cargar datos del invitado
+    // ============================================================
+    async function loadCard() {
+      try {
+        const response = await fetch(SHEETS_URL + '?action=getGuest&codigo=' + encodeURIComponent(codigo));
+        const data = await response.json();
+
+        if (!data.ok || !data.guest) {
+          throw new Error('Invitado no encontrado');
+        }
+
+        loadingEl.style.display = 'none';
+        contentEl.style.display = 'block';
+
+        const guest = data.guest;
+        const fullName = (guest.nombre + ' ' + guest.apellido).trim() || 'Invitado Especial';
+        guestNameEl.textContent = fullName;
+        guestCodeEl.textContent = guest.codigo;
+
+        // Enlace a la invitación con el código
+        inviteLinkEl.href = 'index.html?codigo=' + guest.codigo;
+
+      } catch (error) {
+        console.error(error);
+        loadingEl.style.display = 'none';
+        contentEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.innerHTML = `
+          <p>⚠️ Ups, no pudimos cargar tus datos.</p>
+          <p style="font-size:14px;margin-top:8px;">Verifica tu conexión o <a href="https://wa.me/59170000000">contáctanos</a>.</p>
+          <p style="font-size:12px;color:#6A7848;margin-top:12px;">Código: ${codigo}</p>
+        `;
+      }
     }
-    const url = SHEETS_URL + '?action=getGuest&codigo=' + encodeURIComponent(code);
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error('Error de red');
-    }
-    const data = await response.json();
-    if (!data.ok) {
-      throw new Error(data.error || 'Invitado no encontrado');
-    }
-    return data.guest;
+    loadCard();
   }
-
-  // ============================================================
-  // 5. Cargar y mostrar los datos
-  // ============================================================
-  async function loadCard() {
-    // Si no hay código en la URL, mostrar error
-    if (!codigo || codigo.length !== 4) {
-      loadingEl.style.display = 'none';
-      errorEl.style.display = 'block';
-      errorEl.innerHTML = '<p>⚠️ No se encontró un código válido en el enlace.</p><p style="font-size:14px;margin-top:8px;">Asegúrate de usar el enlace que te enviamos por WhatsApp.</p>';
-      return;
-    }
-
-    try {
-      const guest = await fetchGuestData(codigo);
-      
-      // Mostrar la tarjeta
-      loadingEl.style.display = 'none';
-      contentEl.style.display = 'block';
-
-      // Llenar los datos
-      const fullName = (guest.nombre + ' ' + guest.apellido).trim() || 'Invitado Especial';
-      guestNameEl.textContent = fullName;
-      guestCodeEl.textContent = guest.codigo;
-
-      // Configurar el botón de RSVP (redirige al formulario con el código)
-      rsvpLinkEl.href = 'rsvp-narda-ivan.html?codigo=' + guest.codigo;
-
-    } catch (error) {
-      console.error(error);
-      loadingEl.style.display = 'none';
-      errorEl.style.display = 'block';
-      errorEl.innerHTML = `
-        <p>⚠️ Ups, no pudimos cargar tus datos.</p>
-        <p style="font-size:14px;margin-top:8px;">Verifica tu conexión o <a href="https://wa.me/59170000000">contáctanos</a>.</p>
-        <p style="font-size:12px;color:#6A7848;margin-top:12px;">Código: ${codigo}</p>
-      `;
-    }
-  }
-
-  // ============================================================
-  // 6. Ejecutar
-  // ============================================================
-  loadCard();
 </script>
 </body>
 </html>

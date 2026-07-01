@@ -451,6 +451,19 @@ async function verifyCode() {
     serverData.loaded = false; // forzar recarga
   }
 
+// ====== AUTO-LLENAR CÓDIGO DESDE LA URL ======
+(function autoFillCode() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const codigo = urlParams.get('codigo') || urlParams.get('code') || '';
+  if (codigo && codigo.length === 4) {
+    const input = document.getElementById('code-input');
+    if (input) {
+      input.value = codigo;
+      // Opcional: descomenta la siguiente línea para verificar automáticamente
+      // setTimeout(verifyCode, 300);
+    }
+  }
+})();
   await preloadData();
   btnText.classList.remove('hidden');
   btnLoad.classList.add('hidden');
