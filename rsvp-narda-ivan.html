@@ -329,7 +329,7 @@
 </div>
 
 <script>
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxrl2qI58AqHqq23hfDIzxH-9bsuhZjYDqdM4Zaj_cDGC2FjAe8Xa_qETHyb9QHFdoiZw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzd2mMg7bFlpZjPQqu-MgljYQbgvyLa9IH0D2dgNh8RkwWYGohFJpUHpaXR_wRZD5zuJA/exec';
 const TELEGRAM_TOKEN   = '8343723747:AAHIVAZiSsqGqAG8NqwomJfi0WkscNgMjcQ';
 const TELEGRAM_CHAT_ID = '1366498288';
 const INACTIVITY_MS    = 30 * 60 * 1000;
@@ -436,7 +436,7 @@ async function verifyCode() {
 
   // 2. El codigo existe en la lista de validos?
   if (!VALID_CODES.has(code)) {
-    errEl.innerHTML = '❌ Este codigo no existe. Verifica que lo hayas escrito correctamente o <a href="https://wa.me/59170000000" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>.';
+    errEl.innerHTML = '❌ Este codigo no existe. Verifica que lo hayas escrito correctamente o <a href="https://wa.me/59161144206" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>.';
     errEl.classList.remove('hidden');
     input.classList.add('border-red-400');
     return;
@@ -451,19 +451,6 @@ async function verifyCode() {
     serverData.loaded = false; // forzar recarga
   }
 
-// ====== AUTO-LLENAR CÓDIGO DESDE LA URL ======
-(function autoFillCode() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const codigo = urlParams.get('codigo') || urlParams.get('code') || '';
-  if (codigo && codigo.length === 4) {
-    const input = document.getElementById('code-input');
-    if (input) {
-      input.value = codigo;
-      // Opcional: descomenta la siguiente línea para verificar automáticamente
-      // setTimeout(verifyCode, 300);
-    }
-  }
-})();
   await preloadData();
   btnText.classList.remove('hidden');
   btnLoad.classList.add('hidden');
@@ -471,7 +458,7 @@ async function verifyCode() {
   // 4. Con datos frescos: verificar si ya fue usado
   if (serverData.loaded) {
     if (serverData.usedCodes.has(code)) {
-      errEl.innerHTML = '⚠️ Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.<br><span style="font-size:.8em;opacity:.8;">Si crees que es un error, <a href="https://wa.me/59170000000" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>.</span>';
+      errEl.innerHTML = '⚠️ Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.<br><span style="font-size:.8em;opacity:.8;">Si crees que es un error, <a href="https://wa.me/59161144206" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>.</span>';
       errEl.classList.remove('hidden');
       input.classList.add('border-red-400');
       return;
