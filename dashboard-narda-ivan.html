@@ -380,7 +380,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzd2mMg7bFlpZjPQqu-MgljYQbgvyLa9IH0D2dgNh8RkwWYGohFJpUHpaXR_wRZD5zuJA/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwvx_mBFIN3RrIDdvjNbDYJJpdehxzshmuKHzAEnWwAR0SJlqBSVHmxS8wj3_GqntHtjQ/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -481,7 +481,7 @@ function saveGuests(g) {
 function pushGuestsToSheets(guestList) {
   try {
     const guestData = guestList.map(g =>
-      [g.codigo, g.nombre, g.apellido, g.sufijo||'', g.cupos, g.grupo].join('|')
+      [g.codigo, g.nombre, g.apellido, g.sufijo||'', String(g.cupos), g.grupo].join('|')
     ).join(';;');
     const url = SHEETS_URL + '?action=syncGuests&data=' + encodeURIComponent(guestData);
     const img = new Image();
@@ -574,27 +574,68 @@ function switchTab(name, el) {
 /* ══════════════════════════════════════
    RSVP
 ══════════════════════════════════════ */
-async function refreshRSVP() {
+function refreshRSVP() {
   const icon = document.getElementById('ri');
   icon.classList.add('spin');
-  try {
-    const res  = await fetch(SHEETS_URL + '?t=' + Date.now());
-    const data = await res.json();
-    rsvpRows = data.rows || [];
-    // Apply manual status overrides
-    const overrides = JSON.parse(localStorage.getItem('ni-status-overrides')||'{}');
-    rsvpRows.forEach(r => {
-      const code = String(r.codigo||r.confirmation_code||'').trim();
-      if(overrides[code]) r.asistencia = overrides[code];
-    });
-    renderRSVP();
-    updateStats();
-    // Auto-archive guests who confirmed "no"
-    autoArchiveNoShows();
-  } catch(e) {
-    console.log('Error:', e);
-  }
-  icon.classList.remove('spin');
+  showSyncStatus('⏳ Cargando confirmaciones...', 'loading');
+
+  const cbName = 'rsvpCb_' + Date.now();
+  const script = document.createElement('script');
+  const timeout = setTimeout(function() {
+    try { document.head.removeChild(script); } catch(e) {}
+    delete window[cbName];
+    icon.classList.remove('spin');
+    showSyncStatus('⚠️ No se pudieron cargar las confirmaciones', 'error');
+  }, 10000);
+
+  window[cbName] = function(data) {
+    clearTimeout(timeout);
+    try { document.head.removeChild(script); } catch(e) {}
+    delete window[cbName];
+    icon.classList.remove('spin');
+    if (data && data.ok) {
+      rsvpRows = data.rows || [];
+      // Normalizar nombres de columnas (el Sheet puede tener variaciones)
+      rsvpRows = rsvpRows.map(function(r) {
+        return {
+          codigo:    String(r.codigo || r['código'] || r.confirmation_code || '').trim(),
+          nombre:    r.nombre || r['Nombre'] || r.first_name || '',
+          apellido:  r.apellido || r['Apellido'] || r.last_name || '',
+          telefono:  String(r.telefono || r['teléfono'] || r.phone || '').trim(),
+          asistencia: r.asistencia || r.attendance || r['Asistencia'] || '',
+          acompanantes: parseInt(r.acompanantes || r['acompañantes'] || r.companion_count || 0) || 0,
+          nombres_acompanantes: r.nombres_acompanantes || r['nombres_acompañantes'] || '',
+          alergia:   r.alergia || r.has_allergy || '',
+          detalle_alergia: r.detalle_alergia || r.dietary_restrictions || '',
+          mensaje:   r.mensaje || r.message || '',
+          fecha:     r.fecha || r.submitted_at || '',
+          excedido:  r.excedido || ''
+        };
+      });
+      // Aplicar overrides locales
+      const overrides = JSON.parse(localStorage.getItem('ni-status-overrides')||'{}');
+      rsvpRows.forEach(function(r) {
+        if(overrides[r.codigo]) r.asistencia = overrides[r.codigo];
+      });
+      renderRSVP();
+      updateStats();
+      autoArchiveNoShows();
+      showSyncStatus('✓ ' + rsvpRows.length + ' confirmaciones cargadas', 'ok');
+    } else {
+      showSyncStatus('⚠️ Error al cargar confirmaciones', 'error');
+    }
+  };
+
+  script.onerror = function() {
+    clearTimeout(timeout);
+    try { document.head.removeChild(script); } catch(e) {}
+    delete window[cbName];
+    icon.classList.remove('spin');
+    showSyncStatus('⚠️ Sin conexión — no se cargaron confirmaciones', 'error');
+  };
+
+  script.src = SHEETS_URL + '?callback=' + cbName + '&t=' + Date.now();
+  document.head.appendChild(script);
 }
 
 function updateStats() {
