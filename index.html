@@ -127,17 +127,14 @@ body{
 /* ═══════════════════════════════════════
    HERO
 ═══════════════════════════════════════ */
+/* ── HERO BASE ── */
 #hero{
   height:100vh;min-height:500px;
   position:relative;overflow:hidden;
   background:var(--olive-dk);
 }
-@media(min-width:900px){
-  #hero{ height:auto;min-height:0; }
-  .hero-names{ font-size:clamp(28px,5vw,60px); }
-}
 
-/* ── CARRUSEL (móvil) ── */
+/* ── CARRUSEL (móvil — sin cambios) ── */
 .car-track{display:flex;height:100%;transition:transform .95s cubic-bezier(.4,0,.2,1);}
 .car-slide{min-width:100%;height:100%;position:relative;flex-shrink:0;}
 .slide-ph{
@@ -157,28 +154,25 @@ body{
 .slide-ph p{color:rgba(168,120,40,.4);}
 .slide-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;}
 
-/* ── GALERÍA DESKTOP (≥900px) ── */
+/* ── GALERÍA 4 COLUMNAS (solo desktop ≥900px) ── */
 #hero-gallery{display:none;}
 @media(min-width:900px){
-  /* Ocultar carrusel y mostrar galería */
+  #hero{height:100vh;}
+  .hero-names{font-size:clamp(28px,5vw,60px);}
   #hero-carousel-wrap{display:none !important;}
   #hero-gallery{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    grid-template-rows:50vh 50vh;
-    gap:3px;
+    display:flex;
+    flex-direction:row;
     width:100%;
-    height:100vh;
-    min-height:500px;
+    height:100%;
+    gap:0;
   }
   .hg-item{
+    flex:1;
     position:relative;
     overflow:hidden;
     background:var(--olive-dk);
-    min-height:0;
   }
-  .hg-item:first-child{grid-row:1/3;}
-  /* Fotos verticales — cubren la celda completamente */
   .hg-item img{
     position:absolute;
     inset:0;
@@ -189,24 +183,24 @@ body{
     transition:transform .6s ease;
     display:block;
   }
-  .hg-item:hover img{transform:scale(1.03);}
+  .hg-item:hover img{transform:scale(1.04);}
+  .hg-item::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to bottom,rgba(30,36,16,.05),rgba(30,36,16,.45));
+  }
+  /* Placeholders por si la foto no carga */
   .hg-ph{
     position:absolute;inset:0;
     display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:10px;
-    font-family:'Cinzel',serif;font-size:8px;
-    letter-spacing:.25em;text-transform:uppercase;
+    align-items:center;justify-content:center;gap:8px;
+    font-family:'Cinzel',serif;font-size:7px;
+    letter-spacing:.2em;text-transform:uppercase;
   }
-  .hg-ph.h1{background:linear-gradient(135deg,#4A5828,#2E3818);}
-  .hg-ph.h2{background:linear-gradient(135deg,#3A5040,#243428);}
-  .hg-ph.h3{background:linear-gradient(135deg,#504A28,#343018);}
-  .hg-ph.h4{background:linear-gradient(135deg,#283A40,#182428);}
-  .hg-ph p{color:rgba(168,120,40,.5);}
-  .hg-ph svg{opacity:.2;}
-  .hg-item::after{
-    content:'';position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(to bottom,rgba(30,36,16,.1),rgba(30,36,16,.4));
-  }
+  .hg-ph.h1{background:linear-gradient(180deg,#4A5828,#2E3818);}
+  .hg-ph.h2{background:linear-gradient(180deg,#3A5040,#243428);}
+  .hg-ph.h3{background:linear-gradient(180deg,#504A28,#343018);}
+  .hg-ph.h4{background:linear-gradient(180deg,#283A40,#182428);}
+  .hg-ph p{color:rgba(168,120,40,.4);}
 }
 
 .hero-veil{
@@ -809,36 +803,30 @@ footer{
     </div>
   </div>
 
-  <!-- GALERÍA (solo desktop ≥900px) -->
+  <!-- GALERÍA 4 COLUMNAS (solo desktop ≥900px) -->
   <div id="hero-gallery">
-    <!-- Foto 1: columna izquierda entera -->
     <div class="hg-item">
-      <div class="hg-ph h1">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        <p>Foto 1</p>
-      </div>
-      <!-- Descomenta cuando tengas la imagen: -->
-      <!-- <img src="invitacion-1.jpg" alt="Ivan & Narda"> -->
+      <div class="hg-ph h1"></div>
+      <!-- sin foto 1 todavía — placeholder verde -->
     </div>
-    <!-- Foto 2: columna derecha, fila arriba -->
     <div class="hg-item">
-      <img src="invitacion-2.png" alt="Ivan & Narda - Les Luthiers"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="hg-ph h2" style="display:none;position:absolute;inset:0;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <p>invitacion-2.png</p>
-      </div>
+      <div class="hg-ph h2"></div>
+      <img src="invitacion-2.png" alt="Ivan & Narda"
+           onload="this.previousElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
     </div>
-    <!-- Foto 3: columna derecha fila centro -->
     <div class="hg-item">
-      <img src="invitacion-3.jpg" alt="Ivan & Narda - San Juan"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-      <div class="hg-ph h3" style="display:none;position:absolute;inset:0;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-        <p>invitacion-3.jpg</p>
-      </div>
+      <div class="hg-ph h3"></div>
+      <img src="invitacion-3.jpg" alt="Ivan & Narda"
+           onload="this.previousElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
     </div>
-    <!-- Foto 4 no entra en el grid de 2x2 — se puede agregar como 4ta celda si quieres -->
+    <div class="hg-item">
+      <div class="hg-ph h4"></div>
+      <img src="invitacion-4.png" alt="Ivan & Narda"
+           onload="this.previousElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+    </div>
   </div>
 
   <div class="hero-veil"></div>
