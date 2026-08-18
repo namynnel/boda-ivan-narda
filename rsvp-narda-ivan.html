@@ -132,12 +132,46 @@
         </div>
 
         <!-- Telefono -->
-        <div class="space-y-2">
-          <label class="block font-sans text-olive font-medium text-sm">Numero de telefono <span class="text-gold">*</span></label>
-          <input type="text" id="phone" name="phone" inputmode="numeric" maxlength="8" required placeholder="00000000"
-            class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200"
-            oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-          <p class="font-sans text-olive/60 text-xs">Te enviaremos la confirmacion a este numero.</p>
+        <div class="space-y-2" id="phone-section">
+          <label class="block font-sans text-olive font-medium text-sm" id="phone-label">
+            Numero de WhatsApp <span class="text-gold" id="phone-required-star">*</span>
+            <span id="phone-optional-tag" class="text-gold/60 font-normal hidden">(opcional)</span>
+          </label>
+          <div class="flex gap-2">
+            <select id="phone-country" class="px-3 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus text-sm" style="min-width:110px;">
+              <option value="591">🇧🇴 +591</option>
+              <option value="54">🇦🇷 +54</option>
+              <option value="56">🇨🇱 +56</option>
+              <option value="51">🇵🇪 +51</option>
+              <option value="55">🇧🇷 +55</option>
+              <option value="595">🇵🇾 +595</option>
+              <option value="598">🇺🇾 +598</option>
+              <option value="57">🇨🇴 +57</option>
+              <option value="58">🇻🇪 +58</option>
+              <option value="1">🇺🇸 +1</option>
+              <option value="34">🇪🇸 +34</option>
+              <option value="otro">🌍 Otro</option>
+            </select>
+            <input type="text" id="phone" name="phone" inputmode="tel" placeholder="Numero (sin codigo de pais)"
+              class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200"
+              oninput="this.value=this.value.replace(/[^0-9+\-\s]/g,'')">
+          </div>
+          <p class="font-sans text-olive/60 text-xs" id="phone-hint">Te enviaremos la información de tu mesa a este número.</p>
+        </div>
+
+        <!-- Contacto alternativo (solo virtual/no asiste) -->
+        <div class="space-y-4 hidden" id="alt-contact-section">
+          <p class="font-sans text-olive/70 text-xs italic">Si no tienes WhatsApp o prefieres otro medio, déjanos al menos una forma de contactarte:</p>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Correo electrónico <span class="text-olive/50 font-normal">(opcional)</span></label>
+            <input type="email" id="contact-email" name="contact_email" placeholder="tu@correo.com"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Instagram o TikTok <span class="text-olive/50 font-normal">(opcional)</span></label>
+            <input type="text" id="contact-social" name="contact_social" placeholder="@tu_usuario"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
         </div>
 
         <!-- Asistencia -->
@@ -174,6 +208,20 @@
                     <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
                   </span>
                   Solo a la recepcion
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-virtual" name="attendance" value="virtual" class="sr-only">
+              <label for="att-virtual" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  <span>
+                    Asistire virtualmente 📺
+                    <span class="block text-xs text-olive/60 mt-0.5">Te compartiremos el link de transmision en vivo</span>
+                  </span>
                 </span>
               </label>
             </div>
@@ -329,7 +377,9 @@
 </div>
 
 <script>
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwgqUDtIkFxSDgcEDjTxt22tSyIa5to1_qkRmFjoosneu88TzxERcp-pGu2N-inUSgjMw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxrl2qI58AqHqq23hfDIzxH-9bsuhZjYDqdM4Zaj_cDGC2FjAe8Xa_qETHyb9QHFdoiZw/exec';
+// Token de Telegram removido — las notificaciones las maneja el Apps Script
+// Chat ID removido — ver Apps Script
 const INACTIVITY_MS    = 30 * 60 * 1000;
 
 const VALID_CODES = new Set([
@@ -540,15 +590,40 @@ document.querySelectorAll('.radio-option input[type="radio"]').forEach(function(
 // Attendance change
 document.querySelectorAll('input[name="attendance"]').forEach(function(r) {
   r.addEventListener('change', function() {
-    var attending = this.value !== 'no';
-    var af = document.getElementById('attending-fields');
-    if (attending) {
+    var val = this.value;
+    var isPresencial = (val === 'both' || val === 'ceremony' || val === 'reception');
+    var isVirtual    = (val === 'virtual');
+    var isNo         = (val === 'no');
+    var af           = document.getElementById('attending-fields');
+    var altContact   = document.getElementById('alt-contact-section');
+    var phoneReqStar = document.getElementById('phone-required-star');
+    var phoneOptTag  = document.getElementById('phone-optional-tag');
+    var phoneHint    = document.getElementById('phone-hint');
+    var phoneEl      = document.getElementById('phone');
+
+    // Mostrar campos de asistencia presencial
+    if (isPresencial) {
       af.classList.remove('hidden');
     } else {
       af.classList.add('hidden');
       document.getElementById('comp-count-section').classList.add('hidden');
       document.getElementById('comp-names-section').classList.add('hidden');
       document.getElementById('comp-fields-container').innerHTML = '';
+    }
+
+    // Teléfono: obligatorio solo para presenciales
+    if (isPresencial) {
+      phoneReqStar.classList.remove('hidden');
+      phoneOptTag.classList.add('hidden');
+      phoneEl.setAttribute('required', 'required');
+      phoneHint.textContent = 'Te enviaremos la información de tu mesa a este número.';
+      altContact.classList.add('hidden');
+    } else {
+      phoneReqStar.classList.add('hidden');
+      phoneOptTag.classList.remove('hidden');
+      phoneEl.removeAttribute('required');
+      phoneHint.textContent = 'Opcional — si tienes WhatsApp y quieres recibir novedades.';
+      altContact.classList.remove('hidden');
     }
   });
 });
@@ -620,7 +695,9 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
 
   var formData   = new FormData(this);
   var attendance = formData.get('attendance');
-  var phone      = formData.get('phone');
+  var phoneRaw    = document.getElementById('phone').value.trim();
+  var phoneCountry = document.getElementById('phone-country').value;
+  var phone = phoneRaw ? (phoneCountry !== 'otro' ? phoneCountry + phoneRaw : phoneRaw) : '';
   var code       = document.getElementById('hidden-code').value;
 
   if (!attendance) {
@@ -628,8 +705,15 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
     formErr.classList.remove('hidden');
     return;
   }
-  if (!/^[0-9]{8}$/.test(phone)) {
-    formErr.textContent = 'Por favor ingresa un numero de telefono valido (8 digitos).';
+  // Teléfono: obligatorio si es presencial
+  var isPresencial = (attendance === 'both' || attendance === 'ceremony' || attendance === 'reception');
+  if (isPresencial && !phone) {
+    formErr.textContent = 'Por favor ingresa tu número de WhatsApp — lo necesitamos para enviarte la información de tu mesa.';
+    formErr.classList.remove('hidden');
+    return;
+  }
+  if (phone && !/^[0-9+\-\s]{6,15}$/.test(phone)) {
+    formErr.textContent = 'Por favor ingresa un número válido.';
     formErr.classList.remove('hidden');
     return;
   }
@@ -647,11 +731,16 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
     if (cf) companions.push(cf);
   }
 
+  var contactEmail  = document.getElementById('contact-email').value.trim();
+  var contactSocial = document.getElementById('contact-social').value.trim();
+
   var record = {
     codigo:               code,
     nombre:               formData.get('first_name'),
     apellido:             formData.get('last_name'),
     telefono:             phone,
+    contacto_email:       contactEmail,
+    contacto_social:      contactSocial,
     asistencia:           attendance,
     acompanantes:         companionCount,
     nombres_acompanantes: companions.join(', '),
@@ -692,7 +781,8 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
       ? 'Hola ' + record.nombre + ', hemos recibido tu respuesta para la boda de Ivan & Narda. Lamentamos que no puedas acompanarnos.'
       : 'Hola ' + record.nombre + ', tu asistencia a la boda de Ivan & Narda ha sido confirmada. Nos alegra contar contigo el 5 de diciembre!';
     var waBtn = document.getElementById('whatsapp-btn');
-    waBtn.href = 'https://wa.me/591' + phone + '?text=' + encodeURIComponent(waMsg);
+    waBtn.href = phone ? ('https://wa.me/' + phone.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent(waMsg)) : '#';
+    if (!phone) waBtn.style.display = 'none';
     setTimeout(function() { waBtn.classList.remove('hidden'); }, 800);
 
   } catch(err) {
