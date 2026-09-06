@@ -1721,12 +1721,12 @@ function planoExport() {
   a.click(); URL.revokeObjectURL(url);
 }
 
-// Renderizar plano cuando se activa esa tab
+// Renderizar plano al activar esa tab (hook en la función original)
 var _origSwitchTab = switchTab;
-function switchTab(name, el) {
+switchTab = function(name, el) {
   _origSwitchTab(name, el);
   if (name === 'plano') setTimeout(planoRender, 50);
-}
+};
 
 
 /* ══════════════════════════════════════
