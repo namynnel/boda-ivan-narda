@@ -306,42 +306,6 @@ select.edit-input{cursor:pointer;}
     border-radius:6px;font-size:.75rem;background:white;color:var(--ink);
     margin-bottom:.5rem;box-sizing:border-box;
   }
-
-</style>
-</head>
-<body>
-
-  <!-- LOGIN OVERLAY — PIN VISUAL -->
-  <div id="login-overlay">
-    <div class="login-box">
-      <h2>N · I · DASHBOARD</h2>
-      <p>Ingresa tu PIN para continuar</p>
-      <div class="pin-display" id="pin-display">
-        <div class="pin-dot" id="pd0"></div>
-        <div class="pin-dot" id="pd1"></div>
-        <div class="pin-dot" id="pd2"></div>
-        <div class="pin-dot" id="pd3"></div>
-        <div class="pin-dot" id="pd4"></div>
-        <div class="pin-dot" id="pd5"></div>
-      </div>
-      <div class="pin-grid">
-        <button class="pin-btn" onclick="pinPress('1')">1</button>
-        <button class="pin-btn" onclick="pinPress('2')">2</button>
-        <button class="pin-btn" onclick="pinPress('3')">3</button>
-        <button class="pin-btn" onclick="pinPress('4')">4</button>
-        <button class="pin-btn" onclick="pinPress('5')">5</button>
-        <button class="pin-btn" onclick="pinPress('6')">6</button>
-        <button class="pin-btn" onclick="pinPress('7')">7</button>
-        <button class="pin-btn" onclick="pinPress('8')">8</button>
-        <button class="pin-btn" onclick="pinPress('9')">9</button>
-        <button class="pin-btn wide" onclick="pinPress('0')">0</button>
-        <button class="pin-btn del" onclick="pinDel()">⌫</button>
-      </div>
-      <div class="login-err" id="login-err"></div>
-    </div>
-  </div>
-
-
 <div id="header">
   <div>
     <div class="header-names">Ivan <span>&amp;</span> Narda</div>
@@ -1804,83 +1768,6 @@ function switchTab(name, el) {
   _origSwitchTab(name, el);
   if (name === 'plano') setTimeout(planoRender, 50);
 }
-
-/* ══════════════════════════════════════
-   AUTH — PIN visual (teclado numérico)
-══════════════════════════════════════ */
-(function() {
-  var CORRECT_PIN = '261144';   // ← cambia este PIN (solo dígitos)
-  var SESSION_MS  = 8 * 60 * 60 * 1000;
-  var pinBuffer   = '';
-  var pinLen      = CORRECT_PIN.length;
-
-  function checkSession() {
-    try {
-      var s = JSON.parse(sessionStorage.getItem('ni-auth') || '{}');
-      if (s.ok && (Date.now() - s.ts) < SESSION_MS) {
-        document.getElementById('login-overlay').classList.add('hidden');
-        return true;
-      }
-    } catch(e) {}
-    return false;
-  }
-
-  function updateDots() {
-    for (var i = 0; i < pinLen; i++) {
-      var dot = document.getElementById('pd' + i);
-      if (!dot) continue;
-      dot.classList.toggle('filled', i < pinBuffer.length);
-      dot.classList.remove('error');
-    }
-  }
-
-  function shakeError() {
-    var display = document.getElementById('pin-display');
-    for (var i = 0; i < pinLen; i++) {
-      var dot = document.getElementById('pd' + i);
-      if (dot) dot.classList.add('error');
-    }
-    document.getElementById('login-err').textContent = 'PIN incorrecto, intenta de nuevo.';
-    setTimeout(function() {
-      pinBuffer = '';
-      updateDots();
-      document.getElementById('login-err').textContent = '';
-    }, 900);
-  }
-
-  window.pinPress = function(digit) {
-    if (pinBuffer.length >= pinLen) return;
-    pinBuffer += digit;
-    updateDots();
-    if (pinBuffer.length === pinLen) {
-      setTimeout(function() {
-        if (pinBuffer === CORRECT_PIN) {
-          sessionStorage.setItem('ni-auth', JSON.stringify({ ok: true, ts: Date.now() }));
-          document.getElementById('login-overlay').classList.add('hidden');
-        } else {
-          shakeError();
-        }
-      }, 150);
-    }
-  };
-
-  window.pinDel = function() {
-    if (pinBuffer.length > 0) {
-      pinBuffer = pinBuffer.slice(0, -1);
-      updateDots();
-    }
-  };
-
-  // También funciona con teclado físico
-  document.addEventListener('keydown', function(e) {
-    if (document.getElementById('login-overlay').classList.contains('hidden')) return;
-    if (e.key >= '0' && e.key <= '9') pinPress(e.key);
-    if (e.key === 'Backspace') pinDel();
-  });
-
-  checkSession();
-})();
-
 
 /* ══════════════════════════════════════
    PWA — Service Worker
