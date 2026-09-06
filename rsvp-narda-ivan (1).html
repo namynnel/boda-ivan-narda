@@ -1,0 +1,856 @@
+<!doctype html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSVP - Ivan & Narda</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            olive: '#5C6B4D', 'olive-dark': '#4A5840',
+            eucalyptus: '#7B9E87', 'eucalyptus-light': '#A8C5B0',
+            cream: '#FDFBF7', gold: '#C9A962', 'gold-light': '#D4BA7A'
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+            sans: ['Montserrat', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html, body { height: 100%; }
+    .paper-texture {
+      background-color: #FDFBF7;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23d4c5a9' fill-opacity='0.08'%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .input-focus:focus { outline: none; border-color: #7B9E87; box-shadow: 0 0 0 3px rgba(123,158,135,0.15); }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .radio-option input[type="radio"]:checked + label {
+      background-color: rgba(123,158,135,0.1);
+      border-color: #7B9E87;
+    }
+    .radio-option input[type="radio"]:checked + label .radio-dot {
+      transform: scale(1);
+    }
+    .radio-dot { transform: scale(0); transition: transform 0.2s; }
+    .leaf-decoration::before, .leaf-decoration::after {
+      content: ''; position: absolute; width: 60px; height: 60px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5c-5 15-20 30-40 35 20 5 35 20 40 40 5-20 20-35 40-40C70 35 55 20 50 5z' fill='none' stroke='%237B9E87' stroke-width='1.5' opacity='0.3'/%3E%3C/svg%3E");
+      background-size: contain; background-repeat: no-repeat;
+    }
+    .leaf-decoration::before { top:-20px; left:-20px; transform:rotate(-15deg); }
+    .leaf-decoration::after  { bottom:-20px; right:-20px; transform:rotate(165deg); }
+  </style>
+</head>
+<body class="h-full paper-texture overflow-auto">
+<div class="w-full min-h-full py-8 px-4 sm:px-6 lg:px-8">
+
+  <!-- HEADER -->
+  <header class="text-center mb-10">
+    <div class="inline-block relative leaf-decoration px-8 py-4">
+      <p class="font-serif text-gold text-xl tracking-widest mb-2">Ivan &amp; Narda</p>
+      <div class="w-16 h-px bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mb-4"></div>
+      <p class="font-sans text-olive text-sm tracking-wide">05 de diciembre de 2026</p>
+      <p class="font-sans text-olive/70 text-xs tracking-wide mt-1">La Paz, Bolivia</p>
+    </div>
+  </header>
+
+  <!-- STEP 1: Verificacion de codigo -->
+  <div id="step-codigo" class="max-w-2xl mx-auto">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-olive/5 via-eucalyptus/10 to-olive/5 px-6 sm:px-10 py-8 border-b border-eucalyptus-light/20 text-center">
+        <h1 class="font-serif text-3xl sm:text-4xl text-olive font-semibold tracking-wide">Confirmacion de Asistencia</h1>
+        <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-4 mb-6"></div>
+        <p class="font-sans text-olive/80 text-sm leading-relaxed max-w-lg mx-auto">
+          Nos encantaria contar con tu presencia en este dia tan especial.
+        </p>
+      </div>
+      <div class="px-6 sm:px-10 py-10 text-center">
+        <p class="font-sans text-olive font-semibold text-base mb-2">Para comenzar, ingresa tu codigo de invitacion</p>
+        <p class="font-sans text-olive/60 text-sm mb-8 leading-relaxed max-w-sm mx-auto">
+          Lo encontraras en el mensaje que te enviamos por WhatsApp y en tu pase digital. Si tienes dudas, contactanos directamente.
+        </p>
+        <div class="max-w-xs mx-auto">
+          <input type="text" id="code-input" inputmode="numeric" maxlength="4" placeholder="0000"
+            class="w-full px-4 py-4 border-2 border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white text-center text-3xl tracking-[0.5em] font-medium input-focus transition-all duration-200"
+            oninput="this.value=this.value.replace(/[^0-9]/g,''); clearCodeError()">
+          <p id="code-error" class="hidden text-red-500 text-sm mt-3 font-sans leading-relaxed"></p>
+          <button onclick="verifyCode()" id="verify-btn"
+            class="w-full mt-4 py-4 bg-gradient-to-r from-olive to-olive-dark text-white font-sans font-medium tracking-wide rounded-lg hover:from-olive-dark hover:to-olive transition-all duration-300 shadow-md">
+            <span id="verify-text">Verificar codigo</span>
+            <span id="verify-loading" class="hidden">Verificando...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Formulario (oculto hasta verificar) -->
+  <div id="step-form" class="max-w-2xl mx-auto hidden">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
+
+      <div class="bg-gradient-to-r from-olive/5 via-eucalyptus/10 to-olive/5 px-6 sm:px-10 py-8 border-b border-eucalyptus-light/20">
+        <h1 class="font-serif text-3xl sm:text-4xl text-olive text-center font-semibold tracking-wide">Confirmacion de Asistencia</h1>
+        <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-4 mb-6"></div>
+        <p id="guest-welcome" class="hidden font-sans text-olive/80 text-center text-sm leading-relaxed max-w-lg mx-auto"></p>
+        <p class="font-sans text-olive/80 text-center text-sm leading-relaxed max-w-lg mx-auto mt-2">
+          Por favor completa este formulario para confirmar tu asistencia.
+        </p>
+      </div>
+
+      <div class="bg-gold/5 px-6 sm:px-10 py-4 border-b border-gold/20">
+        <p class="font-sans text-center text-sm">
+          <span class="text-olive font-medium">Confirmacion obligatoria hasta el </span>
+          <span class="text-gold font-semibold">30 de octubre de 2026</span>
+        </p>
+        <p class="font-sans text-olive/60 text-center text-xs mt-1">Despues de esta fecha, la disponibilidad no podra ser garantizada.</p>
+      </div>
+
+      <form id="rsvp-form" class="px-6 sm:px-10 py-8 space-y-6">
+        <input type="hidden" id="hidden-code" name="codigo">
+
+        <!-- Nombre -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="name-section">
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Nombre <span class="text-gold">*</span></label>
+            <input type="text" id="first-name" name="first_name" required placeholder="Tu nombre"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Apellido <span class="text-gold">*</span></label>
+            <input type="text" id="last-name" name="last_name" required placeholder="Tu apellido"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+        </div>
+
+        <!-- Campos bloqueados hasta completar nombre -->
+        <div id="fields-locked" class="hidden space-y-6">
+
+        <!-- Telefono -->
+        <div class="space-y-2" id="phone-section">
+          <label class="block font-sans text-olive font-medium text-sm" id="phone-label">
+            Numero de WhatsApp <span class="text-gold" id="phone-required-star">*</span>
+            <span id="phone-optional-tag" class="text-gold/60 font-normal hidden">(opcional)</span>
+          </label>
+          <div class="flex gap-2">
+            <select id="phone-country" class="px-3 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus text-sm" style="min-width:110px;">
+              <option value="591">🇧🇴 +591</option>
+              <option value="54">🇦🇷 +54</option>
+              <option value="56">🇨🇱 +56</option>
+              <option value="51">🇵🇪 +51</option>
+              <option value="55">🇧🇷 +55</option>
+              <option value="595">🇵🇾 +595</option>
+              <option value="598">🇺🇾 +598</option>
+              <option value="57">🇨🇴 +57</option>
+              <option value="58">🇻🇪 +58</option>
+              <option value="1">🇺🇸 +1</option>
+              <option value="34">🇪🇸 +34</option>
+              <option value="otro">🌍 Otro</option>
+            </select>
+            <input type="text" id="phone" name="phone" inputmode="tel" placeholder="Numero (sin codigo de pais)"
+              class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200"
+              oninput="this.value=this.value.replace(/[^0-9+\-\s]/g,'')">
+          </div>
+          <p class="font-sans text-olive/60 text-xs" id="phone-hint">Te enviaremos la información de tu mesa a este número.</p>
+        </div>
+
+        <!-- Contacto alternativo (solo virtual/no asiste) -->
+        <div class="space-y-4 hidden" id="alt-contact-section">
+          <p class="font-sans text-olive/70 text-xs italic">Si no tienes WhatsApp o prefieres otro medio, déjanos al menos una forma de contactarte:</p>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Correo electrónico <span class="text-olive/50 font-normal">(opcional)</span></label>
+            <input type="email" id="contact-email" name="contact_email" placeholder="tu@correo.com"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Instagram o TikTok <span class="text-olive/50 font-normal">(opcional)</span></label>
+            <input type="text" id="contact-social" name="contact_social" placeholder="@tu_usuario"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+        </div>
+
+        </div><!-- /fields-locked -->
+
+        <!-- Asistencia (también bloqueada) -->
+        <div class="space-y-3 hidden" id="attendance-section">
+          <label class="block font-sans text-olive font-medium text-sm">Asistencia <span class="text-gold">*</span></label>
+          <div class="space-y-2" id="attendance-options">
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-both" name="attendance" value="both" required class="sr-only">
+              <label for="att-both" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  Si, a la ceremonia y recepcion
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-ceremony" name="attendance" value="ceremony" class="sr-only">
+              <label for="att-ceremony" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  Solo a la ceremonia civil
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-reception" name="attendance" value="reception" class="sr-only">
+              <label for="att-reception" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  Solo a la recepcion
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center hidden" id="att-virtual-wrap">
+              <input type="radio" id="att-virtual" name="attendance" value="virtual" class="sr-only">
+              <label for="att-virtual" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  <span>
+                    Asistire virtualmente 📺
+                    <span class="block text-xs text-olive/60 mt-0.5">Te compartiremos el link de transmision en vivo</span>
+                  </span>
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-no" name="attendance" value="no" class="sr-only">
+              <label for="att-no" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  No podre asistir
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        </div><!-- /attendance-section -->
+
+        <!-- Campos condicionales (si asiste) -->
+        <div id="attending-fields" class="space-y-6 hidden fade-in">
+
+          <!-- Alergia -->
+          <div class="space-y-3">
+            <label class="block font-sans text-olive font-medium text-sm">Tienes alguna alergia alimentaria grave? <span class="text-gold">*</span></label>
+            <div class="flex gap-4">
+              <div class="radio-option flex items-center">
+                <input type="radio" id="allergy-yes" name="has_allergy" value="yes" class="sr-only">
+                <label for="allergy-yes" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> Si
+                  </span>
+                </label>
+              </div>
+              <div class="radio-option flex items-center">
+                <input type="radio" id="allergy-no" name="has_allergy" value="no" class="sr-only">
+                <label for="allergy-no" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> No
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div id="allergy-detail" class="hidden fade-in">
+              <input type="text" id="dietary" name="dietary_restrictions" placeholder="Ej: Alergia a mariscos, mani..."
+                class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+            </div>
+          </div>
+
+          <!-- Acompanante -->
+          <div id="companion-section" class="space-y-3">
+            <label class="block font-sans text-olive font-medium text-sm">Vendras con acompanante? <span class="text-gold">*</span></label>
+            <div class="flex gap-4">
+              <div class="radio-option flex items-center">
+                <input type="radio" id="comp-yes" name="has_companion" value="yes" class="sr-only">
+                <label for="comp-yes" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> Si
+                  </span>
+                </label>
+              </div>
+              <div class="radio-option flex items-center">
+                <input type="radio" id="comp-no" name="has_companion" value="no" class="sr-only">
+                <label for="comp-no" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> No
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Numero acompanantes -->
+          <div id="comp-count-section" class="space-y-2 hidden fade-in">
+            <label class="block font-sans text-olive font-medium text-sm">Numero de acompanantes <span class="text-gold">*</span></label>
+            <select id="companion-count" name="companion_count"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200 cursor-pointer">
+              <option value="">Selecciona...</option>
+            </select>
+          </div>
+
+          <!-- Nombres acompanantes -->
+          <div id="comp-names-section" class="space-y-4 hidden fade-in">
+            <label class="block font-sans text-olive font-medium text-sm">Nombre y apellido de acompanantes <span class="text-gold">*</span></label>
+            <div id="comp-fields-container" class="space-y-4"></div>
+          </div>
+
+        </div>
+
+        <!-- Mensaje -->
+        <div class="space-y-2">
+          <label class="block font-sans text-olive font-medium text-sm">
+            Mensaje para los novios <span class="text-olive/50">(opcional)</span>
+          </label>
+          <textarea id="message" name="message" rows="4"
+            placeholder="Escribe aqui tus buenos deseos..."
+            class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200 resize-none"></textarea>
+        </div>
+
+        <!-- Error -->
+        <div id="form-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm text-center"></div>
+
+        <!-- Submit -->
+        <div class="pt-4">
+          <button type="submit" id="submit-btn"
+            class="w-full py-4 bg-gradient-to-r from-olive to-olive-dark text-white font-sans font-medium tracking-wide rounded-lg hover:from-olive-dark hover:to-olive transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+            <span id="submit-text">Confirmar asistencia</span>
+            <span id="submit-loading" class="hidden">
+              <svg class="animate-spin inline-block w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+              </svg>
+              Enviando...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="step-success" class="max-w-2xl mx-auto hidden">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
+      <div class="px-6 sm:px-10 py-12 text-center">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-eucalyptus to-olive flex items-center justify-center">
+          <svg class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <h2 id="success-title" class="font-serif text-2xl sm:text-3xl text-olive font-semibold mb-4"></h2>
+        <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mb-6"></div>
+        <p id="success-message" class="font-sans text-olive/80 text-sm leading-relaxed max-w-md mx-auto mb-8"></p>
+        <a id="whatsapp-btn" href="#" target="_blank" class="hidden inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-sans font-medium rounded-lg hover:shadow-lg transition-all duration-300">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Recibir confirmacion por WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center mt-8">
+    <div class="w-12 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent mx-auto mb-4"></div>
+    <p class="font-serif text-olive/50 text-sm italic">Con amor, Ivan &amp; Narda</p>
+  </footer>
+</div>
+
+<script>
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxrl2qI58AqHqq23hfDIzxH-9bsuhZjYDqdM4Zaj_cDGC2FjAe8Xa_qETHyb9QHFdoiZw/exec';
+// Token de Telegram removido — las notificaciones las maneja el Apps Script
+// Chat ID removido — ver Apps Script
+const INACTIVITY_MS    = 30 * 60 * 1000;
+
+const VALID_CODES = new Set([
+  "1906","5095","4041","9500","8623","7319","2016","9607","3510","9811",
+  "1044","9979","4610","4234","4082","8748","8289","5564","8582","6775",
+  "4012","5307","9135","8198","7935","6144","5038","7686","7383","6995",
+  "9503","7413","7061","4875","5175","3910","3271","3057","6659","7379",
+  "7262","6010","1791","8763","5313","4298","7457","4822","7058","7107",
+  "1864","8788","6113","5383","9299","7655","9047","1603","9600","5033",
+  "2314","5045","7711","7596","9837","1069","8988","9531","4581","8308",
+  "8103","1092","4558","6861","9759","8284","2427","4562","7701","7981",
+  "4043","7134","6865","3259","9061","7578","5924","3537","1969","5459",
+  "2862","5213","7729","2838","4682","5816","2553","8500","1827","4355",
+  "1204","9743","4462","5590","1480","2688","2139","8397","9578","4380",
+  "9919","5407","4094","9738","5309","3758","9939","8631","6288","8201",
+  "1956","5438","4572","4184","2616","5578","7790","4010","6638","8332",
+  "7452","3240","4003","2090","3134","7851","7570","1886","7766","6241",
+  "1363","6870","5114","9371","7010","7806","6187","7575","8652","3686",
+  "5679","4269","6773","6359","6320","8226","6794","2190","1564","3622",
+  "2957","6803","1114","3449","6930","6912","1773","9637","8999","1928",
+  "9222","6162","5649","7593","3410","9731","7869","6098","2374","2152",
+  "6499","8277","9473","7337","7530","3262","4235","6999","2326","4641",
+  "6209","8486","5367","3541","9499","9881","4272","1289","8945","2438",
+  "2515","4215","4222","5670","7489","9972","8495","4290","1653","3983",
+  "1889","7972","3538","1675","8151","7592","1068","5088","3499","9104",
+  "9591","2567","9899","7141","4351","6837","3230","6077","9456","7036",
+  "5738","2338","1027","2131","4175","1271","3854","7495","7768","7169",
+  "9856","7454","8481","5538","2522","9171","6439","2154","8379","1071",
+  "9127","2770","7941","3413","6914","4124","2088","2279","9622","4131",
+  "9638","7787","7288","5705","5835","8640","3948","6600","5477","9771",
+  "5156","5640","4067","7016","9496","8897","2471","9484","2670","3691",
+  "9667","6956","5513","4180","9349","5925","4295","2248","1922","5566",
+  "7672","8836","4118","6008","3604","4814","5999","9365","3990","7347",
+  "2151","4229","4559","4492","3356","2970","9404","8105","6628","5160",
+  "7492","4228","4233","8880","8144","4505","4198","7771","4227","7712",
+  "6610","6491","6778","7381","4325","4179","6608","7945","3794","4238",
+  "3002","1949","1606","4756","5827","6475","2118"
+]);
+
+// Preload data
+var serverData = { loaded: false, usedCodes: new Set(), guestMap: {}, loadedAt: null };
+
+async function preloadData() {
+  return new Promise(function(resolve) {
+    // Use JSONP-style script tag to bypass CORS
+    var callbackName = 'rsvpCallback_' + Date.now();
+    var script = document.createElement('script');
+    var timeout = setTimeout(function() {
+      document.head.removeChild(script);
+      delete window[callbackName];
+      console.log('Preload timed out');
+      resolve();
+    }, 8000);
+
+    window[callbackName] = function(data) {
+      clearTimeout(timeout);
+      document.head.removeChild(script);
+      delete window[callbackName];
+      if (data && data.ok) {
+        serverData.usedCodes = new Set((data.usedCodes || []).map(function(c){ return String(c).trim(); }));
+        serverData.guestMap  = data.guestMap || {};
+        serverData.loaded    = true;
+        serverData.loadedAt  = Date.now();
+      }
+      resolve();
+    };
+
+    script.src = SHEETS_URL + '?action=preloadData&callback=' + callbackName;
+    script.onerror = function() {
+      clearTimeout(timeout);
+      try { document.head.removeChild(script); } catch(e) {}
+      delete window[callbackName];
+      resolve();
+    };
+    document.head.appendChild(script);
+  });
+}
+preloadData();
+
+function clearCodeError() {
+  document.getElementById('code-error').classList.add('hidden');
+  document.getElementById('code-input').classList.remove('border-red-400');
+}
+
+async function verifyCode() {
+  var input   = document.getElementById('code-input');
+  var errEl   = document.getElementById('code-error');
+  var btnText = document.getElementById('verify-text');
+  var btnLoad = document.getElementById('verify-loading');
+  var code    = input.value.trim();
+
+  // Limpiar error previo
+  errEl.classList.add('hidden');
+  input.classList.remove('border-red-400');
+
+  // 1. Formato
+  if (!/^[0-9]{4}$/.test(code)) {
+    errEl.textContent = 'Por favor ingresa un codigo de 4 digitos.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  // 2. El codigo existe en la lista de validos?
+  if (!VALID_CODES.has(code)) {
+    errEl.innerHTML = '❌ Este codigo no existe. Verifica que lo hayas escrito correctamente o <a href="https://wa.me/59161144206" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>.';
+    errEl.classList.remove('hidden');
+    input.classList.add('border-red-400');
+    return;
+  }
+
+  // 3. Verificar con el servidor (siempre refrescar para detectar duplicados recientes)
+  btnText.classList.add('hidden');
+  btnLoad.classList.remove('hidden');
+
+  // Check inactivity
+  if (serverData.loadedAt && (Date.now() - serverData.loadedAt) > INACTIVITY_MS) {
+    serverData.loaded = false; // forzar recarga
+  }
+
+  await preloadData();
+  btnText.classList.remove('hidden');
+  btnLoad.classList.add('hidden');
+
+  // 4. Con datos frescos: verificar si ya fue usado
+  if (serverData.loaded) {
+    if (serverData.usedCodes.has(code)) {
+      errEl.innerHTML = '⚠️ Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.<br><span style="font-size:.8em;opacity:.8;">Si crees que es un error, <a href="https://wa.me/59161144206" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>.</span>';
+      errEl.classList.remove('hidden');
+      input.classList.add('border-red-400');
+      return;
+    }
+    var guest = serverData.guestMap[code] || {};
+    showForm(code, guest.cupos || 1, guest.nombre || '');
+    return;
+  }
+
+  // 5. Fallback directo al servidor si preload falló
+  btnText.classList.add('hidden');
+  btnLoad.classList.remove('hidden');
+  try {
+    var res  = await fetch(SHEETS_URL + '?action=validateCode&codigo=' + code, { redirect: 'follow' });
+    var data = await res.json();
+    btnText.classList.remove('hidden');
+    btnLoad.classList.add('hidden');
+    if (!data.ok) {
+      if (data.error === 'ya_usado') {
+        errEl.innerHTML = '⚠️ Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.<br><span style="font-size:.8em;opacity:.8;">Si crees que es un error, contactanos por WhatsApp.</span>';
+      } else {
+        errEl.innerHTML = '❌ Este codigo no es valido. Verifica que lo hayas copiado correctamente.';
+      }
+      errEl.classList.remove('hidden');
+      input.classList.add('border-red-400');
+      return;
+    }
+    showForm(code, data.cupos || 1, data.nombre || '');
+  } catch(e) {
+    btnText.classList.remove('hidden');
+    btnLoad.classList.add('hidden');
+    errEl.innerHTML = '⚠️ No pudimos verificar tu codigo. Revisa tu conexion e intenta de nuevo.';
+    errEl.classList.remove('hidden');
+  }
+}
+
+function showForm(code, cupos, nombre) {
+  document.getElementById('hidden-code').value = code;
+  document.getElementById('step-codigo').classList.add('hidden');
+  document.getElementById('step-form').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Show welcome message
+  if (nombre) {
+    var w = document.getElementById('guest-welcome');
+    w.textContent = 'Hola, ' + nombre + '!';
+    w.classList.remove('hidden');
+  }
+
+  // Set up companion count options
+  var maxAcomp = Math.max(0, cupos - 1);
+  var sel = document.getElementById('companion-count');
+  sel.innerHTML = '<option value="">Selecciona...</option>';
+  for (var i = 1; i <= maxAcomp; i++) {
+    sel.innerHTML += '<option value="' + i + '">' + i + '</option>';
+  }
+
+  // Hide companion section if only 1 cupo
+  if (maxAcomp === 0) {
+    document.getElementById('companion-section').style.display = 'none';
+    document.getElementById('comp-count-section').classList.add('hidden');
+  }
+}
+
+// Radio buttons visual
+document.querySelectorAll('.radio-option input[type="radio"]').forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    var name = this.name;
+    document.querySelectorAll('input[name="' + name + '"]').forEach(function(r) {
+      var dot = r.nextElementSibling.querySelector('.radio-dot');
+      var lbl = r.nextElementSibling;
+      if (dot) dot.style.transform = 'scale(0)';
+      lbl.classList.remove('bg-eucalyptus/10', 'border-eucalyptus');
+    });
+    var myDot = this.nextElementSibling.querySelector('.radio-dot');
+    if (myDot) myDot.style.transform = 'scale(1)';
+    this.nextElementSibling.classList.add('bg-eucalyptus/10', 'border-eucalyptus');
+  });
+});
+
+// ── LÓGICA PROGRESIVA ──
+var nameUnlocked = false;
+
+function checkNameUnlock() {
+  var fn = document.getElementById('first-name').value.trim();
+  var ln = document.getElementById('last-name').value.trim();
+  if (fn.length >= 2 && ln.length >= 2 && !nameUnlocked) {
+    nameUnlocked = true;
+    document.getElementById('fields-locked').classList.remove('hidden');
+    document.getElementById('fields-locked').classList.add('fade-in');
+  }
+}
+
+document.getElementById('first-name').addEventListener('input', checkNameUnlock);
+document.getElementById('last-name').addEventListener('input', checkNameUnlock);
+
+// ── CÓDIGO DE PAÍS — controla virtual y contacto alternativo ──
+document.getElementById('phone-country').addEventListener('change', function() {
+  var isBolivia  = (this.value === '591');
+  var virtualWrap = document.getElementById('att-virtual-wrap');
+  var altContact  = document.getElementById('alt-contact-section');
+  var phoneHint   = document.getElementById('phone-hint');
+
+  if (!isBolivia) {
+    // País extranjero: mostrar opción virtual y contacto alternativo
+    virtualWrap.classList.remove('hidden');
+    altContact.classList.remove('hidden');
+    phoneHint.textContent = 'Opcional para invitados internacionales.';
+    document.getElementById('phone-required-star').classList.add('hidden');
+    document.getElementById('phone-optional-tag').classList.remove('hidden');
+    document.getElementById('phone').removeAttribute('required');
+  } else {
+    // Bolivia: ocultar virtual, ocultar contacto alternativo
+    virtualWrap.classList.add('hidden');
+    altContact.classList.add('hidden');
+    // Si tenían seleccionado virtual, deseleccionar
+    var virt = document.getElementById('att-virtual');
+    if (virt.checked) { virt.checked = false; }
+    phoneHint.textContent = 'Te enviaremos la información de tu mesa a este número.';
+    document.getElementById('phone-required-star').classList.remove('hidden');
+    document.getElementById('phone-optional-tag').classList.add('hidden');
+    document.getElementById('phone').setAttribute('required','required');
+  }
+  // Re-evaluar qué campos de asistencia mostrar
+  updateAttendanceFields();
+});
+
+// También desbloquear la sección de asistencia cuando completen el teléfono
+document.getElementById('phone').addEventListener('input', function() {
+  var country  = document.getElementById('phone-country').value;
+  var isBolivia = country === '591';
+  var phoneVal  = this.value.trim();
+  var attSection = document.getElementById('attendance-section');
+  if (!attSection) return;
+  if ((isBolivia && phoneVal.length >= 7) || (!isBolivia)) {
+    attSection.classList.remove('hidden');
+    attSection.classList.add('fade-in');
+  }
+});
+
+// ── CAMBIO DE ASISTENCIA ──
+function updateAttendanceFields() {
+  var val = '';
+  document.querySelectorAll('input[name="attendance"]').forEach(function(r) {
+    if (r.checked) val = r.value;
+  });
+  var isPresencial = (val === 'both' || val === 'ceremony' || val === 'reception');
+  var af = document.getElementById('attending-fields');
+  if (isPresencial) {
+    af.classList.remove('hidden');
+    af.classList.add('fade-in');
+  } else {
+    af.classList.add('hidden');
+    document.getElementById('comp-count-section').classList.add('hidden');
+    document.getElementById('comp-names-section').classList.add('hidden');
+    document.getElementById('comp-fields-container').innerHTML = '';
+  }
+}
+
+document.querySelectorAll('input[name="attendance"]').forEach(function(r) {
+  r.addEventListener('change', updateAttendanceFields);
+});
+
+// Mostrar sección asistencia si es Bolivia y el tel ya tiene datos (recarga)
+(function() {
+  var phone = document.getElementById('phone').value.trim();
+  if (phone.length >= 7) {
+    var attSection = document.getElementById('attendance-section');
+    if (attSection) attSection.classList.remove('hidden');
+  }
+})();
+
+// Allergy
+document.querySelectorAll('input[name="has_allergy"]').forEach(function(r) {
+  r.addEventListener('change', function() {
+    var d = document.getElementById('allergy-detail');
+    if (this.value === 'yes') d.classList.remove('hidden');
+    else { d.classList.add('hidden'); document.getElementById('dietary').value = ''; }
+  });
+});
+
+// Companion yes/no
+document.querySelectorAll('input[name="has_companion"]').forEach(function(r) {
+  r.addEventListener('change', function() {
+    var cf = document.getElementById('comp-count-section');
+    if (this.value === 'yes') cf.classList.remove('hidden');
+    else {
+      cf.classList.add('hidden');
+      document.getElementById('comp-names-section').classList.add('hidden');
+      document.getElementById('companion-count').value = '';
+      document.getElementById('comp-fields-container').innerHTML = '';
+    }
+  });
+});
+
+// Companion count
+document.getElementById('companion-count').addEventListener('change', function() {
+  var count = parseInt(this.value) || 0;
+  var ns = document.getElementById('comp-names-section');
+  var container = document.getElementById('comp-fields-container');
+  if (count > 0) {
+    ns.classList.remove('hidden');
+    container.innerHTML = '';
+    for (var i = 1; i <= count; i++) {
+      var div = document.createElement('div');
+      div.className = 'p-4 bg-eucalyptus/5 rounded-lg border border-eucalyptus-light/30 space-y-3 fade-in';
+      div.innerHTML = '<p class="font-sans text-olive/70 text-xs font-medium uppercase tracking-wide">Acompanante ' + i + '</p>'
+        + '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">'
+        + '<input type="text" name="companion_' + i + '_first" required placeholder="Nombre" class="w-full px-3 py-2 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm bg-white/80 input-focus transition-all duration-200">'
+        + '<input type="text" name="companion_' + i + '_last" required placeholder="Apellido" class="w-full px-3 py-2 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm bg-white/80 input-focus transition-all duration-200">'
+        + '</div>';
+      container.appendChild(div);
+    }
+  } else {
+    ns.classList.add('hidden');
+    container.innerHTML = '';
+  }
+});
+
+// Phone input
+document.getElementById('phone').addEventListener('input', function() {
+  this.value = this.value.replace(/[^0-9]/g, '');
+});
+
+// Enter key on code input
+document.getElementById('code-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') verifyCode();
+});
+
+// Form submit
+document.getElementById('rsvp-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var submitBtn  = document.getElementById('submit-btn');
+  var submitText = document.getElementById('submit-text');
+  var submitLoad = document.getElementById('submit-loading');
+  var formErr    = document.getElementById('form-error');
+
+  var formData   = new FormData(this);
+  var attendance = formData.get('attendance');
+  var phoneRaw    = document.getElementById('phone').value.trim();
+  var phoneCountry = document.getElementById('phone-country').value;
+  var phone = phoneRaw ? (phoneCountry !== 'otro' ? phoneCountry + phoneRaw : phoneRaw) : '';
+  var code       = document.getElementById('hidden-code').value;
+
+  if (!attendance) {
+    formErr.textContent = 'Por favor selecciona tu opcion de asistencia.';
+    formErr.classList.remove('hidden');
+    return;
+  }
+  // Teléfono: obligatorio si es presencial
+  var isPresencial = (attendance === 'both' || attendance === 'ceremony' || attendance === 'reception');
+  if (isPresencial && !phone) {
+    formErr.textContent = 'Por favor ingresa tu número de WhatsApp — lo necesitamos para enviarte la información de tu mesa.';
+    formErr.classList.remove('hidden');
+    return;
+  }
+  if (phone && !/^[0-9+\-\s]{6,15}$/.test(phone)) {
+    formErr.textContent = 'Por favor ingresa un número válido.';
+    formErr.classList.remove('hidden');
+    return;
+  }
+  formErr.classList.add('hidden');
+
+  submitBtn.disabled = true;
+  submitText.classList.add('hidden');
+  submitLoad.classList.remove('hidden');
+
+  // Build companion names
+  var companionCount = parseInt(formData.get('companion_count')) || 0;
+  var companions = [];
+  for (var i = 1; i <= companionCount; i++) {
+    var cf = ((formData.get('companion_' + i + '_first') || '') + ' ' + (formData.get('companion_' + i + '_last') || '')).trim();
+    if (cf) companions.push(cf);
+  }
+
+  var contactEmail  = document.getElementById('contact-email').value.trim();
+  var contactSocial = document.getElementById('contact-social').value.trim();
+
+  var record = {
+    codigo:               code,
+    nombre:               formData.get('first_name'),
+    apellido:             formData.get('last_name'),
+    telefono:             phone,
+    contacto_email:       contactEmail,
+    contacto_social:      contactSocial,
+    asistencia:           attendance,
+    acompanantes:         companionCount,
+    nombres_acompanantes: companions.join(', '),
+    alergia:              formData.get('has_allergy') || 'no',
+    detalle_alergia:      formData.get('dietary_restrictions') || '',
+    mensaje:              formData.get('message') || ''
+  };
+
+  try {
+    // Send data via image trick - works from any domain
+    var params = new URLSearchParams();
+    Object.keys(record).forEach(function(k) { params.append(k, record[k]); });
+    
+    await new Promise(function(resolve) {
+      var img = new Image();
+      img.onload = img.onerror = function() { resolve(); };
+      img.src = SHEETS_URL + '?' + params.toString();
+      setTimeout(resolve, 5000); // timeout after 5s
+    });
+
+    // Mark code as used locally
+    serverData.usedCodes.add(code);
+
+    // Success
+    var titulo  = attendance === 'no' ? 'Lamentamos que no puedas acompanarnos' : 'Tu asistencia ha sido confirmada';
+    var mensaje = attendance === 'no'
+      ? 'Gracias por confirmarnos. Esperamos contar contigo en otra oportunidad.'
+      : 'Hemos reservado tu lugar. Te enviaremos una confirmacion al numero que proporcionaste.';
+
+    document.getElementById('success-title').textContent   = titulo;
+    document.getElementById('success-message').textContent = mensaje;
+    document.getElementById('step-form').classList.add('hidden');
+    document.getElementById('step-success').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // WhatsApp button
+    var waMsg = attendance === 'no'
+      ? 'Hola ' + record.nombre + ', hemos recibido tu respuesta para la boda de Ivan & Narda. Lamentamos que no puedas acompanarnos.'
+      : 'Hola ' + record.nombre + ', tu asistencia a la boda de Ivan & Narda ha sido confirmada. Nos alegra contar contigo el 5 de diciembre!';
+    var waBtn = document.getElementById('whatsapp-btn');
+    waBtn.href = phone ? ('https://wa.me/' + phone.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent(waMsg)) : '#';
+    if (!phone) waBtn.style.display = 'none';
+    setTimeout(function() { waBtn.classList.remove('hidden'); }, 800);
+
+  } catch(err) {
+    submitBtn.disabled = false;
+    submitText.classList.remove('hidden');
+    submitLoad.classList.add('hidden');
+    formErr.textContent = 'Hubo un error al enviar. Por favor intenta de nuevo.';
+    formErr.classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>

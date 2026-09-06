@@ -170,7 +170,7 @@ select.edit-input{cursor:pointer;}
   .mesas-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));padding:.8rem 1rem;}
 }
 
-  /* ── LOGIN OVERLAY ── */
+  /* ── LOGIN OVERLAY — PIN VISUAL ── */
   #login-overlay{
     position:fixed;inset:0;z-index:99999;
     background:var(--olive-dk);
@@ -181,31 +181,41 @@ select.edit-input{cursor:pointer;}
   .login-box{
     background:rgba(255,255,255,.04);
     border:1px solid rgba(201,169,98,.2);
-    border-radius:12px;padding:2.5rem 2rem;
-    width:min(340px,90vw);text-align:center;
+    border-radius:16px;padding:2.5rem 2rem;
+    width:min(320px,90vw);text-align:center;
   }
   .login-box h2{
     font-family:'Cinzel',serif;color:var(--gold);
-    font-size:1.1rem;letter-spacing:.15em;margin-bottom:.4rem;
+    font-size:1rem;letter-spacing:.15em;margin-bottom:.3rem;
   }
-  .login-box p{color:rgba(250,244,232,.6);font-size:.75rem;margin-bottom:1.5rem;}
-  .login-input{
-    width:100%;padding:.75rem 1rem;border-radius:8px;
+  .login-box p{color:rgba(250,244,232,.5);font-size:.7rem;margin-bottom:1.5rem;}
+  .pin-display{
+    display:flex;justify-content:center;gap:.75rem;margin-bottom:1.5rem;
+  }
+  .pin-dot{
+    width:14px;height:14px;border-radius:50%;
+    border:2px solid rgba(201,169,98,.4);
+    background:transparent;transition:background .15s;
+  }
+  .pin-dot.filled{background:var(--gold);border-color:var(--gold);}
+  .pin-dot.error{background:#E8A0A0;border-color:#E8A0A0;}
+  .pin-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;
+    max-width:240px;margin:0 auto;
+  }
+  .pin-btn{
+    padding:1rem;border-radius:10px;
     background:rgba(255,255,255,.06);
-    border:1px solid rgba(201,169,98,.25);
+    border:1px solid rgba(201,169,98,.15);
     color:var(--cream);font-family:'Montserrat',sans-serif;
-    font-size:.95rem;text-align:center;letter-spacing:.2em;
-    outline:none;margin-bottom:.75rem;box-sizing:border-box;
+    font-size:1.1rem;font-weight:600;cursor:pointer;
+    transition:background .1s,transform .1s;
+    user-select:none;
   }
-  .login-input:focus{border-color:var(--gold);}
-  .login-btn{
-    width:100%;padding:.75rem;border-radius:8px;
-    background:var(--gold);color:var(--olive-dk);
-    font-family:'Montserrat',sans-serif;font-weight:700;
-    font-size:.8rem;letter-spacing:.1em;border:none;cursor:pointer;
-  }
-  .login-btn:hover{opacity:.9;}
-  .login-err{color:#E8A0A0;font-size:.75rem;margin-top:.5rem;min-height:1rem;}
+  .pin-btn:active{background:rgba(201,169,98,.2);transform:scale(.95);}
+  .pin-btn.wide{grid-column:span 2;}
+  .pin-btn.del{font-size:.9rem;color:rgba(250,244,232,.5);}
+  .login-err{color:#E8A0A0;font-size:.7rem;margin-top:.75rem;min-height:1rem;}
 
 
   /* ── BADGE NOTIFICACIONES ── */
@@ -301,21 +311,32 @@ select.edit-input{cursor:pointer;}
 </head>
 <body>
 
-  <!-- LOGIN OVERLAY -->
+  <!-- LOGIN OVERLAY — PIN VISUAL -->
   <div id="login-overlay">
     <div class="login-box">
       <h2>N · I · DASHBOARD</h2>
-      <p>Acceso restringido — solo organizadores</p>
-      <div style="position:relative;">
-        <input id="login-pw" type="password" class="login-input"
-          placeholder="PIN de acceso" onkeydown="if(event.key==='Enter')doLogin()"
-          style="padding-right:2.5rem;">
-        <button onclick="togglePwVis()" tabindex="-1"
-          style="position:absolute;right:.6rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(250,244,232,.5);font-size:1rem;padding:0;">
-          👁
-        </button>
+      <p>Ingresa tu PIN para continuar</p>
+      <div class="pin-display" id="pin-display">
+        <div class="pin-dot" id="pd0"></div>
+        <div class="pin-dot" id="pd1"></div>
+        <div class="pin-dot" id="pd2"></div>
+        <div class="pin-dot" id="pd3"></div>
+        <div class="pin-dot" id="pd4"></div>
+        <div class="pin-dot" id="pd5"></div>
       </div>
-      <button class="login-btn" onclick="doLogin()">Ingresar</button>
+      <div class="pin-grid">
+        <button class="pin-btn" onclick="pinPress('1')">1</button>
+        <button class="pin-btn" onclick="pinPress('2')">2</button>
+        <button class="pin-btn" onclick="pinPress('3')">3</button>
+        <button class="pin-btn" onclick="pinPress('4')">4</button>
+        <button class="pin-btn" onclick="pinPress('5')">5</button>
+        <button class="pin-btn" onclick="pinPress('6')">6</button>
+        <button class="pin-btn" onclick="pinPress('7')">7</button>
+        <button class="pin-btn" onclick="pinPress('8')">8</button>
+        <button class="pin-btn" onclick="pinPress('9')">9</button>
+        <button class="pin-btn wide" onclick="pinPress('0')">0</button>
+        <button class="pin-btn del" onclick="pinDel()">⌫</button>
+      </div>
       <div class="login-err" id="login-err"></div>
     </div>
   </div>
@@ -1785,12 +1806,13 @@ function switchTab(name, el) {
 }
 
 /* ══════════════════════════════════════
-   AUTH — PIN de acceso simple
+   AUTH — PIN visual (teclado numérico)
 ══════════════════════════════════════ */
 (function() {
-  // Cambia este PIN por el que quieras (solo números o letras, sin espacios)
-  const CORRECT_PIN   = 'awayuwu26';
-  const SESSION_MS    = 8 * 60 * 60 * 1000; // 8 horas
+  var CORRECT_PIN = '261144';   // ← cambia este PIN (solo dígitos)
+  var SESSION_MS  = 8 * 60 * 60 * 1000;
+  var pinBuffer   = '';
+  var pinLen      = CORRECT_PIN.length;
 
   function checkSession() {
     try {
@@ -1803,31 +1825,60 @@ function switchTab(name, el) {
     return false;
   }
 
-  window.doLogin = function() {
-    var pw  = document.getElementById('login-pw').value;
-    var err = document.getElementById('login-err');
-    if (pw === CORRECT_PIN) {
-      sessionStorage.setItem('ni-auth', JSON.stringify({ ok: true, ts: Date.now() }));
-      document.getElementById('login-overlay').classList.add('hidden');
-      err.textContent = '';
-    } else {
-      err.textContent = 'PIN incorrecto, intenta de nuevo.';
-      document.getElementById('login-pw').value = '';
-      document.getElementById('login-pw').focus();
+  function updateDots() {
+    for (var i = 0; i < pinLen; i++) {
+      var dot = document.getElementById('pd' + i);
+      if (!dot) continue;
+      dot.classList.toggle('filled', i < pinBuffer.length);
+      dot.classList.remove('error');
+    }
+  }
+
+  function shakeError() {
+    var display = document.getElementById('pin-display');
+    for (var i = 0; i < pinLen; i++) {
+      var dot = document.getElementById('pd' + i);
+      if (dot) dot.classList.add('error');
+    }
+    document.getElementById('login-err').textContent = 'PIN incorrecto, intenta de nuevo.';
+    setTimeout(function() {
+      pinBuffer = '';
+      updateDots();
+      document.getElementById('login-err').textContent = '';
+    }, 900);
+  }
+
+  window.pinPress = function(digit) {
+    if (pinBuffer.length >= pinLen) return;
+    pinBuffer += digit;
+    updateDots();
+    if (pinBuffer.length === pinLen) {
+      setTimeout(function() {
+        if (pinBuffer === CORRECT_PIN) {
+          sessionStorage.setItem('ni-auth', JSON.stringify({ ok: true, ts: Date.now() }));
+          document.getElementById('login-overlay').classList.add('hidden');
+        } else {
+          shakeError();
+        }
+      }, 150);
     }
   };
 
-  window.togglePwVis = function() {
-    var inp = document.getElementById('login-pw');
-    inp.type = inp.type === 'password' ? 'text' : 'password';
+  window.pinDel = function() {
+    if (pinBuffer.length > 0) {
+      pinBuffer = pinBuffer.slice(0, -1);
+      updateDots();
+    }
   };
 
-  if (!checkSession()) {
-    document.addEventListener('DOMContentLoaded', function() {
-      var inp = document.getElementById('login-pw');
-      if (inp) inp.focus();
-    });
-  }
+  // También funciona con teclado físico
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('login-overlay').classList.contains('hidden')) return;
+    if (e.key >= '0' && e.key <= '9') pinPress(e.key);
+    if (e.key === 'Backspace') pinDel();
+  });
+
+  checkSession();
 })();
 
 
