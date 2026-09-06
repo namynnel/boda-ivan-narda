@@ -170,53 +170,6 @@ select.edit-input{cursor:pointer;}
   .mesas-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));padding:.8rem 1rem;}
 }
 
-  /* ── LOGIN OVERLAY — PIN VISUAL ── */
-  #login-overlay{
-    position:fixed;inset:0;z-index:99999;
-    background:var(--olive-dk);
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Montserrat',sans-serif;
-  }
-  #login-overlay.hidden{display:none;}
-  .login-box{
-    background:rgba(255,255,255,.04);
-    border:1px solid rgba(201,169,98,.2);
-    border-radius:16px;padding:2.5rem 2rem;
-    width:min(320px,90vw);text-align:center;
-  }
-  .login-box h2{
-    font-family:'Cinzel',serif;color:var(--gold);
-    font-size:1rem;letter-spacing:.15em;margin-bottom:.3rem;
-  }
-  .login-box p{color:rgba(250,244,232,.5);font-size:.7rem;margin-bottom:1.5rem;}
-  .pin-display{
-    display:flex;justify-content:center;gap:.75rem;margin-bottom:1.5rem;
-  }
-  .pin-dot{
-    width:14px;height:14px;border-radius:50%;
-    border:2px solid rgba(201,169,98,.4);
-    background:transparent;transition:background .15s;
-  }
-  .pin-dot.filled{background:var(--gold);border-color:var(--gold);}
-  .pin-dot.error{background:#E8A0A0;border-color:#E8A0A0;}
-  .pin-grid{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;
-    max-width:240px;margin:0 auto;
-  }
-  .pin-btn{
-    padding:1rem;border-radius:10px;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(201,169,98,.15);
-    color:var(--cream);font-family:'Montserrat',sans-serif;
-    font-size:1.1rem;font-weight:600;cursor:pointer;
-    transition:background .1s,transform .1s;
-    user-select:none;
-  }
-  .pin-btn:active{background:rgba(201,169,98,.2);transform:scale(.95);}
-  .pin-btn.wide{grid-column:span 2;}
-  .pin-btn.del{font-size:.9rem;color:rgba(250,244,232,.5);}
-  .login-err{color:#E8A0A0;font-size:.7rem;margin-top:.75rem;min-height:1rem;}
-
 
   /* ── BADGE NOTIFICACIONES ── */
   #notif-badge{
@@ -306,6 +259,12 @@ select.edit-input{cursor:pointer;}
     border-radius:6px;font-size:.75rem;background:white;color:var(--ink);
     margin-bottom:.5rem;box-sizing:border-box;
   }
+
+</style>
+</head>
+<body>
+
+
 <div id="header">
   <div>
     <div class="header-names">Ivan <span>&amp;</span> Narda</div>
@@ -1768,6 +1727,7 @@ function switchTab(name, el) {
   _origSwitchTab(name, el);
   if (name === 'plano') setTimeout(planoRender, 50);
 }
+
 
 /* ══════════════════════════════════════
    PWA — Service Worker
