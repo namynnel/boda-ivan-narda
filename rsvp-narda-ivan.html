@@ -519,7 +519,7 @@ async function verifyCode() {
       return;
     }
     var guest = serverData.guestMap[code] || {};
-    showForm(code, guest.cupos || 1, guest.nombre || '');
+    showForm(code, guest.cupos || 1, guest.nombre || '', guest.grupo || '');
     return;
   }
 
@@ -550,8 +550,36 @@ async function verifyCode() {
   }
 }
 
-function showForm(code, cupos, nombre) {
+function showForm(code, cupos, nombre, grupo) {
   document.getElementById('hidden-code').value = code;
+
+  // Configurar opciones según grupo
+  var isIntl     = (grupo === 'INTERNACIONAL');
+  var virtWrap   = document.getElementById('att-virtual-wrap');
+  var altContact = document.getElementById('alt-contact-section');
+  var countryEl  = document.getElementById('phone-country');
+  var reqStar    = document.getElementById('phone-required-star');
+  var optTag     = document.getElementById('phone-optional-tag');
+  var phoneEl    = document.getElementById('phone');
+  var phoneHint  = document.getElementById('phone-hint');
+
+  if (isIntl) {
+    if (virtWrap)   virtWrap.classList.remove('hidden');
+    if (altContact) altContact.classList.remove('hidden');
+    if (countryEl)  countryEl.value = '1';
+    if (reqStar)    reqStar.classList.add('hidden');
+    if (optTag)     optTag.classList.remove('hidden');
+    if (phoneEl)    phoneEl.removeAttribute('required');
+    if (phoneHint)  phoneHint.textContent = 'Opcional — si tienes WhatsApp internacional.';
+  } else {
+    if (virtWrap)   virtWrap.classList.add('hidden');
+    if (altContact) altContact.classList.add('hidden');
+    if (countryEl)  countryEl.value = '591';
+    if (reqStar)    reqStar.classList.remove('hidden');
+    if (optTag)     optTag.classList.add('hidden');
+    if (phoneEl)    phoneEl.setAttribute('required','required');
+    if (phoneHint)  phoneHint.textContent = 'Te enviaremos la información de tu mesa a este número.';
+  }
   document.getElementById('step-codigo').classList.add('hidden');
   document.getElementById('step-form').classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });

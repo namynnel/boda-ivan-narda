@@ -417,6 +417,33 @@ select.edit-input{cursor:pointer;}
     💡 Doble clic en área vacía para agregar mesa · Arrastra para mover · Clic para seleccionar
   </p>
 
+  <!-- ══ EDITOR DE MENSAJES ══ -->
+  <div style="margin-top:1.5rem;background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem;">
+      <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);">✏️ Editor de mensaje de mesa</strong>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+        <button class="btn btn-ghost" style="font-size:.62rem;" onclick="setMsgTemplate('general')">General</button>
+        <button class="btn btn-ghost" style="font-size:.62rem;" onclick="setMsgTemplate('ARZE')">ARZE</button>
+        <button class="btn btn-ghost" style="font-size:.62rem;" onclick="setMsgTemplate('ZELADA')">ZELADA</button>
+        <button class="btn btn-ghost" style="font-size:.62rem;" onclick="setMsgTemplate('INTERNACIONAL')">🌍 Internacional</button>
+      </div>
+    </div>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.5rem;">
+      Usa <code>{nombre}</code>, <code>{mesa}</code>, <code>{plano}</code> como variables. El mensaje se personalizará al enviarlo.
+    </p>
+    <textarea id="msg-template-editor" rows="6"
+      style="width:100%;padding:.6rem .75rem;border:1px solid rgba(92,107,58,.2);border-radius:8px;font-size:.75rem;font-family:'Montserrat',sans-serif;resize:vertical;box-sizing:border-box;line-height:1.6;"
+      onchange="saveMsgTemplate(document.getElementById('msg-group-sel').value, this.value)"
+      oninput="saveMsgTemplate(document.getElementById('msg-group-sel').value, this.value)"></textarea>
+    <input type="hidden" id="msg-group-sel" value="general">
+    <div style="display:flex;gap:.5rem;margin-top:.5rem;flex-wrap:wrap;">
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertVar('{nombre}')">+ {nombre}</button>
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertVar('{mesa}')">+ {mesa}</button>
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertVar('{plano}')">+ {plano}</button>
+      <span id="msg-saved-label" style="font-size:.62rem;color:var(--green);margin-left:auto;align-self:center;"></span>
+    </div>
+  </div>
+
   <!-- Link del plano para incluir en mensajes -->
   <div style="margin-top:1rem;background:rgba(201,169,98,.06);border:1px solid rgba(201,169,98,.2);border-radius:8px;padding:1rem;">
     <p style="font-family:'Montserrat',sans-serif;font-size:.72rem;font-weight:600;color:var(--olive-dk);margin-bottom:.5rem;">
@@ -1511,6 +1538,69 @@ var planoDragging = false;
 var planoDragOffset = {x:0, y:0};
 
 
+
+/* ══════════════════════════════════════
+   EDITOR DE MENSAJES POR GRUPO
+══════════════════════════════════════ */
+var DEFAULT_MSG_GENERAL = '¡Hola {nombre}! 💍\n\nTu lugar en nuestra boda será:\n\n📍 *{mesa}*\n\n{plano}¡Nos vemos el 5 de diciembre! 🥂\n\n— Narda & Ivan 💚';
+var DEFAULT_MSG_INTL    = '¡Hola {nombre}! 💍\n\nGracias por estar presente desde la distancia. El link de transmisión en vivo te llegará próximamente.\n\n¡Nos vemos el 5 de diciembre! 📺\n\n— Narda & Ivan 💚';
+
+function getMsgTemplate(group) {
+  var key = 'ni-msg-' + (group || 'general');
+  var saved = localStorage.getItem(key);
+  if (saved) return saved;
+  if (group === 'INTERNACIONAL') return DEFAULT_MSG_INTL;
+  return DEFAULT_MSG_GENERAL;
+}
+
+function saveMsgTemplate(group, val) {
+  localStorage.setItem('ni-msg-' + (group || 'general'), val);
+  var lbl = document.getElementById('msg-saved-label');
+  if (lbl) { lbl.textContent = '✓ Guardado'; setTimeout(function(){ lbl.textContent=''; }, 2000); }
+}
+
+function setMsgTemplate(group) {
+  document.getElementById('msg-group-sel').value = group;
+  document.getElementById('msg-template-editor').value = getMsgTemplate(group);
+  // Resaltar botón activo
+  document.querySelectorAll('[onclick^="setMsgTemplate"]').forEach(function(b){
+    b.style.borderColor = '';
+  });
+  event.target.style.borderColor = 'var(--gold)';
+}
+
+function insertVar(v) {
+  var ta = document.getElementById('msg-template-editor');
+  var start = ta.selectionStart, end = ta.selectionEnd;
+  ta.value = ta.value.substring(0,start) + v + ta.value.substring(end);
+  ta.selectionStart = ta.selectionEnd = start + v.length;
+  ta.focus();
+  saveMsgTemplate(document.getElementById('msg-group-sel').value, ta.value);
+}
+
+function buildMsg(g, mesaNombre, planoLink) {
+  var grupo    = g.grupo || 'general';
+  var template = getMsgTemplate(grupo) || getMsgTemplate('general');
+  var nombre   = ((g.sufijo||'') + ' ' + g.nombre + ' ' + g.apellido).trim();
+  var planoStr = planoLink ? ('🗺️ Plano del salón:\n' + planoLink + '\n\n') : '';
+  return template
+    .replace(/\{nombre\}/g, nombre)
+    .replace(/\{mesa\}/g,   mesaNombre || '')
+    .replace(/\{plano\}/g,  planoStr);
+}
+
+// Cargar template general al abrir la tab de plano
+var _origSwitchTabMsg = switchTab;
+switchTab = function(name, el) {
+  _origSwitchTabMsg(name, el);
+  if (name === 'plano') {
+    setTimeout(function() {
+      var ta = document.getElementById('msg-template-editor');
+      if (ta && !ta.value) ta.value = getMsgTemplate('general');
+    }, 60);
+  }
+};
+
 function savePlanoLink(val) {
   localStorage.setItem('ni-plano-link', val);
   var st = document.getElementById('plano-link-status');
@@ -1566,22 +1656,7 @@ function openBulkMsg() {
       var mesaNombre = mesaObj ? mesaObj.nombre : 'Mesa ' + mesaNum;
       var nombre    = ((g.sufijo||'') + ' ' + g.nombre + ' ' + g.apellido).trim();
       var telefono  = String(g.telefono).replace(/\D/g,'');
-      var msgText   = '¡Hola ' + nombre + '! 💍
-
-'
-        + 'Tu lugar en nuestra boda será:
-
-'
-        + '📍 *' + mesaNombre + '*
-
-'
-        + (planoLink ? '🗺️ Plano del salón:
-' + planoLink + '
-
-' : '')
-        + '¡Nos vemos el 5 de diciembre! 🥂
-
-— Narda & Ivan 💚';
+      var msgText = buildMsg(g, mesaNombre, planoLink);
       var waLink = 'https://wa.me/591' + telefono + '?text=' + encodeURIComponent(msgText);
 
       var item = document.createElement('a');
