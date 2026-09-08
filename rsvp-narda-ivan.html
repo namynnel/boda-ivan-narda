@@ -118,7 +118,7 @@
         <input type="hidden" id="hidden-code" name="codigo">
 
         <!-- Nombre -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="name-section">
           <div class="space-y-2">
             <label class="block font-sans text-olive font-medium text-sm">Nombre <span class="text-gold">*</span></label>
             <input type="text" id="first-name" name="first_name" required placeholder="Tu nombre"
@@ -131,6 +131,9 @@
           </div>
         </div>
 
+        <!-- Campos bloqueados hasta completar nombre -->
+        <div id="fields-locked" class="hidden space-y-6">
+
         <!-- Telefono -->
         <div class="space-y-2" id="phone-section">
           <label class="block font-sans text-olive font-medium text-sm" id="phone-label">
@@ -138,7 +141,7 @@
             <span id="phone-optional-tag" class="text-gold/60 font-normal hidden">(opcional)</span>
           </label>
           <div class="flex gap-2">
-            <select id="phone-country" class="px-3 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus text-sm" style="min-width:110px;">
+            <select id="phone-country" class="px-3 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus text-sm" style="min-width:110px;" onchange="onCountryChange()">
               <option value="591">🇧🇴 +591</option>
               <option value="54">🇦🇷 +54</option>
               <option value="56">🇨🇱 +56</option>
@@ -174,8 +177,10 @@
           </div>
         </div>
 
-        <!-- Asistencia -->
-        <div class="space-y-3">
+        </div><!-- /fields-locked -->
+
+        <!-- Asistencia (también bloqueada) -->
+        <div class="space-y-3 hidden" id="attendance-section">
           <label class="block font-sans text-olive font-medium text-sm">Asistencia <span class="text-gold">*</span></label>
           <div class="space-y-2" id="attendance-options">
             <div class="radio-option flex items-center">
@@ -211,7 +216,7 @@
                 </span>
               </label>
             </div>
-            <div class="radio-option flex items-center">
+            <div class="radio-option flex items-center hidden" id="att-virtual-wrap">
               <input type="radio" id="att-virtual" name="attendance" value="virtual" class="sr-only">
               <label for="att-virtual" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
                 <span class="flex items-center gap-3">
@@ -238,6 +243,8 @@
             </div>
           </div>
         </div>
+
+        </div><!-- /attendance-section -->
 
         <!-- Campos condicionales (si asiste) -->
         <div id="attending-fields" class="space-y-6 hidden fade-in">
@@ -587,46 +594,100 @@ document.querySelectorAll('.radio-option input[type="radio"]').forEach(function(
   });
 });
 
-// Attendance change
-document.querySelectorAll('input[name="attendance"]').forEach(function(r) {
-  r.addEventListener('change', function() {
-    var val = this.value;
-    var isPresencial = (val === 'both' || val === 'ceremony' || val === 'reception');
-    var isVirtual    = (val === 'virtual');
-    var isNo         = (val === 'no');
-    var af           = document.getElementById('attending-fields');
-    var altContact   = document.getElementById('alt-contact-section');
-    var phoneReqStar = document.getElementById('phone-required-star');
-    var phoneOptTag  = document.getElementById('phone-optional-tag');
-    var phoneHint    = document.getElementById('phone-hint');
-    var phoneEl      = document.getElementById('phone');
+// ── LÓGICA PROGRESIVA ──
+var nameUnlocked = false;
 
-    // Mostrar campos de asistencia presencial
-    if (isPresencial) {
-      af.classList.remove('hidden');
-    } else {
-      af.classList.add('hidden');
-      document.getElementById('comp-count-section').classList.add('hidden');
-      document.getElementById('comp-names-section').classList.add('hidden');
-      document.getElementById('comp-fields-container').innerHTML = '';
-    }
+function checkNameUnlock() {
+  var fn = document.getElementById('first-name').value.trim();
+  var ln = document.getElementById('last-name').value.trim();
+  if (fn.length >= 2 && ln.length >= 2 && !nameUnlocked) {
+    nameUnlocked = true;
+    document.getElementById('fields-locked').classList.remove('hidden');
+    document.getElementById('fields-locked').classList.add('fade-in');
+  }
+}
 
-    // Teléfono: obligatorio solo para presenciales
-    if (isPresencial) {
-      phoneReqStar.classList.remove('hidden');
-      phoneOptTag.classList.add('hidden');
-      phoneEl.setAttribute('required', 'required');
-      phoneHint.textContent = 'Te enviaremos la información de tu mesa a este número.';
-      altContact.classList.add('hidden');
-    } else {
-      phoneReqStar.classList.add('hidden');
-      phoneOptTag.classList.remove('hidden');
-      phoneEl.removeAttribute('required');
-      phoneHint.textContent = 'Opcional — si tienes WhatsApp y quieres recibir novedades.';
-      altContact.classList.remove('hidden');
-    }
-  });
+document.getElementById('first-name').addEventListener('input', checkNameUnlock);
+document.getElementById('last-name').addEventListener('input', checkNameUnlock);
+
+// ── CÓDIGO DE PAÍS — controla virtual y contacto alternativo ──
+function onCountryChange() {
+  var val        = document.getElementById('phone-country').value;
+  var isBolivia  = (val === '591');
+  var virtualWrap = document.getElementById('att-virtual-wrap');
+  var altContact  = document.getElementById('alt-contact-section');
+  var phoneHint   = document.getElementById('phone-hint');
+  var phoneEl     = document.getElementById('phone');
+  var reqStar     = document.getElementById('phone-required-star');
+  var optTag      = document.getElementById('phone-optional-tag');
+
+  if (!isBolivia) {
+    virtualWrap.classList.remove('hidden');
+    altContact.classList.remove('hidden');
+    phoneHint.textContent = 'Opcional — si tienes WhatsApp internacional.';
+    reqStar.classList.add('hidden');
+    optTag.classList.remove('hidden');
+    phoneEl.removeAttribute('required');
+  } else {
+    virtualWrap.classList.add('hidden');
+    altContact.classList.add('hidden');
+    var virt = document.getElementById('att-virtual');
+    if (virt && virt.checked) virt.checked = false;
+    phoneHint.textContent = 'Te enviaremos la información de tu mesa a este número.';
+    reqStar.classList.remove('hidden');
+    optTag.classList.add('hidden');
+    phoneEl.setAttribute('required','required');
+  }
+  // Mostrar sección asistencia
+  var attSection = document.getElementById('attendance-section');
+  if (attSection) attSection.classList.remove('hidden');
+  updateAttendanceFields();
+}
+
+// También desbloquear la sección de asistencia cuando completen el teléfono
+document.getElementById('phone').addEventListener('input', function() {
+  var country  = document.getElementById('phone-country').value;
+  var isBolivia = country === '591';
+  var phoneVal  = this.value.trim();
+  var attSection = document.getElementById('attendance-section');
+  if (!attSection) return;
+  if ((isBolivia && phoneVal.length >= 7) || (!isBolivia)) {
+    attSection.classList.remove('hidden');
+    attSection.classList.add('fade-in');
+  }
 });
+
+// ── CAMBIO DE ASISTENCIA ──
+function updateAttendanceFields() {
+  var val = '';
+  document.querySelectorAll('input[name="attendance"]').forEach(function(r) {
+    if (r.checked) val = r.value;
+  });
+  var isPresencial = (val === 'both' || val === 'ceremony' || val === 'reception');
+  var af = document.getElementById('attending-fields');
+  if (isPresencial) {
+    af.classList.remove('hidden');
+    af.classList.add('fade-in');
+  } else {
+    af.classList.add('hidden');
+    document.getElementById('comp-count-section').classList.add('hidden');
+    document.getElementById('comp-names-section').classList.add('hidden');
+    document.getElementById('comp-fields-container').innerHTML = '';
+  }
+}
+
+document.querySelectorAll('input[name="attendance"]').forEach(function(r) {
+  r.addEventListener('change', updateAttendanceFields);
+});
+
+// Mostrar sección asistencia si es Bolivia y el tel ya tiene datos (recarga)
+(function() {
+  var phone = document.getElementById('phone').value.trim();
+  if (phone.length >= 7) {
+    var attSection = document.getElementById('attendance-section');
+    if (attSection) attSection.classList.remove('hidden');
+  }
+})();
 
 // Allergy
 document.querySelectorAll('input[name="has_allergy"]').forEach(function(r) {

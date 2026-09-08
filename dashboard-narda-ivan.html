@@ -326,6 +326,7 @@ select.edit-input{cursor:pointer;}
     <div class="cupos-track"><div class="cupos-fill" id="cupos-fill" style="width:0%"></div></div>
     <span class="cupos-num" id="cupos-num">0 / 300</span>
     <button class="btn btn-olive" onclick="openAddGuest()">+ Agregar invitado</button>
+    <button class="btn btn-olive" onclick="openBulkMsg()" style="margin-right:.5rem;">💬 Enviar plano a todos</button>
     <button class="btn btn-ghost" onclick="syncGuests()" id="sync-btn" style="border-color:var(--euca);color:var(--euca);">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
       Sincronizar con Sheets
@@ -431,6 +432,17 @@ select.edit-input{cursor:pointer;}
       <button class="btn btn-ghost" onclick="testPlanoLink()" style="font-size:.65rem;white-space:nowrap;">Probar link</button>
     </div>
     <p id="plano-link-status" style="font-size:.65rem;margin-top:.35rem;color:var(--ink-lt);"></p>
+  </div>
+</div>
+
+<!-- ══ MODAL: envío masivo de plano ══ -->
+<div id="bulk-msg-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:1.5rem;width:min(500px,92vw);max-height:85vh;overflow-y:auto;">
+    <h3 style="font-family:'Cinzel',serif;font-size:1rem;color:#3A4520;margin-bottom:.5rem;">Envío masivo — Plano de mesas</h3>
+    <p style="font-size:.72rem;color:#666;margin-bottom:1rem;">Se generará un link de WhatsApp para cada invitado con mesa y teléfono asignados. Abre cada uno para enviarlo.</p>
+    <div id="bulk-msg-list" style="max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem;"></div>
+    <button onclick="document.getElementById('bulk-msg-modal').style.display='none'"
+      style="width:100%;margin-top:1rem;padding:.6rem;background:none;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-size:.75rem;">Cerrar</button>
   </div>
 </div>
 
@@ -616,7 +628,7 @@ function showSyncStatus(msg, type) {
 function loadGroups() {
   const saved = localStorage.getItem('ni-groups');
   if(saved) return JSON.parse(saved);
-  return ['ARZE','ZELADA','MARIÑO','KPOP','COSPLAY','CETI','ABOG','DAMA','CABALLERO','COMPA','CALDERO','TALLER','7 REINOS','CEREMONIA','OTROS','Novios'];
+  return ['ARZE','ZELADA','MARIÑO','KPOP','COSPLAY','CETI','ABOG','DAMA','CABALLERO','COMPA','CALDERO','TALLER','7 REINOS','CEREMONIA','OTROS','Novios','INTERNACIONAL'];
 }
 function saveGroups(g) { localStorage.setItem('ni-groups', JSON.stringify(g)); }
 function getGroups() { return loadGroups(); }
@@ -1528,6 +1540,81 @@ planoRender = function() {
     if (st && saved) st.textContent = '✓ Link guardado';
   }
 };
+
+
+/* ══════════════════════════════════════
+   ENVÍO MASIVO DE PLANO
+══════════════════════════════════════ */
+function openBulkMsg() {
+  var planoLink = getPlanoLink ? getPlanoLink() : '';
+  var list = document.getElementById('bulk-msg-list');
+  list.innerHTML = '';
+
+  // Filtrar invitados con mesa y teléfono asignados, excluyendo INTERNACIONALES
+  var eligible = guests.filter(function(g) {
+    return g.grupo !== 'INTERNACIONAL' &&
+           mesaAssigns[g.codigo] &&
+           g.telefono;
+  });
+
+  if (eligible.length === 0) {
+    list.innerHTML = '<p style="font-size:.75rem;color:#666;text-align:center;">No hay invitados con mesa y teléfono asignados todavía.</p>';
+  } else {
+    eligible.forEach(function(g) {
+      var mesaNum   = mesaAssigns[g.codigo];
+      var mesaObj   = mesas.find(function(m){ return m.num === mesaNum; });
+      var mesaNombre = mesaObj ? mesaObj.nombre : 'Mesa ' + mesaNum;
+      var nombre    = ((g.sufijo||'') + ' ' + g.nombre + ' ' + g.apellido).trim();
+      var telefono  = String(g.telefono).replace(/\D/g,'');
+      var msgText   = '¡Hola ' + nombre + '! 💍
+
+'
+        + 'Tu lugar en nuestra boda será:
+
+'
+        + '📍 *' + mesaNombre + '*
+
+'
+        + (planoLink ? '🗺️ Plano del salón:
+' + planoLink + '
+
+' : '')
+        + '¡Nos vemos el 5 de diciembre! 🥂
+
+— Narda & Ivan 💚';
+      var waLink = 'https://wa.me/591' + telefono + '?text=' + encodeURIComponent(msgText);
+
+      var item = document.createElement('a');
+      item.href = waLink;
+      item.target = '_blank';
+      item.style.cssText = 'display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:#f5faf5;border:1px solid rgba(37,211,102,.2);border-radius:8px;text-decoration:none;color:inherit;';
+      item.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>'
+        + '<div><div style="font-size:.75rem;font-weight:600;">' + nombre + '</div>'
+        + '<div style="font-size:.65rem;color:#666;">' + mesaNombre + ' · +591' + telefono + '</div></div>'
+        + '<span style="margin-left:auto;font-size:.65rem;color:#25D366;font-weight:600;">Abrir →</span>';
+      list.appendChild(item);
+    });
+  }
+
+  // Internacionales — por Instagram/TikTok
+  var intl = guests.filter(function(g) { return g.grupo === 'INTERNACIONAL'; });
+  if (intl.length > 0) {
+    var sep = document.createElement('p');
+    sep.style.cssText = 'font-size:.65rem;color:#999;margin:.5rem 0 .25rem;font-family:Montserrat,sans-serif;letter-spacing:.05em;text-transform:uppercase;';
+    sep.textContent = 'Invitados internacionales (' + intl.length + ') — contactar por red social';
+    list.appendChild(sep);
+    intl.forEach(function(g) {
+      var nombre = ((g.sufijo||'') + ' ' + g.nombre + ' ' + g.apellido).trim();
+      var item = document.createElement('div');
+      item.style.cssText = 'padding:.6rem .75rem;background:#fafaf5;border:1px solid rgba(201,169,98,.2);border-radius:8px;font-size:.72rem;';
+      item.innerHTML = '<strong>' + nombre + '</strong>'
+        + (g.social ? ' · <span style="color:#666;">' + g.social + '</span>' : ' <span style="color:#999;">(sin red social registrada)</span>');
+      list.appendChild(item);
+    });
+  }
+
+  document.getElementById('bulk-msg-modal').style.display = 'flex';
+}
 
 function planoSave() {
   localStorage.setItem('ni-plano', JSON.stringify(planoData));
