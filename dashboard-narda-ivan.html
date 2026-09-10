@@ -599,7 +599,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxrl2qI58AqHqq23hfDIzxH-9bsuhZjYDqdM4Zaj_cDGC2FjAe8Xa_qETHyb9QHFdoiZw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwsv9t1bBGlmggjcCzEiMBVtcAOE7LeYCqLA6_4BKGAdP5H9fMSitDe5mnV7xIepcvKlg/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -700,7 +700,7 @@ function saveGuests(g) {
 function pushGuestsToSheets(guestList) {
   try {
     const guestData = guestList.map(g =>
-      [g.codigo, g.nombre, g.apellido, g.sufijo||'', String(g.cupos), g.grupo].join('|')
+      [g.codigo, g.nombre, g.apellido, g.sufijo||'', String(g.cupos||1), g.grupo||''].join('|')
     ).join(';;');
     const url = SHEETS_URL + '?action=syncGuests&data=' + encodeURIComponent(guestData);
     const img = new Image();
@@ -731,6 +731,10 @@ async function pullGuestsFromSheets() {
         const remoteGuests = data.guests.filter(function(g) {
           if (!g.codigo || seen.has(g.codigo)) return false;
           seen.add(g.codigo); return true;
+        }).map(function(g) {
+          // Asegurar que grupo siempre tenga valor
+          if (!g.grupo) g.grupo = 'OTROS';
+          return g;
         });
         localStorage.setItem('ni-guests', JSON.stringify(remoteGuests));
         guests = remoteGuests;
@@ -817,7 +821,23 @@ function refreshRSVP() {
     delete window[cbName];
     icon.classList.remove('spin');
     if (data && data.ok) {
-      rsvpRows = data.rows || [];
+      rsvpRows = (data.rows || []).map(function(r) {
+        // Normalizar campos
+        return {
+          codigo:     String(r.codigo || r['código'] || '').trim(),
+          nombre:     r.nombre || '',
+          apellido:   r.apellido || '',
+          telefono:   String(r.telefono || '').trim(),
+          asistencia: r.asistencia || '',
+          acompanantes: parseInt(r.acompanantes || r['acompañantes'] || 0)||0,
+          nombres_acompanantes: r.nombres_acompanantes || r['nombres_acompañantes'] || '',
+          alergia:    r.alergia || '',
+          detalle_alergia: r.detalle_alergia || '',
+          mensaje:    r.mensaje || '',
+          fecha:      r.fecha || '',
+          excedido:   r.excedido || ''
+        };
+      });
       // Normalizar nombres de columnas (el Sheet puede tener variaciones)
       rsvpRows = rsvpRows.map(function(r) {
         return {
@@ -1474,7 +1494,7 @@ async function syncGuests() {
   if (shouldPush) {
     showSyncStatus('⏳ Enviando lista a Sheets...', 'loading');
     const guestData = guests.map(g =>
-      [g.codigo, g.nombre, g.apellido, g.sufijo||'', String(g.cupos), g.grupo].join('|')
+      [g.codigo, g.nombre, g.apellido, g.sufijo||'', String(g.cupos||1), g.grupo||''].join('|')
     ).join(';;');
     await new Promise(function(resolve) {
       const img = new Image();
