@@ -882,6 +882,40 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
     formErr.classList.remove('hidden');
   }
 });
+
+/* ══════════════════════════════════════
+   BLOQUEO POR FECHA LÍMITE
+══════════════════════════════════════ */
+(function() {
+  var DEADLINE    = new Date('2026-11-05T23:59:59-04:00'); // Bolivia UTC-4
+  var NARDA_WA    = 'https://wa.me/59161144206';
+  var IVAN_WA     = 'https://wa.me/59160552435';
+
+  if (Date.now() > DEADLINE.getTime()) {
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ocultar todo el contenido del RSVP y mostrar mensaje
+      var body = document.querySelector('.rsvp-wrap') || document.body;
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#1E2410;display:flex;align-items:center;justify-content:center;padding:2rem;';
+      overlay.innerHTML = '<div style="max-width:420px;text-align:center;font-family:Montserrat,sans-serif;">'
+        + '<p style="font-family:Cinzel,serif;font-size:.6rem;letter-spacing:.3em;color:rgba(201,169,98,.6);text-transform:uppercase;margin-bottom:1rem;">N · I · 2026</p>'
+        + '<h2 style="font-family:Cinzel,serif;color:#C9A962;font-size:1.1rem;margin-bottom:1rem;">Fecha límite alcanzada</h2>'
+        + '<p style="color:rgba(250,244,232,.8);font-size:.85rem;line-height:1.7;margin-bottom:1.5rem;">'
+        + 'El plazo para confirmar asistencia venció el <strong style="color:#C9A962;">05 de noviembre de 2026</strong>.<br><br>'
+        + 'Si crees que se trata de un error, contáctanos directamente:'
+        + '</p>'
+        + '<div style="display:flex;flex-direction:column;gap:.75rem;">'
+        + '<a href="' + NARDA_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#A8D4B0;text-decoration:none;font-size:.82rem;">'
+        + '💬 Narda · +591 61144206</a>'
+        + '<a href="' + IVAN_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#A8D4B0;text-decoration:none;font-size:.82rem;">'
+        + '💬 Ivan · +591 60552435</a>'
+        + '</div>'
+        + '</div>';
+      document.body.appendChild(overlay);
+    });
+  }
+})();
+
 </script>
 </body>
 </html>

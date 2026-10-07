@@ -326,6 +326,7 @@ select.edit-input{cursor:pointer;}
     <span class="cupos-label">Cupos utilizados:</span>
     <div class="cupos-track"><div class="cupos-fill" id="cupos-fill" style="width:0%"></div></div>
     <span class="cupos-num" id="cupos-num">0 / 300</span>
+    <span id="intl-num" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:rgba(250,244,232,.5);margin-left:.75rem;"></span>
     <button class="btn btn-olive" onclick="openAddGuest()">+ Agregar invitado</button>
     <button class="btn btn-olive" onclick="openBulkMsg()" style="margin-right:.5rem;">💬 Enviar plano a todos</button>
     <button class="btn btn-ghost" onclick="syncGuests()" id="sync-btn" style="border-color:var(--euca);color:var(--euca);">
@@ -506,6 +507,20 @@ select.edit-input{cursor:pointer;}
       <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertVar('{mesa}')">+ {mesa}</button>
       <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertVar('{plano}')">+ {plano}</button>
       <span id="msg-saved-label" style="font-size:.62rem;color:var(--green);margin-left:auto;"></span>
+    </div>
+  </div>
+
+  <!-- Lista de regalos editable -->
+  <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">🎁 Lista de regalos</strong>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.75rem;line-height:1.5;">
+      Esta lista aparece en la invitación cuando los invitados hacen clic en "Ver lista de regalos". Agrega los ítems que quieras.
+    </p>
+    <div id="gift-items-list" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem;"></div>
+    <div style="display:flex;gap:.4rem;">
+      <input type="text" id="gift-emoji-input" placeholder="🎁" style="width:50px;padding:.4rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.85rem;text-align:center;">
+      <input type="text" id="gift-name-input" placeholder="Ej: Set de sábanas, cafetera..." style="flex:1;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
+      <button class="btn btn-olive" style="font-size:.7rem;white-space:nowrap;" onclick="addGiftItem()">+ Agregar</button>
     </div>
   </div>
 
@@ -1048,7 +1063,9 @@ function updateCuposBar() {
   fill.style.width = pct+'%';
   fill.className = 'cupos-fill' + (pct>=100?' full':pct>=85?' warn':'');
   const intlCount = guests.filter(function(g){return g.grupo==='INTERNACIONAL';}).length;
-  document.getElementById('cupos-num').textContent = totalCupos() + ' / ' + MAX_CUPOS + (intlCount>0 ? ' · '+intlCount+' intl.' : '');
+  document.getElementById('cupos-num').textContent = totalCupos() + ' / ' + MAX_CUPOS;
+  var intlEl = document.getElementById('intl-num');
+  if (intlEl) intlEl.textContent = intlCount > 0 ? '· ' + intlCount + ' internacionales aparte' : '';
 }
 
 let sortMode = 'grupo';
@@ -1721,6 +1738,7 @@ function insertInvVar(v) {
 
 // Inicializar botones de grupos en ajustes
 function initAjustesTab() {
+  renderGiftItems();
   var invBtns = document.getElementById('inv-msg-btns');
   var mesaBtns = document.getElementById('mesa-msg-btns');
   if(!invBtns) return;
@@ -1751,6 +1769,50 @@ function initAjustesTab() {
   // Cargar link plano
   var pli = document.getElementById('plano-link-input');
   if(pli) { var saved=getPlanoLink(); pli.value=saved||''; if(saved){ var st=document.getElementById('plano-link-status'); if(st) st.textContent='✓ Link guardado'; } }
+}
+
+
+/* ══════════════════════════════════════
+   LISTA DE REGALOS EDITABLE
+══════════════════════════════════════ */
+function loadGiftItems() {
+  return JSON.parse(localStorage.getItem('ni-gift-list') || '[]');
+}
+function saveGiftItems(items) {
+  localStorage.setItem('ni-gift-list', JSON.stringify(items));
+}
+function renderGiftItems() {
+  var items = loadGiftItems();
+  var container = document.getElementById('gift-items-list');
+  if (!container) return;
+  if (!items.length) {
+    container.innerHTML = '<p style="font-size:.7rem;color:var(--ink-lt);font-style:italic;">Aún no hay ítems. Agrega el primero abajo.</p>';
+    return;
+  }
+  container.innerHTML = items.map(function(item, i) {
+    return '<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:rgba(92,107,58,.05);border-radius:6px;border:1px solid rgba(92,107,58,.12);">'
+      + '<span>' + (item.emoji||'🎁') + '</span>'
+      + '<span style="flex:1;font-size:.75rem;">' + item.nombre + '</span>'
+      + '<button onclick="removeGiftItem('+i+')" style="background:none;border:none;cursor:pointer;color:var(--ink-lt);font-size:.8rem;padding:2px 6px;">✕</button>'
+      + '</div>';
+  }).join('');
+}
+function addGiftItem() {
+  var emoji = document.getElementById('gift-emoji-input').value.trim() || '🎁';
+  var nombre = document.getElementById('gift-name-input').value.trim();
+  if (!nombre) return;
+  var items = loadGiftItems();
+  items.push({ emoji: emoji, nombre: nombre });
+  saveGiftItems(items);
+  document.getElementById('gift-emoji-input').value = '';
+  document.getElementById('gift-name-input').value = '';
+  renderGiftItems();
+}
+function removeGiftItem(i) {
+  var items = loadGiftItems();
+  items.splice(i, 1);
+  saveGiftItems(items);
+  renderGiftItems();
 }
 
 function savePlanoLink(val) {
