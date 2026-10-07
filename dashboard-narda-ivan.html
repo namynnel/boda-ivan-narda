@@ -286,6 +286,7 @@ select.edit-input{cursor:pointer;}
   <div class="tab" onclick="switchTab('guests',this)">👥 Invitados</div>
   <div class="tab" onclick="switchTab('mesas',this)">🪑 Mesas</div>
   <div class="tab" onclick="switchTab('plano',this)">🗺️ Plano</div>
+  <div class="tab" onclick="switchTab('ajustes',this)">⚙️ Ajustes</div>
 </div>
 
 <!-- ══ TAB 1: RSVP ══ -->
@@ -462,6 +463,68 @@ select.edit-input{cursor:pointer;}
   </div>
 </div>
 
+
+<!-- ══ TAB: AJUSTES ══ -->
+<div id="tab-ajustes" class="tab-content">
+  <h3 style="font-family:'Cinzel',serif;font-size:.9rem;color:var(--olive-dk);margin-bottom:1rem;">⚙️ Ajustes y mensajes</h3>
+
+  <!-- Mensajes de invitación por grupo -->
+  <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">💌 Mensaje de invitación por grupo</strong>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.75rem;line-height:1.5;">
+      Personaliza el mensaje que se envía al compartir la invitación con cada grupo. Usa <code>{nombre}</code> para el nombre del invitado y <code>{link}</code> para el link de la invitación.
+    </p>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem;" id="inv-msg-btns">
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="setInvMsgGroup('general')">General</button>
+    </div>
+    <textarea id="inv-msg-editor" rows="5"
+      style="width:100%;padding:.6rem;border:1px solid rgba(92,107,58,.2);border-radius:8px;font-size:.75rem;font-family:'Montserrat',sans-serif;resize:vertical;box-sizing:border-box;line-height:1.6;"
+      oninput="saveInvMsg(this.value)"></textarea>
+    <div style="display:flex;gap:.4rem;margin-top:.4rem;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertInvVar('{nombre}')">+ {nombre}</button>
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertInvVar('{link}')">+ {link}</button>
+      <span id="inv-msg-saved" style="font-size:.62rem;color:var(--green);margin-left:auto;"></span>
+    </div>
+  </div>
+
+  <!-- Mensajes de mesa por grupo -->
+  <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">📍 Mensaje de mesa por grupo</strong>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.75rem;line-height:1.5;">
+      Usa <code>{nombre}</code>, <code>{mesa}</code> y <code>{plano}</code> como variables.
+    </p>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.5rem;" id="mesa-msg-btns">
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="setMsgTemplate('general')">General</button>
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="setMsgTemplate('INTERNACIONAL')">🌍 Internacional</button>
+    </div>
+    <textarea id="msg-template-editor" rows="6"
+      style="width:100%;padding:.6rem;border:1px solid rgba(92,107,58,.2);border-radius:8px;font-size:.75rem;font-family:'Montserrat',sans-serif;resize:vertical;box-sizing:border-box;line-height:1.6;"
+      oninput="saveMsgTemplate(document.getElementById('msg-group-sel').value, this.value)"></textarea>
+    <input type="hidden" id="msg-group-sel" value="general">
+    <div style="display:flex;gap:.4rem;margin-top:.4rem;flex-wrap:wrap;align-items:center;">
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertVar('{nombre}')">+ {nombre}</button>
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertVar('{mesa}')">+ {mesa}</button>
+      <button class="btn btn-ghost" style="font-size:.62rem;" onclick="insertVar('{plano}')">+ {plano}</button>
+      <span id="msg-saved-label" style="font-size:.62rem;color:var(--green);margin-left:auto;"></span>
+    </div>
+  </div>
+
+  <!-- Link del plano -->
+  <div style="background:rgba(201,169,98,.06);border:1px solid rgba(201,169,98,.2);border-radius:10px;padding:1rem;">
+    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">🗺️ Link del plano de mesas</strong>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.5rem;line-height:1.5;">
+      Exporta el plano desde la pestaña Plano → súbelo a Google Drive → pega el link aquí. Se incluirá automáticamente en cada mensaje de mesa.
+    </p>
+    <div style="display:flex;gap:.5rem;">
+      <input type="text" id="plano-link-input" placeholder="https://drive.google.com/file/..."
+        style="flex:1;padding:.5rem .75rem;border:1px solid rgba(92,107,58,.25);border-radius:6px;font-size:.72rem;font-family:'Montserrat',sans-serif;"
+        oninput="savePlanoLink(this.value)">
+      <button class="btn btn-ghost" onclick="testPlanoLink()" style="font-size:.65rem;white-space:nowrap;">Probar</button>
+    </div>
+    <p id="plano-link-status" style="font-size:.65rem;margin-top:.35rem;color:var(--ink-lt);"></p>
+  </div>
+</div>
+
 <!-- ══ MODAL: envío masivo de plano ══ -->
 <div id="bulk-msg-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
   <div style="background:#fff;border-radius:12px;padding:1.5rem;width:min(500px,92vw);max-height:85vh;overflow-y:auto;">
@@ -599,7 +662,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwsv9t1bBGlmggjcCzEiMBVtcAOE7LeYCqLA6_4BKGAdP5H9fMSitDe5mnV7xIepcvKlg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxrl2qI58AqHqq23hfDIzxH-9bsuhZjYDqdM4Zaj_cDGC2FjAe8Xa_qETHyb9QHFdoiZw/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -958,7 +1021,10 @@ function renderRSVP() {
     const mesaLabel = mesaNum !== '—' ? mesas.find(function(m){return m.num===mesaNum;}) : null;
     const mesaBtnLabel = mesaLabel ? mesaLabel.nombre : (mesaNum !== '—' ? 'Mesa '+mesaNum : 'Asignar');
     const mesaBtn = `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;" onclick="openMesaModal('${code}','${name}')">${mesaBtnLabel}</button>`;
-    const msgBtn = phone && phone !== '—' ? `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;color:#25D366;border-color:#25D366;" onclick="openMsgModal('${code}','${nombre} ${apellido}'.trim(),'${phone}')">💬 Mesa</button>` : '';
+    const hasMesa = !!mesaAssigns[String(code).trim()];
+    const msgBtn  = (phone && phone !== '—' && hasMesa)
+      ? `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;color:#25D366;border-color:#25D366;" onclick="openMsgModal('${code}','${nombre} ${apellido}'.trim(),'${phone}')">💬 Plano</button>`
+      : '';
     const alergia = (r.alergia==='yes'||r.has_allergy==='yes') ? `<span style="color:#e07070;">⚠️ ${r.detalle_alergia||r.dietary_restrictions||''}</span>` : '—';
     const msgText = r.mensaje||r.message||'';
     const msg = msgText ? `<span style="cursor:pointer;color:var(--euca);text-decoration:underline;font-size:.72rem;" onclick="alert('${msgText.replace(/'/g,"\'")}')">💬 Ver</span>` : '—';
@@ -973,7 +1039,7 @@ function renderRSVP() {
 /* ══════════════════════════════════════
    GUEST LIST
 ══════════════════════════════════════ */
-function totalCupos() { return guests.reduce((a,g)=>a+g.cupos,0); }
+function totalCupos() { return guests.filter(function(g){return g.grupo!=='INTERNACIONAL';}).reduce((a,g)=>a+g.cupos,0); }
 
 function updateCuposBar() {
   const total = totalCupos();
@@ -981,7 +1047,8 @@ function updateCuposBar() {
   const fill  = document.getElementById('cupos-fill');
   fill.style.width = pct+'%';
   fill.className = 'cupos-fill' + (pct>=100?' full':pct>=85?' warn':'');
-  document.getElementById('cupos-num').textContent = `${total} / ${MAX_CUPOS}`;
+  const intlCount = guests.filter(function(g){return g.grupo==='INTERNACIONAL';}).length;
+  document.getElementById('cupos-num').textContent = totalCupos() + ' / ' + MAX_CUPOS + (intlCount>0 ? ' · '+intlCount+' intl.' : '');
 }
 
 let sortMode = 'grupo';
@@ -1613,6 +1680,7 @@ function buildMsg(g, mesaNombre, planoLink) {
 var _origSwitchTabMsg = switchTab;
 switchTab = function(name, el) {
   _origSwitchTabMsg(name, el);
+  if (name === 'ajustes') setTimeout(initAjustesTab, 50);
   if (name === 'plano') {
     setTimeout(function() {
       var ta = document.getElementById('msg-template-editor');
@@ -1620,6 +1688,70 @@ switchTab = function(name, el) {
     }, 60);
   }
 };
+
+
+/* ══════════════════════════════════════
+   MENSAJES DE INVITACIÓN POR GRUPO
+══════════════════════════════════════ */
+var DEFAULT_INV_MSG = '¡Hola {nombre}! 💍\n\nNarda e Ivan te invitan a celebrar su boda el 5 de diciembre de 2026.\n\nConfirma tu asistencia aquí:\n{link}\n\n¡Te esperamos! 🥂';
+var currentInvGroup = 'general';
+
+function getInvMsg(group) {
+  return localStorage.getItem('ni-inv-msg-'+(group||'general')) || DEFAULT_INV_MSG;
+}
+function saveInvMsg(val) {
+  localStorage.setItem('ni-inv-msg-'+currentInvGroup, val);
+  var lbl = document.getElementById('inv-msg-saved');
+  if(lbl){ lbl.textContent='✓ Guardado'; setTimeout(function(){lbl.textContent='';},2000); }
+}
+function setInvMsgGroup(group) {
+  currentInvGroup = group;
+  var ta = document.getElementById('inv-msg-editor');
+  if(ta) ta.value = getInvMsg(group);
+  document.querySelectorAll('#inv-msg-btns button').forEach(function(b){b.style.borderColor='';});
+  event.target.style.borderColor = 'var(--gold)';
+}
+function insertInvVar(v) {
+  var ta = document.getElementById('inv-msg-editor');
+  var s=ta.selectionStart, e2=ta.selectionEnd;
+  ta.value=ta.value.substring(0,s)+v+ta.value.substring(e2);
+  ta.selectionStart=ta.selectionEnd=s+v.length;
+  ta.focus(); saveInvMsg(ta.value);
+}
+
+// Inicializar botones de grupos en ajustes
+function initAjustesTab() {
+  var invBtns = document.getElementById('inv-msg-btns');
+  var mesaBtns = document.getElementById('mesa-msg-btns');
+  if(!invBtns) return;
+  // Agregar un botón por cada grupo
+  var grupos = getGroups();
+  grupos.forEach(function(g) {
+    if(g==='general') return;
+    if(!invBtns.querySelector('[data-g="'+g+'"]')) {
+      var b = document.createElement('button');
+      b.className='btn btn-ghost'; b.style.fontSize='.62rem';
+      b.textContent=g; b.dataset.g=g;
+      b.onclick=function(){setInvMsgGroup(g);};
+      invBtns.appendChild(b);
+    }
+    if(mesaBtns && g!=='INTERNACIONAL' && !mesaBtns.querySelector('[data-g="'+g+'"]')) {
+      var b2=document.createElement('button');
+      b2.className='btn btn-ghost'; b2.style.fontSize='.62rem';
+      b2.textContent=g; b2.dataset.g=g;
+      b2.onclick=function(){setMsgTemplate(g);};
+      mesaBtns.appendChild(b2);
+    }
+  });
+  // Cargar mensaje general
+  var ta = document.getElementById('inv-msg-editor');
+  if(ta && !ta.value) ta.value = getInvMsg('general');
+  var mta = document.getElementById('msg-template-editor');
+  if(mta && !mta.value) mta.value = getMsgTemplate('general');
+  // Cargar link plano
+  var pli = document.getElementById('plano-link-input');
+  if(pli) { var saved=getPlanoLink(); pli.value=saved||''; if(saved){ var st=document.getElementById('plano-link-status'); if(st) st.textContent='✓ Link guardado'; } }
+}
 
 function savePlanoLink(val) {
   localStorage.setItem('ni-plano-link', val);
