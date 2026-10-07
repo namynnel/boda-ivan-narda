@@ -326,9 +326,8 @@ select.edit-input{cursor:pointer;}
     <span class="cupos-label">Cupos utilizados:</span>
     <div class="cupos-track"><div class="cupos-fill" id="cupos-fill" style="width:0%"></div></div>
     <span class="cupos-num" id="cupos-num">0 / 300</span>
-    <span id="intl-num" style="font-family:'Montserrat',sans-serif;font-size:.65rem;color:rgba(250,244,232,.5);margin-left:.75rem;"></span>
+    <span id="intl-num" style="display:none;align-items:center;gap:.3rem;font-family:'Montserrat',sans-serif;font-size:.62rem;background:rgba(37,99,235,.15);color:rgba(147,197,253,.9);border:1px solid rgba(37,99,235,.3);border-radius:999px;padding:.15rem .6rem;margin-left:.5rem;">🌍 0 internacionales</span>
     <button class="btn btn-olive" onclick="openAddGuest()">+ Agregar invitado</button>
-    <button class="btn btn-olive" onclick="openBulkMsg()" style="margin-right:.5rem;">💬 Enviar plano a todos</button>
     <button class="btn btn-ghost" onclick="syncGuests()" id="sync-btn" style="border-color:var(--euca);color:var(--euca);">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
       Sincronizar con Sheets
@@ -677,7 +676,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxrl2qI58AqHqq23hfDIzxH-9bsuhZjYDqdM4Zaj_cDGC2FjAe8Xa_qETHyb9QHFdoiZw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyJQrHWJl6funXGKFb73lQN9T5wuXLqtXkea1DBecRTY-fHf4lr0kHTZ5yCo8rYyiMLFw/exec';
 const MAX_CUPOS  = 300;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
@@ -1065,7 +1064,10 @@ function updateCuposBar() {
   const intlCount = guests.filter(function(g){return g.grupo==='INTERNACIONAL';}).length;
   document.getElementById('cupos-num').textContent = totalCupos() + ' / ' + MAX_CUPOS;
   var intlEl = document.getElementById('intl-num');
-  if (intlEl) intlEl.textContent = intlCount > 0 ? '· ' + intlCount + ' internacionales aparte' : '';
+  if (intlEl) {
+    intlEl.textContent = intlCount > 0 ? intlCount + ' internacionales' : '';
+    intlEl.style.display = intlCount > 0 ? 'inline-flex' : 'none';
+  }
 }
 
 let sortMode = 'grupo';

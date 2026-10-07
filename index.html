@@ -295,13 +295,13 @@ body{
 .center{text-align:center;}
 
 /* Section headers */
-.rune{
+.rune{color:rgba(201,169,98,.92)!important;
   font-family:'Cinzel',serif;font-size:10px;
   letter-spacing:.5em;text-transform:uppercase;
   margin-bottom:14px;display:block;
   color:var(--gold-mid);
 }
-.band-olive .rune,.band-euca .rune,.band-sage .rune,.band-dark .rune{
+.band-olive .rune,.band-euca .rune,.band-sage .rune,.band-dark .rune{color:rgba(201,169,98,.92)!important;
   color:rgba(221,176,80,.95);
 }
 .sec-h{
@@ -864,7 +864,7 @@ footer{
         <ellipse cx="75" cy="29" rx="9" ry="4" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width="1" transform="rotate(-5 75 29)"/>
         <!-- Centro flor -->
         <circle cx="100" cy="28" r="5" fill="rgba(221,176,80,.15)" stroke="rgba(221,176,80,.5)" stroke-width="1"/>
-        <circle cx="100" cy="28" r="2" fill="rgba(221,176,80,.4)"/>
+        <circle cx="100" cy="28" r="2" fill="rgba(221,176,80,.85)"/>
         <!-- Rama derecha (espejo) -->
         <path d="M190 50 Q160 35 130 30 Q110 28 100 30" stroke="rgba(106,158,132,.5)" stroke-width="1.5" fill="none"/>
         <ellipse cx="165" cy="38" rx="10" ry="5" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width="1" transform="rotate(20 165 38)"/>
@@ -873,7 +873,7 @@ footer{
       </svg>
     </div>
     <p class="story-quote reveal">
-      "Entre todas las posibilidades, nos elegimos.<br>
+      "<span style="color:rgba(250,244,232,.95);">Entre todas las posibilidades, nos elegimos.<br>
       Y en esa elección, encontramos nuestro hogar."
     </p>
     <p class="story-body reveal d1">
@@ -912,7 +912,7 @@ footer{
 <!-- FECHA & LUGAR -->
 <section id="fecha" class="band band-linen">
   <div class="inner center">
-    <p class="rune reveal">✦ El gran día ✦</p>
+    <p class="rune reveal">✦ <strong style="color:rgba(201,169,98,.95);">El gran día</strong> ✦</p>
     <h2 class="sec-h reveal">Fecha &amp; Lugar</h2>
     <div class="hr-row reveal"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
 
@@ -950,7 +950,7 @@ footer{
         <div class="venue-photo" id="venue-don" style="margin:14px 0;cursor:pointer;"
              onclick="window.open('https://maps.app.goo.gl/mRa91ZVfCGrWVAKZ8','_blank')">
           <img src="salon.jfif" alt="Salón Don Quijote"
-               style="width:100%;height:100%;object-fit:cover;border-radius:6px;"
+               style="width:100%;height:220px;object-fit:cover;object-position:center center;border-radius:6px;display:block;"
                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
           <div style="display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;height:100%;">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -972,6 +972,14 @@ footer{
               <span style="font-size:.85rem;color:var(--ink);">🥂 Recepción</span>
             </div>
           </div>
+        </div>
+
+        <!-- Nota de puntualidad -->
+        <div style="padding:10px 14px;background:rgba(92,107,58,.08);border-left:3px solid var(--euca);border-radius:0 6px 6px 0;margin-bottom:10px;text-align:left;">
+          <p style="font-size:.78rem;color:var(--ink);line-height:1.6;">
+            ⏰ <strong>La ceremonia comenzará puntualmente a las 14:00 hrs.</strong><br>
+            <span style="font-size:.72rem;color:var(--ink-mid);">Se ruega la puntualidad — o llegar al menos 15 minutos antes del inicio.</span>
+          </p>
         </div>
 
         <!-- Acceso privado -->
@@ -1005,8 +1013,8 @@ footer{
         <path d="M20 40 Q20 28 60 28 Q100 28 100 40" stroke="rgba(221,176,80,.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
         <line x1="60" y1="28" x2="60" y2="18" stroke="rgba(221,176,80,.5)" stroke-width="1.5"/>
         <path d="M55 15 Q60 10 65 15" stroke="rgba(221,176,80,.5)" stroke-width="1.5" fill="none"/>
-        <line x1="20" y1="40" x2="10" y2="65" stroke="rgba(221,176,80,.4)" stroke-width="1.5" stroke-linecap="round"/>
-        <line x1="100" y1="40" x2="110" y2="65" stroke="rgba(221,176,80,.4)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="20" y1="40" x2="10" y2="65" stroke="rgba(221,176,80,.85)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="100" y1="40" x2="110" y2="65" stroke="rgba(221,176,80,.85)" stroke-width="1.5" stroke-linecap="round"/>
         <line x1="10" y1="65" x2="110" y2="65" stroke="rgba(221,176,80,.35)" stroke-width="1.5" stroke-linecap="round"/>
         <!-- Flores decorativas -->
         <circle cx="30" cy="35" r="5" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.4)" stroke-width="1"/>
@@ -1042,7 +1050,7 @@ footer{
 <!-- REGALOS -->
 <section id="regalos" class="band band-cream">
   <div class="inner center">
-    <p class="rune reveal">✦ Agradecemos su cariño ✦</p>
+    <p class="rune reveal">✦ <strong style="color:rgba(201,169,98,.95);">Agradecemos su cariño</strong> ✦</p>
     <h2 class="sec-h reveal">Regalos</h2>
     <div class="hr-row reveal"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
 
@@ -1069,9 +1077,9 @@ footer{
     </div>
 
     <p class="story-body reveal" style="margin-bottom:2.5rem;">
-      Sabemos que la tradición invita a traer un regalo físico, y lo recibimos con el mismo amor con el que lo dan.
-      Sin embargo, si desean sumarse de otra manera, una de estas opciones nos ayudará muchísimo
-      a construir nuestro hogar juntos. Cualquier gesto, grande o pequeño, lo atesoramos de corazón.
+      Recibimos cualquier muestra de cariño con el corazón abierto — desde regalos físicos hasta gestos simbólicos.
+      Si deseas consentirte con algo especial de nuestra lista, o sumarte a través de uno de estos medios,
+      te lo agradecemos enormemente. ¡Todo, grande o pequeño, construye nuestro hogar juntos!
     </p>
 
     <div class="gift-grid">
@@ -1117,7 +1125,7 @@ footer{
 <!-- RSVP -->
 <section id="rsvp" class="band band-euca">
   <div class="inner-sm center">
-    <p class="rune reveal">✦ Te esperamos ✦</p>
+    <p class="rune reveal">✦ <strong style="color:rgba(201,169,98,.95);">Te esperamos</strong> ✦</p>
     <h2 class="sec-h reveal">Confirma tu Asistencia</h2>
     <div class="hr-row reveal" style="margin-bottom:30px;"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
 
@@ -1125,9 +1133,9 @@ footer{
     <div class="reveal" style="margin:0 auto 2rem;">
       <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
         <!-- Cuerpo sobre -->
-        <rect x="10" y="20" width="100" height="55" rx="3" fill="rgba(250,244,232,.06)" stroke="rgba(221,176,80,.4)" stroke-width="1.5"/>
+        <rect x="10" y="20" width="100" height="55" rx="3" fill="rgba(250,244,232,.06)" stroke="rgba(221,176,80,.85)" stroke-width="1.5"/>
         <!-- Solapa -->
-        <path d="M10 20 L60 50 L110 20" stroke="rgba(221,176,80,.4)" stroke-width="1.5" fill="none"/>
+        <path d="M10 20 L60 50 L110 20" stroke="rgba(221,176,80,.85)" stroke-width="1.5" fill="none"/>
         <!-- Pliegues base -->
         <line x1="10" y1="75" x2="60" y2="50" stroke="rgba(221,176,80,.25)" stroke-width="1"/>
         <line x1="110" y1="75" x2="60" y2="50" stroke="rgba(221,176,80,.25)" stroke-width="1"/>
@@ -1163,7 +1171,7 @@ footer{
 <!-- MESAS -->
 <section id="mesas" class="band band-dark">
   <div class="inner center">
-    <p class="rune reveal">✦ Tu lugar en la celebración ✦</p>
+    <p class="rune reveal">✦ <strong style="color:rgba(201,169,98,.95);">Tu lugar en la celebración</strong> ✦</p>
     <h2 class="sec-h reveal">Distribución de Mesas</h2>
     <div class="hr-row reveal"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
 
@@ -1172,12 +1180,12 @@ footer{
       <svg width="180" height="120" viewBox="0 0 180 120" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Mesa -->
         <ellipse cx="90" cy="72" rx="70" ry="18" fill="none" stroke="rgba(221,176,80,.5)" stroke-width="1.5"/>
-        <rect x="86" y="72" width="8" height="32" fill="none" stroke="rgba(221,176,80,.4)" stroke-width="1.5" rx="2"/>
+        <rect x="86" y="72" width="8" height="32" fill="none" stroke="rgba(221,176,80,.85)" stroke-width="1.5" rx="2"/>
         <ellipse cx="90" cy="104" rx="18" ry="5" fill="none" stroke="rgba(221,176,80,.3)" stroke-width="1.2"/>
         <!-- Platos -->
-        <ellipse cx="60" cy="68" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.4)" stroke-width="1"/>
-        <ellipse cx="90" cy="66" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.4)" stroke-width="1"/>
-        <ellipse cx="120" cy="68" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.4)" stroke-width="1"/>
+        <ellipse cx="60" cy="68" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
+        <ellipse cx="90" cy="66" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
+        <ellipse cx="120" cy="68" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
         <!-- Copas -->
         <path d="M55 58 Q55 64 60 66" stroke="rgba(221,176,80,.35)" stroke-width="1" fill="none"/>
         <path d="M65 58 Q65 64 60 66" stroke="rgba(221,176,80,.35)" stroke-width="1" fill="none"/>
@@ -1189,10 +1197,10 @@ footer{
         <circle cx="90" cy="58" r="3" fill="rgba(221,176,80,.3)" stroke="rgba(221,176,80,.5)" stroke-width="1"/>
         <circle cx="82" cy="55" r="2" fill="rgba(168,197,176,.3)" stroke="rgba(168,197,176,.5)" stroke-width="1"/>
         <circle cx="98" cy="55" r="2" fill="rgba(168,197,176,.3)" stroke="rgba(168,197,176,.5)" stroke-width="1"/>
-        <circle cx="86" cy="52" r="2" fill="rgba(221,176,80,.25)" stroke="rgba(221,176,80,.4)" stroke-width="1"/>
-        <circle cx="94" cy="52" r="2" fill="rgba(221,176,80,.25)" stroke="rgba(221,176,80,.4)" stroke-width="1"/>
+        <circle cx="86" cy="52" r="2" fill="rgba(221,176,80,.25)" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
+        <circle cx="94" cy="52" r="2" fill="rgba(221,176,80,.25)" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
         <!-- Tarjeta de lugar -->
-        <rect x="74" y="43" width="32" height="20" rx="2" fill="none" stroke="rgba(221,176,80,.45)" stroke-width="1"/>
+        <rect x="74" y="43" width="32" height="20" rx="2" fill="none" stroke="rgba(221,176,80,.88)" stroke-width="1"/>
         <line x1="80" y1="50" x2="100" y2="50" stroke="rgba(221,176,80,.3)" stroke-width="1"/>
         <line x1="82" y1="55" x2="98" y2="55" stroke="rgba(221,176,80,.25)" stroke-width=".8"/>
         <!-- Velas -->
@@ -1216,7 +1224,7 @@ footer{
       <!-- Mesa por WhatsApp -->
       <div style="background:rgba(255,255,255,.06);border:1px solid rgba(221,176,80,.2);padding:32px;text-align:center;">
         <span style="font-size:2rem;display:block;margin-bottom:1rem;">📱</span>
-        <h3 style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-lt);margin-bottom:14px;">Tu lugar en la celebración</h3>
+        <h3 style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-lt);margin-bottom:14px;"><strong style="color:rgba(201,169,98,.95);">Tu lugar en la celebración</strong></h3>
         <p style="font-family:'Crimson Text',serif;font-size:17px;color:rgba(250,244,232,.92);line-height:1.85;">
           Una semana antes del gran día recibirás por WhatsApp
           el nombre y ubicación de tu mesa — con el plano del salón
@@ -1335,7 +1343,7 @@ function toggleAudio(){
 function tick(){
   const diff=new Date('December 5, 2026 10:00:00 GMT-4').getTime()-Date.now();
   if(diff<=0)return;
-  document.getElementById('cd-d').textContent=String(Math.floor(diff/86400000)).padStart(3,'0');
+  document.getElementById('cd-d').textContent=String(Math.floor(diff/86400000)).padStart(2,'0');
   document.getElementById('cd-h').textContent=String(Math.floor((diff%86400000)/3600000)).padStart(2,'0');
   document.getElementById('cd-m').textContent=String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
   document.getElementById('cd-s').textContent=String(Math.floor((diff%60000)/1000)).padStart(2,'0');
