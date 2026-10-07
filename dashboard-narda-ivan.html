@@ -509,6 +509,24 @@ select.edit-input{cursor:pointer;}
     </div>
   </div>
 
+  <!-- Cronograma editable -->
+  <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">📅 Cronograma del día</strong>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.75rem;line-height:1.5;">
+      Edita los eventos del cronograma. El primero se mostrará como destacado en la invitación. Los cambios se aplican automáticamente.
+    </p>
+    <div id="cronograma-editor-list" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem;"></div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+      <input type="text" id="cron-hora-input" placeholder="14:00" style="width:70px;padding:.4rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;text-align:center;">
+      <input type="text" id="cron-evento-input" placeholder="⚖️ Ceremonia Civil" style="flex:1;min-width:150px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
+      <label style="display:flex;align-items:center;gap:.3rem;font-size:.68rem;color:var(--ink-lt);">
+        <input type="checkbox" id="cron-destacado"> Destacado
+      </label>
+      <button class="btn btn-olive" style="font-size:.7rem;" onclick="addCronogramaItem()">+ Agregar</button>
+    </div>
+    <button class="btn btn-ghost" style="font-size:.65rem;margin-top:.5rem;width:100%;" onclick="resetCronograma()">↺ Restaurar valores por defecto</button>
+  </div>
+
   <!-- Lista de regalos editable -->
   <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
     <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">🎁 Lista de regalos</strong>
@@ -1741,6 +1759,7 @@ function insertInvVar(v) {
 // Inicializar botones de grupos en ajustes
 function initAjustesTab() {
   renderGiftItems();
+  renderCronogramaEditor();
   var invBtns = document.getElementById('inv-msg-btns');
   var mesaBtns = document.getElementById('mesa-msg-btns');
   if(!invBtns) return;
@@ -1777,6 +1796,74 @@ function initAjustesTab() {
 /* ══════════════════════════════════════
    LISTA DE REGALOS EDITABLE
 ══════════════════════════════════════ */
+
+/* ══════════════════════════════════════
+   CRONOGRAMA EDITABLE — DASHBOARD
+══════════════════════════════════════ */
+var DEFAULT_CRONOGRAMA_DB = [
+  { hora:'14:00', evento:'⚖️ Ceremonia Civil', destacado: true },
+  { hora:'16:00', evento:'🥂 Recepción', destacado: false }
+];
+
+function loadCronogramaDB() {
+  try {
+    var saved = localStorage.getItem('ni-cronograma');
+    return saved ? JSON.parse(saved) : DEFAULT_CRONOGRAMA_DB;
+  } catch(e) { return DEFAULT_CRONOGRAMA_DB; }
+}
+
+function saveCronogramaDB(items) {
+  localStorage.setItem('ni-cronograma', JSON.stringify(items));
+}
+
+function renderCronogramaEditor() {
+  var items = loadCronogramaDB();
+  var container = document.getElementById('cronograma-editor-list');
+  if (!container) return;
+  if (!items.length) {
+    container.innerHTML = '<p style="font-size:.7rem;color:var(--ink-lt);font-style:italic;">Sin eventos. Agrega uno abajo.</p>';
+    return;
+  }
+  container.innerHTML = items.map(function(item, i) {
+    return '<div style="display:flex;align-items:center;gap:.4rem;padding:.4rem .6rem;background:'
+      + (item.destacado ? 'rgba(201,169,98,.08)' : 'rgba(92,107,58,.05)')
+      + ';border-radius:6px;border:1px solid rgba(92,107,58,.12);">'
+      + '<span style="font-family:Cinzel,serif;font-size:.8rem;color:var(--gold);min-width:50px;">' + item.hora + '</span>'
+      + '<span style="flex:1;font-size:.75rem;">' + item.evento + (item.destacado ? ' ⭐' : '') + '</span>'
+      + '<button onclick="removeCronogramaItem('+i+')" style="background:none;border:none;cursor:pointer;color:var(--ink-lt);font-size:.75rem;padding:2px 6px;">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+function addCronogramaItem() {
+  var hora   = document.getElementById('cron-hora-input').value.trim();
+  var evento = document.getElementById('cron-evento-input').value.trim();
+  var dest   = document.getElementById('cron-destacado').checked;
+  if (!hora || !evento) return;
+  var items = loadCronogramaDB();
+  items.push({ hora:hora, evento:evento, destacado:dest });
+  // Ordenar por hora
+  items.sort(function(a,b){ return a.hora.localeCompare(b.hora); });
+  saveCronogramaDB(items);
+  document.getElementById('cron-hora-input').value = '';
+  document.getElementById('cron-evento-input').value = '';
+  document.getElementById('cron-destacado').checked = false;
+  renderCronogramaEditor();
+}
+
+function removeCronogramaItem(i) {
+  var items = loadCronogramaDB();
+  items.splice(i, 1);
+  saveCronogramaDB(items);
+  renderCronogramaEditor();
+}
+
+function resetCronograma() {
+  if (!confirm('¿Restaurar el cronograma a los valores originales?')) return;
+  saveCronogramaDB(DEFAULT_CRONOGRAMA_DB);
+  renderCronogramaEditor();
+}
+
 function loadGiftItems() {
   return JSON.parse(localStorage.getItem('ni-gift-list') || '[]');
 }
