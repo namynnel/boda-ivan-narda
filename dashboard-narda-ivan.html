@@ -518,7 +518,8 @@ select.edit-input{cursor:pointer;}
     <div id="cronograma-editor-list" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem;"></div>
     <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
       <input type="text" id="cron-hora-input" placeholder="14:00" style="width:70px;padding:.4rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;text-align:center;">
-      <input type="text" id="cron-evento-input" placeholder="⚖️ Ceremonia Civil" style="flex:1;min-width:150px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
+      <input type="text" id="cron-emoji-input" placeholder="⚖️" style="width:46px;padding:.4rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.9rem;text-align:center;" title="Emoji opcional">
+      <input type="text" id="cron-evento-input" placeholder="Ceremonia Civil" style="flex:1;min-width:120px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
       <label style="display:flex;align-items:center;gap:.3rem;font-size:.68rem;color:var(--ink-lt);">
         <input type="checkbox" id="cron-destacado"> Destacado
       </label>
@@ -827,9 +828,14 @@ async function pullGuestsFromSheets() {
           if (!g.codigo || seen.has(g.codigo)) return false;
           seen.add(g.codigo); return true;
         }).map(function(g) {
-          // Asegurar que grupo siempre tenga valor
-          if (!g.grupo) g.grupo = 'OTROS';
+          // Preservar grupo exactamente como viene de Sheets
+          if (!g.grupo || g.grupo.trim() === '') g.grupo = 'OTROS';
           return g;
+        });
+        // Actualizar también el mapa local de grupos
+        remoteGuests.forEach(function(rg) {
+          var local = guests.find(function(lg){ return lg.codigo === rg.codigo; });
+          if (local) local.grupo = rg.grupo;
         });
         localStorage.setItem('ni-guests', JSON.stringify(remoteGuests));
         guests = remoteGuests;
@@ -1746,6 +1752,18 @@ switchTab = function(name, el) {
 var DEFAULT_INV_MSG = '¡Hola {nombre}! 💍\n\nNarda e Ivan te invitan a celebrar su boda el 5 de diciembre de 2026.\n\nConfirma tu asistencia aquí:\n{link}\n\n¡Te esperamos! 🥂';
 var currentInvGroup = 'general';
 
+
+function buildInvMsg(g) {
+  var grupo    = g.grupo || 'general';
+  var template = getInvMsg(grupo) || getInvMsg('general');
+  if (!template) return null;
+  var nombre = ((g.sufijo||'') + ' ' + g.nombre + ' ' + g.apellido).trim();
+  var link   = 'https://namynnel.github.io/boda-ivan-narda/index.html?codigo=' + g.codigo;
+  return template
+    .replace(/\{nombre\}/g, nombre)
+    .replace(/\{link\}/g,   link);
+}
+
 function getInvMsg(group) {
   return localStorage.getItem('ni-inv-msg-'+(group||'general')) || DEFAULT_INV_MSG;
 }
@@ -1850,9 +1868,11 @@ function renderCronogramaEditor() {
 
 function addCronogramaItem() {
   var hora   = document.getElementById('cron-hora-input').value.trim();
-  var evento = document.getElementById('cron-evento-input').value.trim();
+  var emoji  = document.getElementById('cron-emoji-input') ? document.getElementById('cron-emoji-input').value.trim() : '';
+  var eventoBase = document.getElementById('cron-evento-input').value.trim();
+  var evento = emoji ? emoji + ' ' + eventoBase : eventoBase;
   var dest   = document.getElementById('cron-destacado').checked;
-  if (!hora || !evento) return;
+  if (!hora || !eventoBase) return;
   var items = loadCronogramaDB();
   items.push({ hora:hora, evento:evento, destacado:dest });
   // Ordenar por hora
