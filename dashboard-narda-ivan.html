@@ -1013,7 +1013,7 @@ function renderRSVP() {
   const q = document.getElementById('rsvp-search').value.toLowerCase();
   const tbody = document.getElementById('rsvp-tbody');
   const empty = document.getElementById('rsvp-empty');
-  const attLabel = {both:'💍 Ambos',ceremony:'🎩 Ceremonia',reception:'🍽️ Recepción',no:'❌ No asiste','':`<span class="badge b-pending">⏳ Pendiente</span>`};
+  const attLabel = {both:'💍 Ambos',ceremony:'🎩 Ceremonia',reception:'🍽️ Recepción',virtual:'📺 Virtual',no:'❌ No asiste','':`<span class="badge b-pending">⏳ Pendiente</span>`};
 
   let rows = rsvpRows.filter(r=>{
     const name = `${r.nombre||''} ${r.apellido||''}`.toLowerCase();
@@ -1043,6 +1043,7 @@ function renderRSVP() {
       <option value="both" ${asistencia==='both'?'selected':''}>Ambos</option>
       <option value="ceremony" ${asistencia==='ceremony'?'selected':''}>Ceremonia</option>
       <option value="reception" ${asistencia==='reception'?'selected':''}>Recepcion</option>
+      <option value="virtual" ${asistencia==='virtual'?'selected':''}>Virtual</option>
       <option value="no" ${asistencia==='no'?'selected':''}>No asiste</option>
       <option value="" ${!asistencia?'selected':''}>Pendiente</option>
     </select>`;
@@ -1053,9 +1054,21 @@ function renderRSVP() {
     const mesaLabel = mesaNum !== '—' ? mesas.find(function(m){return m.num===mesaNum;}) : null;
     const mesaBtnLabel = mesaLabel ? mesaLabel.nombre : (mesaNum !== '—' ? 'Mesa '+mesaNum : 'Asignar');
     const mesaBtn = `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;" onclick="openMesaModal('${code}','${name}')">${mesaBtnLabel}</button>`;
-    const hasMesa = !!mesaAssigns[String(code).trim()];
-    const msgBtn  = (phone && phone !== '—' && hasMesa)
-      ? `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;color:#25D366;border-color:#25D366;" onclick="openMsgModal('${code}','${nombre} ${apellido}'.trim(),'${phone}')">💬 Plano</button>`
+    const hasMesa   = !!mesaAssigns[String(code).trim()];
+    const yaConfirmo = asistencia && asistencia !== '' && asistencia !== 'virtual';
+    const socialRaw  = String(r.contacto_social||r['contacto_social']||'').trim();
+    const emailRaw   = String(r.contacto_email||r['contacto_email']||'').trim();
+    // Botón WhatsApp para presenciales que ya confirmaron
+    const waBtn = (phone && phone !== '—' && yaConfirmo && asistencia !== 'no')
+      ? `<a href="https://wa.me/${phone.replace(/\D/g,'')}" target="_blank" class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;color:#25D366;border-color:#25D366;text-decoration:none;display:inline-block;">💬 WhatsApp</a>`
+      : '';
+    // Botón plano (solo si tiene mesa asignada)
+    const msgBtn = (phone && phone !== '—' && hasMesa)
+      ? `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;color:#25D366;border-color:#25D366;" onclick="openMsgModal('${code}','${nombre} ${apellido}'.trim(),'${phone}')">📍 Plano</button>`
+      : '';
+    // Contacto alternativo para internacionales
+    const altContactBtn = (!phone || phone === '—') && (socialRaw || emailRaw)
+      ? `<span style="font-size:.62rem;color:var(--euca);">${socialRaw || emailRaw}</span>`
       : '';
     const alergia = (r.alergia==='yes'||r.has_allergy==='yes') ? `<span style="color:#e07070;">⚠️ ${r.detalle_alergia||r.dietary_restrictions||''}</span>` : '—';
     const msgText = r.mensaje||r.message||'';
@@ -1064,7 +1077,7 @@ function renderRSVP() {
     const excedido = r.excedido === 'EXCEDIDO' || r['excedido'] === 'EXCEDIDO';
     const rowStyle = excedido ? 'background:rgba(220,107,107,.08);border-left:3px solid var(--red);' : '';
     const excBadge = excedido ? '<span style="font-size:.6rem;color:var(--red);font-weight:600;display:block;">⚠️ Cupos excedidos</span>' : '';
-    return `<tr style="${rowStyle}"><td class="td-name">${name}${excBadge}</td><td class="td-code">${code}</td><td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱${phone}</a></td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${mesaBtn} ${msgBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${fecha}</td></tr>`;
+    return `<tr style="${rowStyle}"><td class="td-name">${name}${excBadge}</td><td class="td-code">${code}</td><td><a href="https://wa.me/591${phone}" target="_blank" style="color:var(--euca);text-decoration:none;">📱${phone}</a></td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${mesaBtn} ${waBtn} ${msgBtn} ${altContactBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${fecha}</td></tr>`;
   }).join('');
 }
 

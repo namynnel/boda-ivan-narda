@@ -162,17 +162,22 @@
           <p class="font-sans text-olive/60 text-xs" id="phone-hint">Te enviaremos la información de tu mesa a este número.</p>
         </div>
 
-        <!-- Contacto alternativo (solo virtual/no asiste) -->
+        <!-- Contacto alternativo (internacionales / sin WhatsApp) -->
         <div class="space-y-4 hidden" id="alt-contact-section">
-          <p class="font-sans text-olive/70 text-xs italic">Si no tienes WhatsApp o prefieres otro medio, déjanos al menos una forma de contactarte:</p>
+          <div style="background:rgba(92,107,58,.06);border-left:3px solid var(--euca-light,#7BAE95);padding:.75rem 1rem;border-radius:0 8px 8px 0;">
+            <p class="font-sans text-sm" style="color:var(--olive-dk,#3A4520);font-weight:600;margin-bottom:.25rem;">¿Cómo podemos contactarte? 🌍</p>
+            <p class="font-sans text-xs" style="color:var(--ink-mid,#4A5528);line-height:1.5;">
+              Tu confirmación la haremos por este medio — déjanos al menos uno.
+            </p>
+          </div>
           <div class="space-y-2">
-            <label class="block font-sans text-olive font-medium text-sm">Correo electrónico <span class="text-olive/50 font-normal">(opcional)</span></label>
-            <input type="email" id="contact-email" name="contact_email" placeholder="tu@correo.com"
+            <label class="block font-sans text-olive font-medium text-sm">Instagram o TikTok</label>
+            <input type="text" id="contact-social" name="contact_social" placeholder="@tu_usuario"
               class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
           </div>
           <div class="space-y-2">
-            <label class="block font-sans text-olive font-medium text-sm">Instagram o TikTok <span class="text-olive/50 font-normal">(opcional)</span></label>
-            <input type="text" id="contact-social" name="contact_social" placeholder="@tu_usuario"
+            <label class="block font-sans text-olive font-medium text-sm">Correo electrónico</label>
+            <input type="email" id="contact-email" name="contact_email" placeholder="tu@correo.com"
               class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
           </div>
         </div>
@@ -794,15 +799,27 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
     formErr.classList.remove('hidden');
     return;
   }
-  // Teléfono: obligatorio si es presencial
+  // Teléfono: obligatorio si es presencial Y código Bolivia
   var isPresencial = (attendance === 'both' || attendance === 'ceremony' || attendance === 'reception');
-  if (isPresencial && !phone) {
+  var isVirtual    = (attendance === 'virtual');
+  var country      = document.getElementById('phone-country').value;
+  var isBolivia    = (country === '591');
+  var contactEmail  = document.getElementById('contact-email') ? document.getElementById('contact-email').value.trim() : '';
+  var contactSocial = document.getElementById('contact-social') ? document.getElementById('contact-social').value.trim() : '';
+
+  if (isPresencial && isBolivia && !phone) {
     formErr.textContent = 'Por favor ingresa tu número de WhatsApp — lo necesitamos para enviarte la información de tu mesa.';
     formErr.classList.remove('hidden');
     return;
   }
   if (phone && !/^[0-9+\-\s]{6,15}$/.test(phone)) {
     formErr.textContent = 'Por favor ingresa un número válido.';
+    formErr.classList.remove('hidden');
+    return;
+  }
+  // Internacionales o virtuales sin teléfono deben dejar al menos un contacto
+  if (!isBolivia && !phone && !contactEmail && !contactSocial) {
+    formErr.textContent = 'Por favor déjanos al menos un medio de contacto (Instagram, TikTok o correo) para poder confirmarte.';
     formErr.classList.remove('hidden');
     return;
   }
@@ -870,8 +887,20 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
       ? 'Hola ' + record.nombre + ', hemos recibido tu respuesta para la boda de Ivan & Narda. Lamentamos que no puedas acompanarnos.'
       : 'Hola ' + record.nombre + ', tu asistencia a la boda de Ivan & Narda ha sido confirmada. Nos alegra contar contigo el 5 de diciembre!';
     var waBtn = document.getElementById('whatsapp-btn');
-    waBtn.href = phone ? ('https://wa.me/' + phone.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent(waMsg)) : '#';
-    if (!phone) waBtn.style.display = 'none';
+    if (phone) {
+      waBtn.href = 'https://wa.me/' + phone.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent(waMsg);
+    } else {
+      // Internacional sin teléfono — mostrar mensaje diferente
+      waBtn.style.display = 'none';
+      var intlNote = document.getElementById('intl-confirm-note');
+      if (intlNote) {
+        var social = document.getElementById('contact-social') ? document.getElementById('contact-social').value.trim() : '';
+        var email  = document.getElementById('contact-email')  ? document.getElementById('contact-email').value.trim()  : '';
+        var medio  = social || email || 'el medio que dejaste';
+        intlNote.textContent = '¡Listo! Te contactaremos a través de ' + medio + ' para confirmar tu participación en la transmisión en vivo. 💚';
+        intlNote.classList.remove('hidden');
+      }
+    }
     setTimeout(function() { waBtn.classList.remove('hidden'); }, 800);
 
   } catch(err) {
