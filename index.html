@@ -1384,15 +1384,49 @@ function addToCalendar(){
   window.open(url,'_blank');
 }
 
+var SHEETS_URL_PUBLIC = 'https://script.google.com/macros/s/AKfycbyJQrHWJl6funXGKFb73lQN9T5wuXLqtXkea1DBecRTY-fHf4lr0kHTZ5yCo8rYyiMLFw/exec';
+var _publicGifts = null;
+var _publicCron = null;
+
+function fetchPublicConfig() {
+  return new Promise(function(resolve) {
+    var cb = 'pubCfg_' + Date.now();
+    var script = document.createElement('script');
+    var to = setTimeout(function(){ try{document.head.removeChild(script);}catch(e){} delete window[cb]; resolve(false); }, 8000);
+    window[cb] = function(data) {
+      clearTimeout(to);
+      try{document.head.removeChild(script);}catch(e){}
+      delete window[cb];
+      if (data && data.ok) {
+        if (Array.isArray(data.gifts)) _publicGifts = data.gifts;
+        if (Array.isArray(data.cronograma)) {
+          _publicCron = data.cronograma;
+          try { localStorage.setItem('ni-cronograma', JSON.stringify(data.cronograma)); } catch(e){}
+        }
+        resolve(true);
+      } else resolve(false);
+    };
+    script.src = SHEETS_URL_PUBLIC + '?action=getConfig&callback=' + cb;
+    script.onerror = function(){ clearTimeout(to); try{document.head.removeChild(script);}catch(e){} delete window[cb]; resolve(false); };
+    document.head.appendChild(script);
+  });
+}
+
 function openGiftList() {
-  var items = JSON.parse(localStorage.getItem('ni-gift-list') || '[]');
+  var items = _publicGifts;
+  if (!items) {
+    try { items = JSON.parse(localStorage.getItem('ni-gift-list') || '[]'); } catch(e) { items = []; }
+  }
   var container = document.getElementById('gift-list-items');
-  if (!items.length) {
+  if (!items || !items.length) {
     container.innerHTML = '<p style="text-align:center;color:var(--ink-lt);font-style:italic;font-size:.85rem;">La lista de regalos estará disponible pronto.</p>';
   } else {
-    container.innerHTML = items.map(function(item, i) {
+    container.innerHTML = items.map(function(item) {
+      var media = item.imagen
+        ? '<img src="'+item.imagen+'" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:8px;background:#eee;flex-shrink:0;" onerror="this.outerHTML=\'<span style=font-size:1.4rem>'+(item.emoji||'🎁')+'</span>\'">'
+        : '<span style="font-size:1.4rem;width:56px;text-align:center;flex-shrink:0;">' + (item.emoji||'🎁') + '</span>';
       return '<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:rgba(92,107,58,.06);border-radius:8px;border:1px solid rgba(92,107,58,.15);">'
-        + '<span style="font-size:1.1rem;">' + (item.emoji||'🎁') + '</span>'
+        + media
         + '<span style="font-family:Montserrat,sans-serif;font-size:.82rem;color:var(--ink);">' + item.nombre + '</span>'
         + '</div>';
     }).join('');
@@ -1415,6 +1449,7 @@ var DEFAULT_CRONOGRAMA = [
 ];
 
 function loadCronograma() {
+  if (_publicCron && _publicCron.length) return _publicCron;
   try {
     var saved = localStorage.getItem('ni-cronograma');
     return saved ? JSON.parse(saved) : DEFAULT_CRONOGRAMA;
@@ -1450,7 +1485,10 @@ function renderCronograma() {
   }).join('');
 }
 
-document.addEventListener('DOMContentLoaded', renderCronograma);
+document.addEventListener('DOMContentLoaded', function() {
+  fetchPublicConfig().then(function(){ renderCronograma(); });
+  renderCronograma();
+});
 
 function openQR(){document.getElementById('qr-modal').style.display='flex';document.body.style.overflow='hidden';}
 function closeQR(){document.getElementById('qr-modal').style.display='none';document.body.style.overflow='auto';}

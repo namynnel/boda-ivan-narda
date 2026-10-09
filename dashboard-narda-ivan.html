@@ -322,20 +322,17 @@ select.edit-input{cursor:pointer;}
 
 <!-- ══ TAB 2: INVITADOS ══ -->
 <div id="tab-guests" class="tab-content">
-  <div class="cupos-bar">
-    <span class="cupos-label">Cupos utilizados:</span>
+    <div class="cupos-bar">
+    <span class="cupos-label">Presenciales:</span>
     <div class="cupos-track"><div class="cupos-fill" id="cupos-fill" style="width:0%"></div></div>
-    <span class="cupos-num" id="cupos-num">0 / 300</span>
-    <span id="intl-num" style="display:none;align-items:center;gap:.3rem;font-family:'Montserrat',sans-serif;font-size:.62rem;background:rgba(37,99,235,.15);color:rgba(147,197,253,.9);border:1px solid rgba(37,99,235,.3);border-radius:999px;padding:.15rem .6rem;margin-left:.5rem;">🌍 0 internacionales</span>
-    <button class="btn btn-olive" onclick="openAddGuest()">+ Agregar invitado</button>
-    <button class="btn btn-ghost" onclick="syncGuests()" id="sync-btn" style="border-color:var(--euca);color:var(--euca);">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
-      Sincronizar con Sheets
-    </button>
-    <input type="text" class="search-input" id="guest-search" placeholder="Buscar..." oninput="renderGuests()" style="max-width:180px;">
+    <span class="cupos-num" id="cupos-num">0 / 400</span>
   </div>
-
-  <div class="groups-bar" id="groups-bar">
+  <div class="cupos-bar" style="background:linear-gradient(90deg,rgba(37,99,235,.08),rgba(37,99,235,.03));border-bottom:1px solid rgba(37,99,235,.15);">
+    <span class="cupos-label" style="color:#1e40af;">Virtuales / Internacional:</span>
+    <div class="cupos-track" style="background:rgba(147,197,253,.35);"><div class="cupos-fill" id="cupos-fill-virt" style="width:0%;background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div></div>
+    <span class="cupos-num" id="cupos-num-virt" style="color:#1e40af;">0 · ilimitados</span>
+  </div>
+<div class="groups-bar" id="groups-bar">
     <span style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;color:var(--olive-dk);text-transform:uppercase;">Grupos:</span>
     <div id="group-chips"></div>
     <button class="btn btn-ghost" onclick="openAddGroup()" style="font-size:.6rem;">＋ Nuevo grupo</button>
@@ -369,7 +366,7 @@ select.edit-input{cursor:pointer;}
 <!-- ══ TAB 3: MESAS ══ -->
 <div id="tab-mesas" class="tab-content">
   <div class="controls">
-    <span style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--olive-dk);">29 MESAS · Mesa Principal: 12 · Resto: 10 · Total: 300</span>
+    <span style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--olive-dk);">29 MESAS · Cupos presenciales máx: 400 · Virtuales: ilimitados</span>
     <span id="mesas-resumen" style="font-size:.72rem;color:var(--ink-lt);margin-left:auto;"></span>
   </div>
   <div class="mesas-grid" id="mesas-grid"></div>
@@ -528,18 +525,26 @@ select.edit-input{cursor:pointer;}
     <button class="btn btn-ghost" style="font-size:.65rem;margin-top:.5rem;width:100%;" onclick="resetCronograma()">↺ Restaurar valores por defecto</button>
   </div>
 
-  <!-- Lista de regalos editable -->
+  <!-- Lista de regalos editable (Sheets) -->
   <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
     <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">🎁 Lista de regalos</strong>
     <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.75rem;line-height:1.5;">
-      Esta lista aparece en la invitación cuando los invitados hacen clic en "Ver lista de regalos". Agrega los ítems que quieras.
+      Se guarda en Google Sheets (hoja <code>Config</code>) y se muestra en la invitación pública. Pega una URL de imagen o usa “Buscar imagen”.
     </p>
     <div id="gift-items-list" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem;"></div>
-    <div style="display:flex;gap:.4rem;">
-      <input type="text" id="gift-emoji-input" placeholder="🎁" style="width:50px;padding:.4rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.85rem;text-align:center;">
-      <input type="text" id="gift-name-input" placeholder="Ej: Set de sábanas, cafetera..." style="flex:1;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
-      <button class="btn btn-olive" style="font-size:.7rem;white-space:nowrap;" onclick="addGiftItem()">+ Agregar</button>
+    <div style="display:flex;flex-direction:column;gap:.4rem;">
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+        <input type="text" id="gift-emoji-input" placeholder="🎁" style="width:50px;padding:.4rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.85rem;text-align:center;">
+        <input type="text" id="gift-name-input" placeholder="Ej: Set de sábanas, cafetera..." style="flex:1;min-width:140px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
+      </div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;">
+        <input type="url" id="gift-img-input" placeholder="URL de imagen (opcional)" style="flex:1;min-width:160px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.72rem;">
+        <button type="button" class="btn btn-ghost" style="font-size:.62rem;" onclick="searchGiftImage()">🔍 Buscar imagen</button>
+        <button type="button" class="btn btn-olive" style="font-size:.7rem;white-space:nowrap;" onclick="addGiftItem()">+ Agregar</button>
+      </div>
     </div>
+    <button type="button" class="btn btn-ghost" style="font-size:.65rem;margin-top:.6rem;width:100%;border-color:var(--euca);color:var(--euca);" onclick="pushConfigToSheets()">☁ Guardar regalos y cronograma en Sheets</button>
+    <span id="config-sync-status" style="font-size:.62rem;color:var(--ink-lt);display:block;margin-top:.35rem;"></span>
   </div>
 
   <!-- Link del plano -->
@@ -601,7 +606,7 @@ select.edit-input{cursor:pointer;}
         </div>
         <div class="form-group">
           <label class="form-label">Cupos *</label>
-          <input type="number" class="form-input" id="f-cupos" min="1" max="10" value="1">
+          <input type="number" class="form-input" id="f-cupos" min="1" max="20" value="1">
         </div>
       </div>
       <div class="form-group">
@@ -695,8 +700,8 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyJQrHWJl6funXGKFb73lQN9T5wuXLqtXkea1DBecRTY-fHf4lr0kHTZ5yCo8rYyiMLFw/exec';
-const MAX_CUPOS  = 300;
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwKaqmzHuKG-WfzI7vVvrfRmVCKCYtQyd2OxJ1MhsdtUio4rjWM7IZASVEimeITVqYncA/exec';
+const MAX_CUPOS  = 400;
 const MAX_MESA   = 10;
 const INVITE_URL = 'https://namynnel.github.io/boda-ivan-narda/';
 const WA_MESSAGE_TEMPLATE = (nombre, codigo) =>
@@ -1090,7 +1095,18 @@ function renderRSVP() {
 /* ══════════════════════════════════════
    GUEST LIST
 ══════════════════════════════════════ */
-function totalCupos() { return guests.filter(function(g){return g.grupo!=='INTERNACIONAL';}).reduce((a,g)=>a+g.cupos,0); }
+function totalCupos() {
+  return guests.filter(function(g){
+    var gup = String(g.grupo||'').toUpperCase();
+    return gup !== 'INTERNACIONAL' && gup !== 'VIRTUAL';
+  }).reduce(function(s,g){ return s + (parseInt(g.cupos)||1); }, 0);
+}
+function totalCuposVirtual() {
+  return guests.filter(function(g){
+    var gup = String(g.grupo||'').toUpperCase();
+    return gup === 'INTERNACIONAL' || gup === 'VIRTUAL';
+  }).reduce(function(s,g){ return s + (parseInt(g.cupos)||1); }, 0);
+}
 
 function updateCuposBar() {
   const total = totalCupos();
@@ -1100,6 +1116,10 @@ function updateCuposBar() {
   fill.className = 'cupos-fill' + (pct>=100?' full':pct>=85?' warn':'');
   const intlCount = guests.filter(function(g){return g.grupo==='INTERNACIONAL';}).length;
   document.getElementById('cupos-num').textContent = totalCupos() + ' / ' + MAX_CUPOS;
+  var virtEl = document.getElementById('cupos-num-virt');
+  var virtFill = document.getElementById('cupos-fill-virt');
+  if (virtEl) virtEl.textContent = totalCuposVirtual() + ' · ilimitados';
+  if (virtFill) virtFill.style.width = Math.min(100, totalCuposVirtual() * 2) + '%';
   var intlEl = document.getElementById('intl-num');
   if (intlEl) {
     intlEl.textContent = intlCount > 0 ? intlCount + ' internacionales' : '';
@@ -1589,6 +1609,43 @@ function renderArchived() {
   }
 }
 
+
+/* ══════════════════════════════════════
+   EXPORTAR / BORRAR LISTA
+══════════════════════════════════════ */
+function exportGuestsCSV() {
+  var header = 'codigo,nombre,apellido,sufijo,cupos,grupo\n';
+  var rows = guests.map(function(g){
+    return [g.codigo,g.nombre,g.apellido,g.sufijo||'',g.cupos||1,g.grupo||''].map(function(c){
+      var s = String(c==null?'':c);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    }).join(',');
+  }).join('\n');
+  var blob = new Blob([header+rows], {type:'text/csv;charset=utf-8;'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'invitados-narda-ivan.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportGuestsJSON() {
+  var blob = new Blob([JSON.stringify(guests, null, 2)], {type:'application/json'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'invitados-narda-ivan.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function clearAllGuests() {
+  if (!confirm('¿Borrar TODA la lista de invitados del dashboard?\n\nEsto solo afecta datos locales. Para vaciar también Sheets, sincroniza después y confirma el envío.')) return;
+  if (!confirm('Segunda confirmación: se borrarán ' + guests.length + ' invitados locales. ¿Continuar?')) return;
+  guests = [];
+  saveGuests(guests);
+  renderGuests();
+  updateStats();
+  showSyncStatus('Lista local vaciada. Sincroniza con Sheets si quieres vaciar también la nube.', 'ok');
+}
+
 /* ══════════════════════════════════════
    RESET
 ══════════════════════════════════════ */
@@ -1652,6 +1709,7 @@ refreshRSVP();
 
 // Al cargar: intentar sincronizar lista de invitados desde Sheets
 // Solo si hay conexión y han pasado más de 5 minutos desde la última sync
+pullConfigFromSheets(); // boot
 (async function initSync() {
   const lastSync = parseInt(localStorage.getItem('ni-last-sync') || '0');
   const SYNC_INTERVAL = 5 * 60 * 1000; // 5 minutos
@@ -1736,7 +1794,7 @@ function buildMsg(g, mesaNombre, planoLink) {
 var _origSwitchTabMsg = switchTab;
 switchTab = function(name, el) {
   _origSwitchTabMsg(name, el);
-  if (name === 'ajustes') setTimeout(initAjustesTab, 50);
+  if (name === 'ajustes') setTimeout(function(){ initAjustesTab(); pullConfigFromSheets(); }, 50);
   if (name === 'plano') {
     setTimeout(function() {
       var ta = document.getElementById('msg-template-editor');
@@ -1912,8 +1970,11 @@ function renderGiftItems() {
     return;
   }
   container.innerHTML = items.map(function(item, i) {
+    var thumb = item.imagen
+      ? '<img src="'+item.imagen+'" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:6px;background:#eee;" onerror="this.style.display=\'none\'">'
+      : '<span style="font-size:1.2rem;width:40px;text-align:center;">' + (item.emoji||'🎁') + '</span>';
     return '<div style="display:flex;align-items:center;gap:.5rem;padding:.4rem .6rem;background:rgba(92,107,58,.05);border-radius:6px;border:1px solid rgba(92,107,58,.12);">'
-      + '<span>' + (item.emoji||'🎁') + '</span>'
+      + thumb
       + '<span style="flex:1;font-size:.75rem;">' + item.nombre + '</span>'
       + '<button onclick="removeGiftItem('+i+')" style="background:none;border:none;cursor:pointer;color:var(--ink-lt);font-size:.8rem;padding:2px 6px;">✕</button>'
       + '</div>';
@@ -1922,12 +1983,15 @@ function renderGiftItems() {
 function addGiftItem() {
   var emoji = document.getElementById('gift-emoji-input').value.trim() || '🎁';
   var nombre = document.getElementById('gift-name-input').value.trim();
+  var imagen = (document.getElementById('gift-img-input')||{}).value || '';
+  imagen = imagen.trim();
   if (!nombre) return;
   var items = loadGiftItems();
-  items.push({ emoji: emoji, nombre: nombre });
+  items.push({ emoji: emoji, nombre: nombre, imagen: imagen });
   saveGiftItems(items);
   document.getElementById('gift-emoji-input').value = '';
   document.getElementById('gift-name-input').value = '';
+  if (document.getElementById('gift-img-input')) document.getElementById('gift-img-input').value = '';
   renderGiftItems();
 }
 function removeGiftItem(i) {
@@ -1935,6 +1999,50 @@ function removeGiftItem(i) {
   items.splice(i, 1);
   saveGiftItems(items);
   renderGiftItems();
+}
+function searchGiftImage() {
+  var nombre = (document.getElementById('gift-name-input')||{}).value || '';
+  var q = encodeURIComponent((nombre || 'gift product') + ' product photo');
+  window.open('https://www.google.com/search?tbm=isch&q=' + q, '_blank');
+}
+function pushConfigToSheets() {
+  var st = document.getElementById('config-sync-status');
+  if (st) st.textContent = '⏳ Guardando en Sheets...';
+  var gifts = loadGiftItems();
+  var cron = loadCronogramaDB();
+  var payload = encodeURIComponent(JSON.stringify(gifts));
+  var payload2 = encodeURIComponent(JSON.stringify(cron));
+  // GET with JSONP-style image trick (URL length limit ~2000) — prefer Image beacon for moderate size
+  var url = SHEETS_URL + '?action=saveConfig&gifts=' + payload + '&cronograma=' + payload2;
+  if (url.length > 1800) {
+    // Too long for GET: still try Image (may fail) and warn
+    if (st) st.textContent = '⚠️ Lista muy larga; intenta con menos ítems o URLs más cortas.';
+  }
+  var img = new Image();
+  img.onload = img.onerror = function() {
+    if (st) { st.textContent = '✓ Enviado a Sheets (revisa la hoja Config)'; setTimeout(function(){ st.textContent=''; }, 4000); }
+  };
+  img.src = url;
+}
+function pullConfigFromSheets() {
+  return new Promise(function(resolve) {
+    var cb = 'cfgCb_' + Date.now();
+    var script = document.createElement('script');
+    var timeout = setTimeout(function(){ try{document.head.removeChild(script);}catch(e){} delete window[cb]; resolve(false); }, 8000);
+    window[cb] = function(data) {
+      clearTimeout(timeout);
+      try{document.head.removeChild(script);}catch(e){}
+      delete window[cb];
+      if (data && data.ok) {
+        if (Array.isArray(data.gifts)) { saveGiftItems(data.gifts); renderGiftItems(); }
+        if (Array.isArray(data.cronograma)) { saveCronogramaDB(data.cronograma); renderCronogramaEditor(); }
+        resolve(true);
+      } else resolve(false);
+    };
+    script.src = SHEETS_URL + '?action=getConfig&callback=' + cb;
+    script.onerror = function(){ clearTimeout(timeout); try{document.head.removeChild(script);}catch(e){} delete window[cb]; resolve(false); };
+    document.head.appendChild(script);
+  });
 }
 
 function savePlanoLink(val) {

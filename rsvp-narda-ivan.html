@@ -360,6 +360,68 @@
     </div>
   </div>
 
+  <!-- STEP 2b: Formulario VIRTUAL / INTERNACIONAL -->
+  <div id="step-virtual" class="max-w-2xl mx-auto hidden">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-olive/5 via-eucalyptus/10 to-olive/5 px-6 sm:px-10 py-8 border-b border-eucalyptus-light/20 text-center">
+        <p class="font-sans text-xs tracking-widest uppercase text-gold mb-2">Transmisión en vivo</p>
+        <h1 class="font-serif text-3xl sm:text-4xl text-olive font-semibold tracking-wide">Confirmación virtual</h1>
+        <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-4 mb-4"></div>
+        <p id="virtual-welcome" class="font-sans text-olive/80 text-sm leading-relaxed max-w-lg mx-auto"></p>
+        <p class="font-sans text-olive/70 text-sm mt-2">No ocupas lugar en el salón — solo necesitamos cómo enviarte el link de la transmisión.</p>
+      </div>
+      <form id="virtual-form" class="px-6 sm:px-10 py-8 space-y-6">
+        <input type="hidden" id="virtual-code" name="codigo">
+        <div class="space-y-2">
+          <label class="block font-sans text-olive font-medium text-sm">¿Cómo quieres que te llamemos? <span class="text-gold">*</span></label>
+          <input type="text" id="virtual-apodo" required placeholder="Tu nombre o apodo"
+            class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus">
+        </div>
+        <div class="space-y-3">
+          <label class="block font-sans text-olive font-medium text-sm">¿Nos acompañarás por la transmisión? <span class="text-gold">*</span></label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-3 px-4 py-3 border border-eucalyptus-light/50 rounded-lg cursor-pointer hover:bg-eucalyptus/5">
+              <input type="radio" name="virtual_attendance" value="virtual" required class="accent-eucalyptus">
+              <span class="font-sans text-olive text-sm">Sí, quiero el link de la transmisión en vivo 📺</span>
+            </label>
+            <label class="flex items-center gap-3 px-4 py-3 border border-eucalyptus-light/50 rounded-lg cursor-pointer hover:bg-eucalyptus/5">
+              <input type="radio" name="virtual_attendance" value="no" class="accent-eucalyptus">
+              <span class="font-sans text-olive text-sm">No podré conectarme</span>
+            </label>
+          </div>
+        </div>
+        <div class="space-y-3" id="virtual-contact-block">
+          <p class="font-sans text-olive font-medium text-sm">¿Cómo te enviamos el link? <span class="text-gold">*</span></p>
+          <p class="font-sans text-olive/60 text-xs">Deja al menos un medio de contacto.</p>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive text-sm">Teléfono internacional (opcional)</label>
+            <div class="flex gap-2">
+              <input type="text" id="virtual-phone-cc" placeholder="+1" class="w-20 px-3 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm bg-white/50 input-focus">
+              <input type="text" id="virtual-phone" inputmode="tel" placeholder="Número" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus">
+            </div>
+          </div>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive text-sm">Instagram, TikTok u otra red</label>
+            <input type="text" id="virtual-social" placeholder="@tu_usuario o link" class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus">
+          </div>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive text-sm">Correo electrónico</label>
+            <input type="email" id="virtual-email" placeholder="tu@correo.com" class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus">
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="block font-sans text-olive font-medium text-sm">Mensaje para los novios <span class="text-olive/50">(opcional)</span></label>
+          <textarea id="virtual-message" rows="3" placeholder="Tus buenos deseos..." class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus resize-none"></textarea>
+        </div>
+        <div id="virtual-form-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm text-center"></div>
+        <button type="submit" id="virtual-submit-btn" class="w-full py-4 bg-gradient-to-r from-olive to-olive-dark text-white font-sans font-medium tracking-wide rounded-lg shadow-md">
+          <span id="virtual-submit-text">Confirmar</span>
+          <span id="virtual-submit-loading" class="hidden">Enviando...</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- SUCCESS -->
   <div id="step-success" class="max-w-2xl mx-auto hidden">
     <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
@@ -389,7 +451,7 @@
 </div>
 
 <script>
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyJQrHWJl6funXGKFb73lQN9T5wuXLqtXkea1DBecRTY-fHf4lr0kHTZ5yCo8rYyiMLFw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwKaqmzHuKG-WfzI7vVvrfRmVCKCYtQyd2OxJ1MhsdtUio4rjWM7IZASVEimeITVqYncA/exec';
 // Token de Telegram removido — las notificaciones las maneja el Apps Script
 // Chat ID removido — ver Apps Script
 const INACTIVITY_MS    = 30 * 60 * 1000;
@@ -557,9 +619,25 @@ async function verifyCode() {
 
 function showForm(code, cupos, nombre, grupo) {
   document.getElementById('hidden-code').value = code;
+  var gup = String(grupo || '').toUpperCase();
+  var isVirtualGroup = (gup === 'INTERNACIONAL' || gup === 'VIRTUAL');
 
-  // Configurar opciones según grupo
-  var isIntl     = (grupo === 'INTERNACIONAL');
+  // Flujo aparte para invitación virtual / internacional
+  if (isVirtualGroup) {
+    document.getElementById('virtual-code').value = code;
+    var vw = document.getElementById('virtual-welcome');
+    if (vw) vw.textContent = nombre ? ('Hola, ' + nombre + '!') : '¡Hola!';
+    if (nombre) {
+      var ap = document.getElementById('virtual-apodo');
+      if (ap && !ap.value) ap.value = nombre.split(' ')[0] || nombre;
+    }
+    document.getElementById('step-codigo').classList.add('hidden');
+    document.getElementById('step-form').classList.add('hidden');
+    document.getElementById('step-virtual').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
   var virtWrap   = document.getElementById('att-virtual-wrap');
   var altContact = document.getElementById('alt-contact-section');
   var countryEl  = document.getElementById('phone-country');
@@ -568,28 +646,18 @@ function showForm(code, cupos, nombre, grupo) {
   var phoneEl    = document.getElementById('phone');
   var phoneHint  = document.getElementById('phone-hint');
 
-  if (isIntl) {
-    if (virtWrap)   virtWrap.classList.remove('hidden');
-    if (altContact) altContact.classList.remove('hidden');
-    if (countryEl)  countryEl.value = '1';
-    if (reqStar)    reqStar.classList.add('hidden');
-    if (optTag)     optTag.classList.remove('hidden');
-    if (phoneEl)    phoneEl.removeAttribute('required');
-    if (phoneHint)  phoneHint.textContent = 'Opcional — si tienes WhatsApp internacional.';
-  } else {
-    if (virtWrap)   virtWrap.classList.add('hidden');
-    if (altContact) altContact.classList.add('hidden');
-    if (countryEl)  countryEl.value = '591';
-    if (reqStar)    reqStar.classList.remove('hidden');
-    if (optTag)     optTag.classList.add('hidden');
-    if (phoneEl)    phoneEl.setAttribute('required','required');
-    if (phoneHint)  phoneHint.textContent = 'Te enviaremos la información de tu mesa a este número.';
-  }
+  if (virtWrap)   virtWrap.classList.add('hidden');
+  if (altContact) altContact.classList.add('hidden');
+  if (countryEl)  countryEl.value = '591';
+  if (reqStar)    reqStar.classList.remove('hidden');
+  if (optTag)     optTag.classList.add('hidden');
+  if (phoneEl)    phoneEl.setAttribute('required','required');
+  if (phoneHint)  phoneHint.textContent = 'Te enviaremos la información de tu mesa a este número.';
+
   document.getElementById('step-codigo').classList.add('hidden');
   document.getElementById('step-form').classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
-  // Show welcome message
   if (nombre) {
     var w = document.getElementById('guest-welcome');
     w.textContent = 'Hola, ' + nombre + '!';
@@ -909,6 +977,75 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
     submitLoad.classList.add('hidden');
     formErr.textContent = 'Hubo un error al enviar. Por favor intenta de nuevo.';
     formErr.classList.remove('hidden');
+  }
+});
+
+
+// Virtual form submit
+document.getElementById('virtual-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var err = document.getElementById('virtual-form-error');
+  var att = (document.querySelector('input[name="virtual_attendance"]:checked') || {}).value;
+  var apodo = document.getElementById('virtual-apodo').value.trim();
+  var cc = document.getElementById('virtual-phone-cc').value.trim();
+  var phoneRaw = document.getElementById('virtual-phone').value.trim().replace(/[^0-9]/g,'');
+  var phone = phoneRaw ? ((cc || '') + phoneRaw).replace(/[^0-9+]/g,'') : '';
+  var social = document.getElementById('virtual-social').value.trim();
+  var email = document.getElementById('virtual-email').value.trim();
+  var code = document.getElementById('virtual-code').value;
+  if (!apodo) { err.textContent = 'Indica un nombre o apodo.'; err.classList.remove('hidden'); return; }
+  if (!att) { err.textContent = 'Selecciona si te conectarás o no.'; err.classList.remove('hidden'); return; }
+  if (att === 'virtual' && !phone && !social && !email) {
+    err.textContent = 'Deja al menos un medio de contacto para enviarte el link.';
+    err.classList.remove('hidden'); return;
+  }
+  err.classList.add('hidden');
+  document.getElementById('virtual-submit-text').classList.add('hidden');
+  document.getElementById('virtual-submit-loading').classList.remove('hidden');
+  document.getElementById('virtual-submit-btn').disabled = true;
+
+  var record = {
+    codigo: code,
+    nombre: apodo,
+    apellido: '',
+    telefono: phone,
+    contacto_email: email,
+    contacto_social: social,
+    asistencia: att,
+    acompanantes: 0,
+    nombres_acompanantes: '',
+    alergia: 'no',
+    detalle_alergia: '',
+    mensaje: document.getElementById('virtual-message').value.trim(),
+    grupo: 'INTERNACIONAL'
+  };
+  try {
+    var params = new URLSearchParams();
+    Object.keys(record).forEach(function(k){ params.append(k, record[k]); });
+    await new Promise(function(resolve) {
+      var img = new Image();
+      img.onload = img.onerror = resolve;
+      img.src = SHEETS_URL + '?' + params.toString();
+      setTimeout(resolve, 5000);
+    });
+    serverData.usedCodes.add(code);
+    document.getElementById('success-title').textContent = att === 'no'
+      ? 'Lamentamos que no puedas acompañarnos'
+      : '¡Listo! Te enviaremos el link de la transmisión';
+    document.getElementById('success-message').textContent = att === 'no'
+      ? 'Gracias por avisarnos. Siempre serás parte de este día en nuestros corazones.'
+      : 'Usaremos el contacto que dejaste para compartir el enlace el día del evento.';
+    document.getElementById('step-virtual').classList.add('hidden');
+    document.getElementById('step-success').classList.remove('hidden');
+    var waBtn = document.getElementById('whatsapp-btn');
+    if (waBtn) waBtn.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } catch(err2) {
+    document.getElementById('virtual-submit-btn').disabled = false;
+    document.getElementById('virtual-submit-text').classList.remove('hidden');
+    document.getElementById('virtual-submit-loading').classList.add('hidden');
+    err.textContent = 'Hubo un error al enviar. Intenta de nuevo.';
+    err.classList.remove('hidden');
   }
 });
 
