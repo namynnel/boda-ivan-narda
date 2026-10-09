@@ -7,6 +7,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Great+Vibes&family=Pinyon+Script&display=swap" rel="stylesheet">
 <style>
+/* ═══════════════════════════════════════
+   PALETA: Beige · Oliva · Eucalipto · Dorado
+═══════════════════════════════════════ */
 :root {
   --cream:      #FAF4E8;
   --cream-mid:  #F0E6CE;
@@ -27,39 +30,121 @@
   --ink-lt:     #6A7848;
   --sage:       #8AAA78;
 }
+
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{background:var(--cream);color:var(--ink);font-family:'Crimson Text',serif;overflow-x:hidden;}
-#nav{position:fixed;top:0;left:0;right:0;z-index:900;background:rgba(58,69,32,.97);backdrop-filter:blur(14px);border-bottom:1px solid rgba(168,120,40,.2);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;transform:translateY(-100%);transition:transform .5s cubic-bezier(.4,0,.2,1);}
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:'Crimson Text',serif;
+  overflow-x:hidden;
+}
+
+/* ═══════════════════════════════════════
+   NAV
+═══════════════════════════════════════ */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  background:rgba(58,69,32,.97);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(168,120,40,.2);
+  height:52px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 20px;
+  transform:translateY(-100%);
+  transition:transform .5s cubic-bezier(.4,0,.2,1);
+}
 #nav.show{transform:translateY(0);}
-.nav-logo{font-family:'Cinzel',serif;font-size:15px;color:var(--gold-lt);text-decoration:none;letter-spacing:.2em;font-weight:600;}
+.nav-logo{
+  font-family:'Cinzel',serif;font-size:15px;
+  color:var(--gold-lt);text-decoration:none;
+  letter-spacing:.2em;font-weight:600;
+}
 .nav-links{display:flex;gap:2px;}
-.nav-links a{font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(221,176,80,.85);text-decoration:none;padding:6px 10px;white-space:nowrap;transition:color .2s;}
+.nav-links a{
+  font-family:'Cinzel',serif;font-size:7.5px;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(221,176,80,.85);text-decoration:none;
+  padding:6px 10px;white-space:nowrap;transition:color .2s;
+}
 .nav-links a:hover,.nav-links a.on{color:var(--gold-lt);}
 .burger{display:none;flex-direction:column;gap:5px;cursor:pointer;}
 .burger span{width:20px;height:1.5px;background:rgba(221,176,80,.6);display:block;}
 @media(max-width:640px){
-  .nav-links{display:none;position:absolute;top:52px;left:0;right:0;flex-direction:column;background:rgba(30,36,16,.99);border-bottom:1px solid rgba(168,120,40,.12);padding:6px 0;}
+  .nav-links{display:none;position:absolute;top:52px;left:0;right:0;
+    flex-direction:column;background:rgba(30,36,16,.99);
+    border-bottom:1px solid rgba(168,120,40,.12);padding:6px 0;}
   .nav-links.open{display:flex;}
   .nav-links a{padding:11px 20px;font-size:9px;}
   .burger{display:flex;}
 }
-#vinyl{position:fixed;bottom:22px;right:22px;z-index:9999;cursor:pointer;transition:transform .3s;}
+
+/* ═══════════════════════════════════════
+   VINILO
+═══════════════════════════════════════ */
+#vinyl{
+  position:fixed;bottom:22px;right:22px;z-index:9999;
+  cursor:pointer;transition:transform .3s;
+}
 #vinyl:hover{transform:scale(1.08);}
-.v-disc{width:66px;height:66px;background:radial-gradient(circle at 36% 30%,#2A3410,#141A06,#0C1004);border-radius:50%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;border:2px solid rgba(168,120,40,.4);box-shadow:0 6px 24px rgba(0,0,0,.45),0 0 0 1px rgba(168,120,40,.12);}
-.v-grooves{position:absolute;inset:0;border-radius:50%;background:repeating-radial-gradient(circle,transparent 6px,rgba(255,255,255,.03) 7px,transparent 8px);}
-.v-label{width:24px;height:24px;background:radial-gradient(circle at 40% 35%,var(--gold-lt),var(--gold));border-radius:50%;z-index:2;display:flex;align-items:center;justify-content:center;font-family:'Cinzel',serif;font-size:9px;color:var(--olive-dk);font-weight:600;}
-.v-needle{position:absolute;right:-5px;top:5px;width:26px;height:2.5px;background:linear-gradient(to right,var(--gold-lt),var(--gold));transform-origin:right center;transform:rotate(-30deg);border-radius:2px;transition:transform .7s ease;}
+.v-disc{
+  width:66px;height:66px;
+  background:radial-gradient(circle at 36% 30%,#2A3410,#141A06,#0C1004);
+  border-radius:50%;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid rgba(168,120,40,.4);
+  box-shadow:0 6px 24px rgba(0,0,0,.45),0 0 0 1px rgba(168,120,40,.12);
+}
+.v-grooves{
+  position:absolute;inset:0;border-radius:50%;
+  background:repeating-radial-gradient(circle,transparent 6px,rgba(255,255,255,.03) 7px,transparent 8px);
+}
+.v-label{
+  width:24px;height:24px;
+  background:radial-gradient(circle at 40% 35%,var(--gold-lt),var(--gold));
+  border-radius:50%;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cinzel',serif;font-size:9px;color:var(--olive-dk);
+  font-weight:600;
+}
+.v-needle{
+  position:absolute;right:-5px;top:5px;
+  width:26px;height:2.5px;
+  background:linear-gradient(to right,var(--gold-lt),var(--gold));
+  transform-origin:right center;transform:rotate(-30deg);
+  border-radius:2px;transition:transform .7s ease;
+}
 .v-needle.on{transform:rotate(-10deg);}
 .v-disc.spin{animation:vspin 2.4s linear infinite;}
 @keyframes vspin{to{transform:rotate(360deg)}}
-.v-tip{position:absolute;bottom:calc(100% + 7px);right:0;background:rgba(30,36,16,.95);border:1px solid rgba(168,120,40,.3);color:var(--gold-pale);font-family:'Cinzel',serif;font-size:8px;letter-spacing:.1em;padding:5px 10px;white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;}
+.v-tip{
+  position:absolute;bottom:calc(100% + 7px);right:0;
+  background:rgba(30,36,16,.95);border:1px solid rgba(168,120,40,.3);
+  color:var(--gold-pale);font-family:'Cinzel',serif;
+  font-size:8px;letter-spacing:.1em;padding:5px 10px;
+  white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none;
+}
 #vinyl:hover .v-tip{opacity:1;}
-#hero{height:100vh;min-height:500px;position:relative;overflow:hidden;background:var(--olive-dk);}
+
+/* ═══════════════════════════════════════
+   HERO
+═══════════════════════════════════════ */
+/* ── HERO BASE ── */
+#hero{
+  height:100vh;min-height:500px;
+  position:relative;overflow:hidden;
+  background:var(--olive-dk);
+}
+
+/* ── CARRUSEL (móvil — sin cambios) ── */
 #hero-carousel-wrap{height:100%;display:flex;flex-direction:column;}
 .car-track{display:flex;flex:1;height:100%;transition:transform .95s cubic-bezier(.4,0,.2,1);}
 .car-slide{min-width:100%;height:100%;position:relative;flex-shrink:0;overflow:hidden;}
-.slide-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.3em;text-transform:uppercase;}
+.slide-ph{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;
+  font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:.3em;text-transform:uppercase;
+}
 .slide-ph.s1{background:linear-gradient(135deg,#4A5828,#2E3818,#1E2810);}
 .slide-ph.s2{background:linear-gradient(135deg,#3A5040,#243428,#182418);}
 .slide-ph.s3{background:linear-gradient(135deg,#504A28,#343018,#241E10);}
@@ -67,41 +152,136 @@ body{background:var(--cream);color:var(--ink);font-family:'Crimson Text',serif;o
 .slide-ph svg{opacity:.15;position:relative;z-index:1;}
 .slide-ph p{color:rgba(168,120,40,.4);position:relative;z-index:1;}
 .slide-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;z-index:2;}
+
+/* ── GALERÍA 4 COLUMNAS (solo desktop ≥900px) ── */
 #hero-gallery{display:none;}
 @media(min-width:900px){
   #hero{height:100vh;}
   .hero-names{font-size:clamp(28px,5vw,60px);}
   #hero-carousel-wrap{display:none !important;}
-  #hero-gallery{display:flex;flex-direction:row;width:100%;height:100%;gap:0;}
-  .hg-item{flex:1;position:relative;overflow:hidden;background:var(--olive-dk);}
-  .hg-item img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform .6s ease;display:block;}
+  #hero-gallery{
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    height:100%;
+    gap:0;
+  }
+  .hg-item{
+    flex:1;
+    position:relative;
+    overflow:hidden;
+    background:var(--olive-dk);
+  }
+  .hg-item img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center top;
+    transition:transform .6s ease;
+    display:block;
+  }
   .hg-item:hover img{transform:scale(1.04);}
-  .hg-item::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(30,36,16,.05),rgba(30,36,16,.45));}
-  .hg-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:'Cinzel',serif;font-size:7px;letter-spacing:.2em;text-transform:uppercase;}
+  .hg-item::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(to bottom,rgba(30,36,16,.05),rgba(30,36,16,.45));
+  }
+  /* Placeholders por si la foto no carga */
+  .hg-ph{
+    position:absolute;inset:0;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:8px;
+    font-family:'Cinzel',serif;font-size:7px;
+    letter-spacing:.2em;text-transform:uppercase;
+  }
   .hg-ph.h1{background:linear-gradient(180deg,#4A5828,#2E3818);}
   .hg-ph.h2{background:linear-gradient(180deg,#3A5040,#243428);}
   .hg-ph.h3{background:linear-gradient(180deg,#504A28,#343018);}
   .hg-ph.h4{background:linear-gradient(180deg,#283A40,#182428);}
   .hg-ph p{color:rgba(168,120,40,.4);}
 }
-.hero-veil{position:absolute;inset:0;pointer-events:none;z-index:2;background:linear-gradient(to bottom,rgba(30,36,16,.3) 0%,rgba(30,36,16,.1) 20%,rgba(30,36,16,.1) 40%,rgba(30,36,16,.7) 72%,rgba(30,36,16,.97) 100%);}
-@media(min-width:900px){
-  .hero-veil{background:linear-gradient(to bottom,rgba(30,36,16,.1) 0%,rgba(30,36,16,.05) 30%,rgba(30,36,16,.55) 72%,rgba(30,36,16,.97) 100%);}
+
+.hero-veil{
+  position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(to bottom,
+    rgba(30,36,16,.3) 0%,rgba(30,36,16,.1) 20%,
+    rgba(30,36,16,.1) 40%,rgba(30,36,16,.7) 72%,rgba(30,36,16,.97) 100%);
 }
-.hero-text{position:absolute;bottom:54px;left:0;right:0;text-align:center;z-index:3;padding:0 20px;}
-.hero-pre{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.55em;color:#fff;text-transform:uppercase;margin-bottom:10px;text-shadow:0 2px 12px rgba(0,0,0,.6);}
-.hero-names{font-family:'Cinzel',serif;font-size:clamp(36px,9vw,90px);color:#fff;line-height:1;font-weight:600;letter-spacing:.08em;text-transform:uppercase;text-shadow:0 4px 40px rgba(0,0,0,.7),0 0 80px rgba(0,0,0,.4);}
-.hero-amp{display:block;font-family:'Cormorant Garamond',serif;font-size:clamp(18px,3.5vw,32px);color:var(--gold-lt);letter-spacing:.35em;margin:8px 0;font-weight:300;font-style:italic;text-shadow:0 2px 20px rgba(0,0,0,.5);}
-.hero-date{font-family:'Cinzel',serif;font-size:clamp(11px,1.8vw,16px);font-weight:400;color:rgba(255,255,255,.75);letter-spacing:.35em;margin-top:16px;text-transform:uppercase;display:block;text-align:center;}
-.hero-hint{margin-top:22px;display:flex;align-items:center;justify-content:center;gap:8px;color:#fff;font-family:'Cormorant Garamond',serif;font-size:clamp(13px,2vw,16px);letter-spacing:.12em;font-style:italic;animation:breathe 3.5s ease-in-out infinite;text-shadow:0 2px 10px rgba(0,0,0,.6);}
-@keyframes breathe{0%,100%{opacity:.4}50%{opacity:.95}}
-.car-dots{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:4;}
-.cdot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.15);border:1px solid rgba(168,120,40,.4);cursor:pointer;transition:background .3s;}
+@media(min-width:900px){
+  .hero-veil{
+    background:linear-gradient(to bottom,
+      rgba(30,36,16,.1) 0%,rgba(30,36,16,.05) 30%,
+      rgba(30,36,16,.55) 72%,rgba(30,36,16,.97) 100%);
+  }
+}
+.hero-text{
+  position:absolute;bottom:54px;left:0;right:0;
+  text-align:center;z-index:3;padding:0 20px;
+}
+.hero-pre{
+  font-family:'Cinzel',serif;font-size:11px;
+  letter-spacing:.55em;color:#fff;
+  text-transform:uppercase;margin-bottom:10px;opacity:1;
+  text-shadow:0 2px 12px rgba(0,0,0,.6);
+}
+.hero-names{
+  font-family:'Cinzel',serif;
+  font-size:clamp(36px,9vw,90px);
+  color:#fff;line-height:1;
+  font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  text-shadow:0 4px 40px rgba(0,0,0,.7),0 0 80px rgba(0,0,0,.4);
+}
+.hero-amp{
+  display:block;font-family:'Cormorant Garamond',serif;
+  font-size:clamp(18px,3.5vw,32px);color:var(--gold-lt);
+  letter-spacing:.35em;margin:8px 0;font-weight:300;font-style:italic;
+  text-shadow:0 2px 20px rgba(0,0,0,.5);
+}
+.hero-date{
+  font-family:'Cinzel',serif;
+  font-size:clamp(11px,1.8vw,16px);font-weight:400;
+  color:rgba(255,255,255,.6);letter-spacing:.35em;
+  margin-top:16px;text-transform:uppercase;
+  display:block;text-align:center;
+}
+.hero-hint{
+  margin-top:22px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  color:#fff;font-family:'Cormorant Garamond',serif;
+  font-size:clamp(13px,2vw,16px);letter-spacing:.12em;
+  font-style:italic;
+  animation:breathe 3.5s ease-in-out infinite;
+  text-shadow:0 2px 10px rgba(0,0,0,.6);
+}
+@keyframes breathe{0%,100%{opacity:.3}50%{opacity:.85}}
+
+.car-dots{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  display:flex;gap:7px;z-index:4;
+}
+.cdot{
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,.15);border:1px solid rgba(168,120,40,.4);
+  cursor:pointer;transition:background .3s;
+}
 .cdot.on{background:var(--gold-lt);}
-.car-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:42px;height:42px;background:rgba(30,36,16,.5);border:1px solid rgba(168,120,40,.3);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .25s,transform .25s;color:var(--gold-lt);}
+.car-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);
+  z-index:4;width:42px;height:42px;
+  background:rgba(30,36,16,.5);border:1px solid rgba(168,120,40,.3);
+  backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .25s,transform .25s;
+  color:var(--gold-lt);
+}
 .car-arrow:hover{background:rgba(168,120,40,.2);transform:translateY(-50%) scale(1.08);}
 .car-arrow.prev{left:16px;}
 .car-arrow.next{right:16px;}
+
+/* ═══════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════ */
 .band{padding:88px 24px;position:relative;}
 .band-cream{background:var(--cream);}
 .band-linen{background:linear-gradient(160deg,#F5EDD8,#EAE0C4);}
@@ -109,64 +289,487 @@ body{background:var(--cream);color:var(--ink);font-family:'Crimson Text',serif;o
 .band-euca{background:linear-gradient(160deg,var(--euca),#2E4A3A,#1E3028);}
 .band-sage{background:linear-gradient(160deg,#6A7848,#4A5830,#303A1E);}
 .band-dark{background:linear-gradient(160deg,#1A2010,#141808,#0E1406);}
+
 .inner{max-width:860px;margin:0 auto;}
 .inner-sm{max-width:580px;margin:0 auto;}
 .center{text-align:center;}
-.rune{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.5em;text-transform:uppercase;margin-bottom:14px;display:block;color:var(--gold-mid);font-weight:600;}
-.sec-h{font-family:'Cinzel',serif;font-size:clamp(20px,3.5vw,32px);font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--olive-dk);}
-.band-olive .sec-h,.band-euca .sec-h,.band-sage .sec-h,.band-dark .sec-h{color:rgba(250,244,232,.98);}
+
+/* Section headers */
+.rune{color:rgba(201,169,98,.92)!important;
+  font-family:'Cinzel',serif;font-size:10px;
+  letter-spacing:.5em;text-transform:uppercase;
+  margin-bottom:14px;display:block;
+  color:var(--gold-mid);
+}
+.band-olive .rune,.band-euca .rune,.band-sage .rune,.band-dark .rune{color:rgba(201,169,98,.92)!important;
+  color:rgba(221,176,80,.95);
+}
+.sec-h{
+  font-family:'Cinzel',serif;
+  font-size:clamp(20px,3.5vw,32px);
+  font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--olive-dk);
+}
+.band-olive .sec-h,.band-euca .sec-h,.band-sage .sec-h,.band-dark .sec-h{
+  color:rgba(250,244,232,.95);
+}
+
 .hr-row{display:flex;align-items:center;gap:10px;margin:20px 0 36px;justify-content:center;}
 .hr-l{flex:1;max-width:90px;height:1px;background:linear-gradient(to right,transparent,var(--gold-mid));}
 .hr-l.r{background:linear-gradient(to left,transparent,var(--gold-mid));}
 .hr-d{width:5px;height:5px;border-radius:50%;background:var(--gold-mid);flex-shrink:0;}
+.band-olive .hr-l,.band-euca .hr-l,.band-sage .hr-l,.band-dark .hr-l{background:linear-gradient(to right,transparent,rgba(221,176,80,.5));}
+.band-olive .hr-l.r,.band-euca .hr-l.r,.band-sage .hr-l.r,.band-dark .hr-l.r{background:linear-gradient(to left,transparent,rgba(221,176,80,.5));}
+.band-olive .hr-d,.band-euca .hr-d,.band-sage .hr-d,.band-dark .hr-d{background:rgba(221,176,80,.5);}
+
+/* Reveal */
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s,transform .8s;}
 .reveal.visible{opacity:1;transform:none;}
 .d1{transition-delay:.1s;}.d2{transition-delay:.22s;}.d3{transition-delay:.34s;}
+
+/* Divider */
 .divider{height:1px;background:linear-gradient(to right,transparent,var(--gold-mid),transparent);opacity:.3;}
-.story-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,3vw,26px);font-style:italic;font-weight:300;color:var(--olive-dk);line-height:1.8;text-align:center;max-width:580px;margin:0 auto 1.5rem;}
-.story-body{font-family:'Crimson Text',serif;font-size:clamp(17px,2vw,20px);line-height:1.9;color:var(--ink-mid);text-align:center;max-width:580px;margin:0 auto;}
-.historia-date{font-family:'Cinzel',serif;font-size:clamp(26px,6vw,52px);font-weight:600;color:var(--olive-dk);letter-spacing:.12em;text-transform:uppercase;margin:2.5rem 0 1rem;display:block;text-align:center;position:relative;padding-bottom:1.2rem;}
-.historia-date::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
-.cal-btn{display:inline-flex;align-items:center;gap:8px;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--olive-dk);text-decoration:none;border:1px solid rgba(92,107,58,.4);padding:10px 20px;transition:all .3s;margin-bottom:2rem;cursor:pointer;background:transparent;}
+
+/* ═══════════════════════════════════════
+   HISTORIA
+═══════════════════════════════════════ */
+.story-names{
+  font-family:'Cinzel',serif;
+  font-size:clamp(16px,3.5vw,28px);
+  font-weight:600;letter-spacing:.18em;
+  color:var(--olive-dk);text-transform:uppercase;
+  margin-bottom:1.2rem;display:block;
+}
+.story-quote{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(18px,3vw,26px);
+  font-style:italic;font-weight:300;
+  color:var(--olive-dk);line-height:1.8;
+  text-align:center;max-width:580px;margin:0 auto 1.5rem;
+}
+.story-body{
+  font-family:'Crimson Text',serif;
+  font-size:clamp(17px,2vw,20px);
+  line-height:1.9;
+  color:var(--ink-mid);
+  text-align:center;
+  max-width:580px;
+  margin:0 auto;
+}
+.story-attr{
+  display:block;margin-top:1.5rem;
+  font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:.4em;color:var(--gold);
+  text-transform:uppercase;text-align:center;
+}
+/* Historia date */
+.historia-date{
+  font-family:'Cinzel',serif;
+  font-size:clamp(26px,6vw,52px);
+  font-weight:600;
+  color:var(--olive-dk);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin:2.5rem 0 1rem;
+  display:block;
+  text-align:center;
+  position:relative;
+  padding-bottom:1.2rem;
+}
+.historia-date::after{
+  content:'';
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:120px;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+/* Calendar button */
+.cal-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:'Cinzel',serif;font-size:8.5px;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--olive-dk);text-decoration:none;
+  border:1px solid rgba(92,107,58,.4);
+  padding:10px 20px;transition:all .3s;
+  margin-bottom:2rem;cursor:pointer;background:transparent;
+}
 .cal-btn:hover{background:var(--olive-dk);color:var(--gold-pale);}
-.countdown-wrap{display:flex;gap:0;justify-content:center;margin-top:8px;background:linear-gradient(160deg,var(--olive-dk),#283010);border-radius:8px;overflow:hidden;box-shadow:0 8px 32px rgba(58,69,32,.25);width:100%;max-width:520px;margin-left:auto;margin-right:auto;}
-.cd-unit{text-align:center;padding:20px 0;border-right:1px solid rgba(221,176,80,.15);flex:1;}
+
+/* ═══════════════════════════════════════
+   COUNTDOWN
+═══════════════════════════════════════ */
+.cd-pre{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(18px,3vw,24px);
+  font-style:italic;font-weight:300;
+  color:var(--olive-dk);margin-bottom:1rem;display:block;
+  text-align:center;
+}
+.countdown-wrap{
+  display:flex;gap:0;justify-content:center;
+  margin-top:8px;flex-wrap:nowrap;
+  background:linear-gradient(160deg,var(--olive-dk),#283010);
+  border-radius:8px;overflow:hidden;
+  box-shadow:0 8px 32px rgba(58,69,32,.25);
+  width:100%;max-width:520px;margin-left:auto;margin-right:auto;
+}
+.cd-unit{
+  text-align:center;padding:20px 0;
+  border-right:1px solid rgba(221,176,80,.15);
+  flex:1;position:relative;
+}
 .cd-unit:last-child{border-right:none;}
-.cd-n{font-family:'Cinzel',serif;font-size:clamp(32px,6vw,52px);font-weight:400;color:var(--gold-lt);display:block;line-height:1;}
-.cd-l{font-family:'Cinzel',serif;font-size:7px;letter-spacing:.3em;text-transform:uppercase;color:rgba(221,176,80,.9);margin-top:6px;display:block;}
-.event-card{padding:36px 28px;text-align:center;background:rgba(255,255,255,.75);border:1px solid rgba(168,120,40,.2);position:relative;overflow:hidden;border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.05);}
-.event-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--sage),var(--euca),var(--gold-mid));}
+.cd-n{
+  font-family:'Cinzel',serif;
+  font-size:clamp(32px,6vw,52px);
+  font-weight:400;color:var(--gold-lt);
+  display:block;line-height:1;
+  text-shadow:0 0 30px rgba(221,176,80,.3);
+}
+.cd-l{
+  font-family:'Cinzel',serif;font-size:7px;
+  letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(221,176,80,.9);margin-top:6px;display:block;
+}
+@media(max-width:480px){
+  .cd-n{font-size:clamp(26px,7vw,40px);}
+  .cd-unit{padding:16px 0;}
+}
+
+/* ═══════════════════════════════════════
+   EVENTOS / FECHA
+═══════════════════════════════════════ */
+.events-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:2px;margin-top:8px;
+}
+@media(max-width:600px){.events-grid{grid-template-columns:1fr;}}
+
+.event-card{
+  padding:36px 28px;text-align:center;
+  background:rgba(255,255,255,.55);
+  border:1px solid rgba(168,120,40,.15);
+  position:relative;overflow:hidden;
+}
+.event-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--sage),var(--euca),var(--gold-mid));
+}
 .event-icon{font-size:28px;margin-bottom:12px;display:block;}
-.event-type{font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:block;}
-.event-name{font-size:1.15rem;font-weight:700;color:var(--olive-dk);margin-bottom:6px;font-family:'Cinzel',serif;}
-.event-place{font-size:15px;color:var(--ink-mid);font-style:italic;line-height:1.5;}
-.map-btn{display:inline-flex;align-items:center;gap:7px;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--olive-dk);text-decoration:none;border:1px solid rgba(92,107,58,.5);padding:10px 18px;transition:all .3s;background:rgba(92,107,58,.05);}
+.event-type{
+  font-family:'Cinzel',serif;font-size:8.5px;
+  letter-spacing:.35em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:10px;display:block;
+}
+.event-time{
+  font-family:'Cinzel',serif;font-size:clamp(20px,3vw,28px);
+  font-weight:500;color:var(--olive-dk);display:block;margin-bottom:6px;
+}
+.event-name{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+.event-place{font-size:15px;color:var(--ink-lt);font-style:italic;line-height:1.5;}
+.event-pending{
+  display:inline-block;margin-top:10px;
+  font-family:'Cinzel',serif;font-size:7.5px;
+  letter-spacing:.2em;color:var(--gold);
+  border:1px solid rgba(168,120,40,.3);
+  padding:4px 10px;text-transform:uppercase;
+}
+
+/* Venue photo placeholder */
+.venue-photo{
+  width:100%;height:180px;
+  background:linear-gradient(135deg,var(--euca-pale),var(--cream-deep));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:8px;margin-top:16px;border:1px dashed rgba(168,120,40,.25);
+  cursor:pointer;transition:background .3s;
+}
+.venue-photo:hover{background:linear-gradient(135deg,var(--euca-pale),var(--cream-mid));}
+.venue-photo svg{opacity:.3;}
+.venue-photo p{
+  font-family:'Cinzel',serif;font-size:8px;
+  letter-spacing:.2em;color:var(--ink-lt);
+  text-transform:uppercase;opacity:.6;
+}
+.venue-photo.has-img{padding:0;overflow:hidden;}
+.venue-photo.has-img img{width:100%;height:100%;object-fit:cover;}
+
+/* Map */
+.map-wrap{
+  margin-top:36px;overflow:hidden;
+  border:1px solid rgba(92,107,58,.25);
+  box-shadow:0 8px 32px rgba(30,36,16,.12);
+}
+.map-wrap iframe{width:100%;height:360px;border:none;display:block;}
+.map-info{
+  background:rgba(255,255,255,.8);
+  padding:16px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+  border-top:1px solid rgba(92,107,58,.15);
+}
+.map-addr{font-size:15px;color:var(--ink-mid);font-style:italic;}
+.map-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:'Cinzel',serif;font-size:8px;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--olive-dk);text-decoration:none;
+  border:1px solid rgba(92,107,58,.4);
+  padding:8px 16px;transition:all .3s;
+}
 .map-btn:hover{background:var(--olive-dk);color:var(--gold-pale);}
-.dress-body-text{font-size:18px;line-height:1.9;color:var(--ink-mid);max-width:560px;margin:0 auto 2rem;text-align:center;}
-.forbidden-wrap{margin-top:2rem;text-align:center;background:rgba(255,255,255,.6);padding:24px;border-radius:12px;border:1px solid rgba(168,120,40,.25);max-width:650px;margin-left:auto;margin-right:auto;}
-.forbidden-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#8B2525;margin-bottom:14px;display:block;font-weight:700;}
+
+/* ═══════════════════════════════════════
+   DRESSCODE
+═══════════════════════════════════════ */
+.dress-body-text{
+  font-size:18px;line-height:1.9;
+  color:rgba(250,244,232,.95);
+  max-width:560px;margin:0 auto 2rem;
+  text-align:center;
+}
+.forbidden-wrap{margin-top:2rem;text-align:center;}
+.forbidden-title{
+  font-family:'Cinzel',serif;font-size:8px;
+  letter-spacing:.35em;text-transform:uppercase;
+  color:rgba(221,176,80,.92);margin-bottom:16px;display:block;
+}
 .forbidden-chips{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:20px;font-size:14px;font-weight:600;}
-.gift-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:8px;}
+.chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 18px;border-radius:20px;font-size:14px;font-weight:600;
+}
+.chip-w{background:rgba(240,235,220,.1);border:1px solid rgba(200,195,180,.3);color:rgba(250,244,232,.92);}
+.chip-g{background:rgba(90,140,80,.15);border:1px solid rgba(120,170,80,.35);color:#A8D890;}
+.chip-r{background:rgba(180,70,60,.12);border:1px solid rgba(200,80,70,.3);color:#E89090;}
+.dress-note{
+  margin-top:2rem;font-size:16px;font-style:italic;
+  color:rgba(250,244,232,.85);text-align:center;
+}
+
+/* ═══════════════════════════════════════
+   REGALOS
+═══════════════════════════════════════ */
+.gift-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:2px;margin-top:8px;
+}
 @media(max-width:640px){.gift-grid{grid-template-columns:1fr;}}
-.gcard{padding:36px 24px;text-align:center;background:rgba(255,255,255,.7);position:relative;overflow:hidden;border-radius:8px;border:1px solid rgba(92,107,58,.2);box-shadow:0 8px 24px rgba(0,0,0,.04);}
+
+.gcard{
+  padding:36px 24px;text-align:center;
+  background:rgba(30,36,16,.5);
+  position:relative;overflow:hidden;
+}
+.gcard::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--euca-lt),var(--gold-mid));
+}
 .gi{font-size:32px;margin-bottom:14px;display:block;}
-.gn{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--olive-dk);margin-bottom:10px;font-weight:700;}
-.gd{font-size:15px;color:var(--ink-mid);line-height:1.7;margin-bottom:16px;}
-.gl{display:inline-block;font-family:'Cinzel',serif;font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--olive-dk);text-decoration:none;border:1px solid rgba(92,107,58,.5);padding:9px 18px;transition:all .3s;cursor:pointer;background:transparent;border-radius:4px;}
-.gl:hover{background:var(--olive-dk);color:var(--gold-pale);}
-.rsvp-body{font-size:19px;line-height:1.85;color:rgba(250,244,232,.95);margin-bottom:24px;}
-.deadline{display:inline-block;font-family:'Cinzel',serif;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-pale);border:1px solid rgba(221,176,80,.3);padding:10px 20px;margin-bottom:32px;}
-.rsvp-cta{display:inline-flex;align-items:center;gap:9px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--olive-dk);text-decoration:none;background:linear-gradient(135deg,var(--gold-lt),var(--gold));padding:16px 34px;box-shadow:0 8px 32px rgba(0,0,0,.3);transition:all .4s;border-radius:4px;}
+.gn{
+  font-family:'Cinzel',serif;font-size:10px;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold-lt);margin-bottom:10px;
+}
+.gd{font-size:15px;color:rgba(250,244,232,.9);line-height:1.7;margin-bottom:16px;}
+.gl{
+  display:inline-block;font-family:'Cinzel',serif;
+  font-size:7.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold-lt);text-decoration:none;
+  border:1px solid rgba(221,176,80,.35);padding:8px 16px;
+  transition:all .3s;cursor:pointer;background:transparent;
+}
+.gl:hover{background:rgba(221,176,80,.1);}
+.gl.off{opacity:.35;pointer-events:none;}
+
+.gift-note{
+  font-size:17px;font-style:italic;
+  color:rgba(250,244,232,.88);line-height:1.85;
+  text-align:center;margin-top:44px;
+  max-width:560px;margin-left:auto;margin-right:auto;
+}
+
+/* QR Modal */
+#qr-modal{
+  display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.75);z-index:9999;
+  justify-content:center;align-items:center;padding:20px;
+  backdrop-filter:blur(6px);
+}
+.qr-box{
+  background:var(--cream);
+  border:1px solid rgba(168,120,40,.3);
+  max-width:440px;width:100%;padding:40px;
+  position:relative;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+.qr-close{
+  position:absolute;top:14px;right:14px;
+  width:30px;height:30px;
+  border:1px solid rgba(92,107,58,.3);background:transparent;
+  border-radius:50%;cursor:pointer;font-size:16px;
+  color:var(--olive-dk);display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.qr-close:hover{background:var(--olive-dk);color:var(--gold-pale);}
+.qr-label{
+  font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:.35em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:8px;display:block;
+}
+.qr-title{
+  font-family:'Cinzel',serif;font-size:18px;
+  color:var(--olive-dk);margin-bottom:20px;letter-spacing:.1em;
+}
+.qr-info{font-size:15px;color:var(--ink-lt);margin-bottom:6px;}
+.qr-img-wrap{
+  width:180px;height:180px;margin:20px auto;
+  border:1px dashed rgba(92,107,58,.3);
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(92,107,58,.04);
+}
+/* Replace this div with <img src="tu-qr.jpg"> when ready */
+.qr-ph{
+  font-family:'Cinzel',serif;font-size:8px;
+  letter-spacing:.12em;color:rgba(92,107,58,.75);
+  text-align:center;padding:16px;line-height:1.8;
+}
+
+/* ═══════════════════════════════════════
+   RSVP
+═══════════════════════════════════════ */
+.rsvp-body{
+  font-size:19px;line-height:1.85;
+  color:rgba(250,244,232,.95);margin-bottom:24px;
+}
+.deadline{
+  display:inline-block;
+  font-family:'Cinzel',serif;font-size:9px;
+  letter-spacing:.25em;text-transform:uppercase;
+  color:var(--gold-pale);border:1px solid rgba(221,176,80,.3);
+  padding:10px 20px;margin-bottom:32px;
+}
+.rsvp-cta{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:'Cinzel',serif;font-size:10px;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:var(--olive-dk);text-decoration:none;
+  background:linear-gradient(135deg,var(--gold-lt),var(--gold));
+  padding:16px 34px;
+  box-shadow:0 8px 32px rgba(0,0,0,.3);
+  transition:all .4s;
+}
 .rsvp-cta:hover{box-shadow:0 12px 40px rgba(0,0,0,.4);transform:translateY(-2px);}
-footer{background:linear-gradient(160deg,#1A2010,#0E1408);padding:56px 24px;text-align:center;border-top:1px solid rgba(168,120,40,.15);}
-.footer-n{font-family:'Cormorant Garamond',serif;font-size:clamp(48px,9vw,80px);font-weight:300;color:var(--gold-lt);margin-bottom:14px;letter-spacing:.1em;}
-.footer-d{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:rgba(221,176,80,.85);}
-.footer-quote{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:rgba(250,244,232,.92);margin-top:24px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.8;}
+
+/* ═══════════════════════════════════════
+   MESAS
+═══════════════════════════════════════ */
+.mesas-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px;}
+@media(max-width:600px){.mesas-grid{grid-template-columns:1fr;}}
+.mesas-card{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(168,120,40,.18);
+  padding:32px 24px;text-align:center;
+}
+.mesas-icon{font-size:28px;margin-bottom:12px;display:block;}
+.mesas-h{
+  font-family:'Cinzel',serif;font-size:11px;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold-lt);margin-bottom:12px;
+}
+.mesas-b{font-size:15px;color:rgba(250,244,232,.9);line-height:1.75;margin-bottom:16px;}
+.mesas-pill{
+  display:inline-block;font-size:13px;
+  color:rgba(221,176,80,.92);border:1px solid rgba(221,176,80,.5);
+  padding:5px 12px;margin-bottom:16px;
+}
+.mesas-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  font-family:'Cinzel',serif;font-size:8px;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--gold-lt);text-decoration:none;
+  border:1px solid rgba(221,176,80,.3);padding:9px 18px;
+  transition:all .3s;
+}
+.mesas-btn:hover{background:rgba(221,176,80,.1);}
+.mesas-btn.off{opacity:.3;pointer-events:none;}
+.mesas-wa{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;color:rgba(250,244,232,.95);
+  text-decoration:none;transition:color .3s;margin-top:8px;
+}
+.mesas-wa:hover{color:rgba(250,244,232,.92);}
+
+/* ═══════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════ */
+footer{
+  background:linear-gradient(160deg,#1A2010,#0E1408);
+  padding:56px 24px;text-align:center;
+  border-top:1px solid rgba(168,120,40,.15);
+}
+.footer-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(48px,9vw,80px);
+  font-weight:300;
+  color:var(--gold-lt);margin-bottom:14px;
+  letter-spacing:.1em;
+}
+.footer-d{
+  font-family:'Cinzel',serif;font-size:10px;
+  letter-spacing:.4em;text-transform:uppercase;
+  color:rgba(221,176,80,.85);
+}
+.footer-quote{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-style:italic;
+  color:rgba(250,244,232,.92);margin-top:24px;
+  max-width:480px;margin-left:auto;margin-right:auto;line-height:1.8;
+}
+
+
+/* ── CONTRASTE ELEGANTE — solo fondos oscuros ── */
+/* Secciones con fondo OSCURO: textos claros y dorados brillantes */
+.band-dark .sec-pre,
+.band-olive .sec-pre,
+.band-euca .sec-pre,
+.band-sage .sec-pre { 
+  color:#D4A840 !important; 
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+  font-weight:600 !important;
+  opacity:1 !important;
+}
+.band-dark .sec-h,
+.band-olive .sec-h,
+.band-euca .sec-h,
+.band-sage .sec-h { 
+  color:#F0EAD6 !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+}
+.band-dark .gd { color:rgba(240,234,214,.92) !important; }
+
+/* Secciones con fondo CLARO: textos oscuros y elegantes */
+.band-linen .sec-pre,
+.band-cream .sec-pre,
+.band-light .sec-pre { 
+  color:rgba(160,120,30,.95) !important; 
+  text-shadow:none !important;
+}
+.band-linen .sec-h,
+.band-cream .sec-h,
+.band-light .sec-h {
+  color:rgba(40,50,20,.98) !important;
+  text-shadow:none !important;
+}
+/* event-card en fondos claros */
+.band-linen .event-name { color:rgba(40,50,20,.98) !important; }
+.band-linen .event-place { color:rgba(74,88,40,.85) !important; }
+.band-linen .event-type { color:rgba(160,120,30,.95) !important; }
+
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav id="nav">
   <a href="#hero" class="nav-logo">N · I</a>
   <div class="nav-links" id="nav-links">
@@ -177,64 +780,165 @@ footer{background:linear-gradient(160deg,#1A2010,#0E1408);padding:56px 24px;text
     <a href="#rsvp">RSVP</a>
     <a href="#mesas">Mesas</a>
   </div>
-  <div class="burger" onclick="toggleMenu()"><span></span><span></span><span></span></div>
+  <div class="burger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
 </nav>
 
+<!-- VINILO -->
 <div id="vinyl" onclick="toggleAudio()">
   <div style="position:relative;">
-    <div class="v-disc" id="v-disc"><div class="v-grooves"></div><div class="v-label">N·I</div></div>
+    <div class="v-disc" id="v-disc">
+      <div class="v-grooves"></div>
+      <div class="v-label">N·I</div>
+    </div>
     <div class="v-needle" id="v-needle"></div>
     <div class="v-tip" id="v-tip">Reproducir música</div>
   </div>
 </div>
-<audio id="audio-fondo" loop preload="auto"><source src="shissou.mpeg" type="audio/mpeg"></audio>
+<audio id="audio-fondo" loop preload="auto">
+  <source src="shissou.mpeg" type="audio/mpeg">
+</audio>
 
+<!-- HERO -->
 <section id="hero">
+
+  <!-- CARRUSEL (solo móvil) -->
   <div id="hero-carousel-wrap">
     <div class="car-track" id="car-track">
       <div class="car-slide">
-        <div class="slide-ph s1"><p>Foto 1</p></div>
-        <img class="slide-img" src="invitacion-1.png" alt="Ivan & Narda" onerror="this.style.display='none'">
+        <div class="slide-ph s1">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+          <p>Foto 1</p>
+        </div>
+        <img class="slide-img" src="invitacion-1.png" alt="Ivan &amp; Narda" onerror="this.style.display='none'">
       </div>
-      <div class="car-slide"><div class="slide-ph s2"></div><img class="slide-img" src="invitacion-2.png" alt="Ivan & Narda" onerror="this.style.display='none'"></div>
-      <div class="car-slide"><div class="slide-ph s3"></div><img class="slide-img" src="invitacion-3.jpg" alt="Ivan & Narda" onerror="this.style.display='none'"></div>
-      <div class="car-slide"><div class="slide-ph s4"></div><img class="slide-img" src="invitacion-4.png" alt="Ivan & Narda" onerror="this.style.display='none'"></div>
+      <div class="car-slide">
+        <div class="slide-ph s2"></div>
+        <img class="slide-img" src="invitacion-2.png" alt="Ivan & Narda"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="car-slide">
+        <div class="slide-ph s3"></div>
+        <img class="slide-img" src="invitacion-3.jpg" alt="Ivan & Narda"
+             onerror="this.style.display='none'">
+      </div>
+      <div class="car-slide">
+        <div class="slide-ph s4"></div>
+        <img class="slide-img" src="invitacion-4.png" alt="Ivan & Narda"
+             onerror="this.style.display='none'">
+      </div>
     </div>
-    <button class="car-arrow prev" onclick="prevSlide()">❮</button>
-    <button class="car-arrow next" onclick="nextSlide()">❯</button>
-    <div class="car-dots"><div class="cdot on" onclick="goSlide(0)"></div><div class="cdot" onclick="goSlide(1)"></div><div class="cdot" onclick="goSlide(2)"></div><div class="cdot" onclick="goSlide(3)"></div></div>
+    <button class="car-arrow prev" onclick="prevSlide()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="car-arrow next" onclick="nextSlide()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="car-dots">
+      <div class="cdot on" onclick="goSlide(0)"></div>
+      <div class="cdot" onclick="goSlide(1)"></div>
+      <div class="cdot" onclick="goSlide(2)"></div>
+      <div class="cdot" onclick="goSlide(3)"></div>
+    </div>
   </div>
 
+  <!-- GALERÍA 4 COLUMNAS (solo desktop ≥900px) -->
   <div id="hero-gallery">
-    <div class="hg-item"><div class="hg-ph h1"></div><img src="invitacion-1.png" alt="Ivan & Narda" onload="this.previousElementSibling.style.display='none'" onerror="this.style.display='none'"></div>
-    <div class="hg-item"><div class="hg-ph h2"></div><img src="invitacion-2.png" alt="Ivan & Narda" onload="this.previousElementSibling.style.display='none'" onerror="this.style.display='none'"></div>
-    <div class="hg-item"><div class="hg-ph h3"></div><img src="invitacion-3.jpg" alt="Ivan & Narda" onload="this.previousElementSibling.style.display='none'" onerror="this.style.display='none'"></div>
-    <div class="hg-item"><div class="hg-ph h4"></div><img src="invitacion-4.png" alt="Ivan & Narda" onload="this.previousElementSibling.style.display='none'" onerror="this.style.display='none'"></div>
+    <div class="hg-item">
+      <div class="hg-ph h1"></div>
+      <img src="invitacion-1.png" alt="Ivan &amp; Narda"
+           onload="this.previousElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+    </div>
+    <div class="hg-item">
+      <div class="hg-ph h2"></div>
+      <img src="invitacion-2.png" alt="Ivan & Narda"
+           onload="this.previousElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+    </div>
+    <div class="hg-item">
+      <div class="hg-ph h3"></div>
+      <img src="invitacion-3.jpg" alt="Ivan & Narda"
+           onload="this.previousElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+    </div>
+    <div class="hg-item">
+      <div class="hg-ph h4"></div>
+      <img src="invitacion-4.png" alt="Ivan & Narda"
+           onload="this.previousElementSibling.style.display='none'"
+           onerror="this.style.display='none'">
+    </div>
   </div>
 
   <div class="hero-veil"></div>
+
   <div class="hero-text">
     <p class="hero-pre">Con amor, los invitamos</p>
-    <div class="hero-names">Ivan Zelada <span class="hero-amp">&amp;</span> Narda Arze</div>
+    <div class="hero-names">
+      Ivan Zelada
+      <span class="hero-amp">&amp;</span>
+      Narda Arze
+    </div>
     <div class="hero-date">05 · XII · 2026</div>
-    <div class="hero-hint">🎵 Toca el vinilo para escuchar nuestra canción</div>
+    <div class="hero-hint">
+      🎵 Te compartimos un poquito de nosotros a través de esta canción — toca el vinilo
+    </div>
   </div>
 </section>
 
 <div class="divider"></div>
 
+<!-- HISTORIA -->
 <section id="historia" class="band band-cream">
   <div class="inner center">
     <p class="rune reveal">✦ El comienzo de todo ✦</p>
     <h2 class="sec-h reveal">Nuestra Historia</h2>
     <div class="hr-row reveal"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
-    <p class="story-quote reveal">"Entre todas las posibilidades, nos elegimos.<br>Y en esa elección, encontramos nuestro hogar."</p>
-    <p class="story-body reveal d1">Con el amor que nos une y el apoyo de nuestro círculo familiar y social más cercano, te invitamos a celebrar con nosotros este momento tan especial en nuestras vidas.</p>
-    <span class="historia-date reveal d3">05 de Diciembre de 2026</span>
-    <div class="reveal d3" style="text-align:center;margin-bottom:2rem;">
-      <button class="cal-btn" onclick="addToCalendar()">📅 Agregar a mi calendario</button>
+
+    <!-- Ramas de olivo decorativas -->
+    <div class="reveal" style="margin:0 auto 1.5rem;">
+      <svg width="200" height="60" viewBox="0 0 200 60" fill="none">
+        <!-- Rama izquierda -->
+        <path d="M10 50 Q40 35 70 30 Q90 28 100 30" stroke="rgba(106,158,132,.5)" stroke-width="1.5" fill="none"/>
+        <ellipse cx="35" cy="38" rx="10" ry="5" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width="1" transform="rotate(-20 35 38)"/>
+        <ellipse cx="55" cy="32" rx="10" ry="5" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width="1" transform="rotate(-10 55 32)"/>
+        <ellipse cx="75" cy="29" rx="9" ry="4" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width="1" transform="rotate(-5 75 29)"/>
+        <!-- Centro flor -->
+        <circle cx="100" cy="28" r="5" fill="rgba(221,176,80,.15)" stroke="rgba(221,176,80,.5)" stroke-width="1"/>
+        <circle cx="100" cy="28" r="2" fill="rgba(221,176,80,.85)"/>
+        <!-- Rama derecha (espejo) -->
+        <path d="M190 50 Q160 35 130 30 Q110 28 100 30" stroke="rgba(106,158,132,.5)" stroke-width="1.5" fill="none"/>
+        <ellipse cx="165" cy="38" rx="10" ry="5" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width="1" transform="rotate(20 165 38)"/>
+        <ellipse cx="145" cy="32" rx="10" ry="5" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width="1" transform="rotate(10 145 32)"/>
+        <ellipse cx="125" cy="29" rx="9" ry="4" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width="1" transform="rotate(5 125 29)"/>
+      </svg>
     </div>
-    <span class="cd-pre reveal d3" style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--olive-dk);margin-bottom:1rem;display:block;">Ya solo faltan...</span>
+    <p class="story-quote reveal">
+      "Entre todas las posibilidades, nos elegimos.<br>Y en esa elección, encontramos nuestro hogar."
+    </p>
+    <p class="story-body reveal d1">
+      Con el amor que nos une y el apoyo de nuestro círculo familiar y social más cercano,
+      te invitamos a celebrar con nosotros este momento tan especial en nuestras vidas.
+      Hoy queremos que seas parte del capítulo más importante de nuestra historia —
+      que tu presencia complete esta página que escribimos juntos.
+    </p>
+    <p class="story-body reveal d2" style="margin-top:1rem;">
+      Lo que comenzó como un encuentro ordinario se fue tejiendo, con el tiempo,
+      en algo que ninguno supo nombrar al principio —
+      pero que ambos reconocieron en silencio: <em>aquí es donde pertenecemos.</em>
+    </p>
+
+    <span class="historia-date reveal d3">05 de Diciembre de 2026</span>
+
+    <div class="reveal d3" style="text-align:center;margin-bottom:2rem;">
+      <button class="cal-btn" onclick="addToCalendar()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Agregar a mi calendario
+      </button>
+    </div>
+
+    <span class="cd-pre reveal d3">Ya solo faltan...</span>
     <div class="countdown-wrap reveal d3">
       <div class="cd-unit"><span class="cd-n" id="cd-d">—</span><span class="cd-l">Días</span></div>
       <div class="cd-unit"><span class="cd-n" id="cd-h">—</span><span class="cd-l">Horas</span></div>
@@ -246,43 +950,73 @@ footer{background:linear-gradient(160deg,#1A2010,#0E1408);padding:56px 24px;text
 
 <div class="divider"></div>
 
+<!-- FECHA & LUGAR -->
 <section id="fecha" class="band band-linen">
   <div class="inner center">
-    <p class="rune reveal">✦ El gran día ✦</p>
+    <p class="rune reveal">✦ <strong style="color:rgba(201,169,98,.95);">El gran día</strong> ✦</p>
     <h2 class="sec-h reveal">Fecha &amp; Lugar</h2>
     <div class="hr-row reveal"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
 
-    <div style="max-width:560px;margin:0 auto;">
+    <!-- Reloj ornamental -->
+    <div class="reveal" style="margin:0 auto 2rem;">
+      <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="34" stroke="rgba(168,120,40,.4)" stroke-width="1.5"/>
+        <circle cx="40" cy="40" r="28" stroke="rgba(168,120,40,.2)" stroke-width="1" stroke-dasharray="3,4"/>
+        <circle cx="40" cy="40" r="3" fill="rgba(168,120,40,.6)"/>
+        <!-- Manecillas -->
+        <line x1="40" y1="40" x2="40" y2="18" stroke="rgba(168,120,40,.7)" stroke-width="2" stroke-linecap="round"/>
+        <line x1="40" y1="40" x2="56" y2="48" stroke="rgba(168,120,40,.5)" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Marcas horas -->
+        <line x1="40" y1="8" x2="40" y2="14" stroke="rgba(168,120,40,.5)" stroke-width="1.5"/>
+        <line x1="40" y1="66" x2="40" y2="72" stroke="rgba(168,120,40,.5)" stroke-width="1.5"/>
+        <line x1="8" y1="40" x2="14" y2="40" stroke="rgba(168,120,40,.5)" stroke-width="1.5"/>
+        <line x1="66" y1="40" x2="72" y2="40" stroke="rgba(168,120,40,.5)" stroke-width="1.5"/>
+        <!-- Florecitas en esquinas -->
+        <circle cx="40" cy="6" r="2.5" fill="rgba(106,158,132,.4)" stroke="rgba(106,158,132,.5)" stroke-width=".8"/>
+        <circle cx="74" cy="40" r="2.5" fill="rgba(106,158,132,.4)" stroke="rgba(106,158,132,.5)" stroke-width=".8"/>
+        <circle cx="40" cy="74" r="2.5" fill="rgba(106,158,132,.4)" stroke="rgba(106,158,132,.5)" stroke-width=".8"/>
+        <circle cx="6" cy="40" r="2.5" fill="rgba(106,158,132,.4)" stroke="rgba(106,158,132,.5)" stroke-width=".8"/>
+      </svg>
+    </div>
+
+    <!-- Tarjeta única: mismo lugar para todo -->
+    <div style="max-width:520px;margin:0 auto;">
       <div class="event-card reveal d1" style="text-align:center;">
         <span class="event-icon">💍</span>
         <span class="event-type">Sábado 5 de Diciembre, 2026</span>
-        <p class="event-name">Salón Don Quijote</p>
-        <p class="event-place" style="margin-bottom:14px;">Av. Illampu Esq. C. Sagarnaga, La Paz, Bolivia</p>
+        <!-- Nombre y dirección del salón -->
+        <p class="event-name" style="font-size:1.2rem;margin:.5rem 0 .2rem;font-weight:700;">Salón Don Quijote</p>
+        <p style="font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.08em;color:var(--gold);margin-bottom:.25rem;">Av. Illampu Esq. C. Sagárnaga</p>
+        <p class="event-place" style="margin-bottom:1rem;">La Paz, Bolivia</p>
 
-        <!-- Botón de Maps movido ARRIBA de la foto del salón -->
-        <div style="margin-bottom:16px;">
-          <a href="https://maps.app.goo.gl/mRa91ZVfCGrWVAKZ8" target="_blank" class="map-btn">
-            📍 Cómo llegar al Salón Don Quijote
-          </a>
-        </div>
+        <!-- Botón de cómo llegar — ANTES de la foto -->
+        <a href="https://maps.app.goo.gl/mRa91ZVfCGrWVAKZ8" target="_blank" class="map-btn" style="display:inline-flex;margin-bottom:14px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Cómo llegar al Salón Don Quijote
+        </a>
 
-        <!-- Foto del salón optimizada para no tapar texto -->
-        <div class="venue-photo" id="venue-don" style="margin:14px 0;cursor:pointer;border-radius:8px;overflow:hidden;border:1px solid rgba(168,120,40,.3);"
-             onclick="window.open('https://maps.app.goo.gl/mRa91ZVfCGrWVAKZ8','_blank')">
+        <!-- Foto del salón -->
+        <div style="margin:0 0 14px;border-radius:8px;overflow:hidden;">
           <img src="salon.jfif" alt="Salón Don Quijote"
-               style="width:100%;max-height:280px;object-fit:cover;display:block;background:#1E2410;"
+               style="width:100%;height:auto;display:block;border-radius:8px;"
                onerror="this.style.display='none'">
         </div>
 
+        <!-- Cronograma editable desde dashboard -->
         <div style="margin:18px 0;" id="cronograma-display">
-          <p style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;text-align:center;">— Cronograma del día —</p>
-          <div style="display:flex;flex-direction:column;gap:8px;" id="cronograma-items"></div>
+          <p style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;text-align:center;opacity:.8;">— Cronograma del día —</p>
+          <div style="display:flex;flex-direction:column;gap:0;" id="cronograma-items">
+            <!-- Se carga desde localStorage o usa valores por defecto -->
+          </div>
         </div>
 
-        <div style="padding:10px 14px;background:rgba(168,120,40,.1);border:1px solid rgba(168,120,40,.3);border-radius:6px;margin-top:14px;">
+        <!-- Acceso privado -->
+        <div style="padding:10px 14px;background:rgba(168,120,40,.1);border:1px solid rgba(168,120,40,.3);border-radius:6px;margin-bottom:14px;">
           <p style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:4px;">🔒 Evento privado</p>
-          <p style="font-size:.8rem;color:var(--ink-mid);font-style:italic;">Entrada bajo lista de invitados — control en puerta.</p>
+          <p style="font-size:.8rem;color:var(--ink-mid);font-style:italic;">Entrada bajo lista de invitados — se realizará control en la puerta.</p>
         </div>
+
+
       </div>
     </div>
   </div>
@@ -290,141 +1024,351 @@ footer{background:linear-gradient(160deg,#1A2010,#0E1408);padding:56px 24px;text
 
 <div class="divider"></div>
 
+<!-- DRESSCODE -->
 <section id="dresscode" class="band band-linen">
   <div class="inner center">
     <p class="rune reveal">✦ Para la ocasión ✦</p>
     <h2 class="sec-h reveal">Código de Vestimenta</h2>
     <div class="hr-row reveal"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
 
+    <!-- Percha con flor ornamental -->
+    <div class="reveal" style="margin:0 auto 2rem;">
+      <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
+        <!-- Percha -->
+        <path d="M20 40 Q20 28 60 28 Q100 28 100 40" stroke="rgba(221,176,80,.5)" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <line x1="60" y1="28" x2="60" y2="18" stroke="rgba(221,176,80,.5)" stroke-width="1.5"/>
+        <path d="M55 15 Q60 10 65 15" stroke="rgba(221,176,80,.5)" stroke-width="1.5" fill="none"/>
+        <line x1="20" y1="40" x2="10" y2="65" stroke="rgba(221,176,80,.85)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="100" y1="40" x2="110" y2="65" stroke="rgba(221,176,80,.85)" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="10" y1="65" x2="110" y2="65" stroke="rgba(221,176,80,.35)" stroke-width="1.5" stroke-linecap="round"/>
+        <!-- Flores decorativas -->
+        <circle cx="30" cy="35" r="5" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.4)" stroke-width="1"/>
+        <circle cx="30" cy="35" r="2" fill="rgba(106,158,132,.3)"/>
+        <circle cx="90" cy="35" r="5" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.4)" stroke-width="1"/>
+        <circle cx="90" cy="35" r="2" fill="rgba(106,158,132,.3)"/>
+        <!-- Hojitas -->
+        <ellipse cx="22" cy="30" rx="7" ry="3" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.3)" stroke-width=".8" transform="rotate(-30 22 30)"/>
+        <ellipse cx="98" cy="30" rx="7" ry="3" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.3)" stroke-width=".8" transform="rotate(30 98 30)"/>
+      </svg>
+    </div>
+
     <p class="dress-body-text reveal" style="color:var(--ink-mid);">
-      Este día merece tu mejor versión. Te pedimos <strong style="color:var(--olive-dk);">atuendo formal</strong>.
+      Este día merece tu mejor versión. Te pedimos <strong style="color:var(--olive-dk);">atuendo formal</strong> —
+      porque la elegancia de este momento lo merece.
+      Luce como quieras dentro de ese marco y celebra con nosotros.
     </p>
 
     <div class="forbidden-wrap reveal d1">
-      <span class="forbidden-title">⚠️ COLORES RESTRINGIDOS Y RESERVADOS</span>
-      <p style="font-size:.85rem;color:var(--ink-mid);margin-bottom:14px;line-height:1.6;">
-        Los siguientes colores están <strong>estrictamente reservados y restringidos para el cortejo nupcial</strong> (novios, damas, caballeros y tradición):
-      </p>
+      <span class="forbidden-title" style="color:rgba(100,80,40,.7);">✗ Por favor evita estos colores</span>
       <div class="forbidden-chips">
-        <span class="chip" style="background:#fff;border:1px solid #ccc;color:#333;">⬜ Blanco y similares</span>
-        <span class="chip" style="background:#F3E9D2;border:2px solid #C49040;color:#7A5210;font-weight:700;">⛔ Beige / Crema / Hueso</span>
-        <span class="chip" style="background:#D4E4C8;border:1px solid #7A8C50;color:#3A4520;">🌿 Tonos verdes</span>
-        <span class="chip" style="background:#F2D6D6;border:1px solid #C94040;color:#8B2525;">🌹 Rojo</span>
+        <span class="chip" style="background:rgba(200,190,170,.2);border:1px solid rgba(160,150,130,.4);color:var(--ink-mid);">⬜ Blanco y similares</span>
+        <span class="chip" style="background:rgba(210,195,160,.25);border:2px solid rgba(180,160,110,.6);color:rgba(100,80,20,.9);font-weight:600;">⛔ Beige / Crema / Hueso</span>
+        <span class="chip" style="background:rgba(90,120,60,.1);border:1px solid rgba(90,140,60,.35);color:var(--olive-dk);">🌿 Tonos verdes</span>
+        <span class="chip" style="background:rgba(180,70,60,.08);border:1px solid rgba(200,80,70,.3);color:#904040;">🌹 Rojo</span>
       </div>
-      <p style="font-size:.78rem;color:#8B2525;margin-top:14px;font-style:italic;font-weight:600;">
-        * El beige, crema y blanco están reservados exclusivamente para los novios.
+      <p style="font-size:.72rem;color:rgba(150,110,30,.9);margin-top:10px;font-style:italic;">
+        * Estos colores están reservados exclusivamente para el cortejo nupcial (novios, damas y caballeros).
       </p>
     </div>
+    <p class="dress-note reveal d2" style="color:var(--ink-lt);">Los colores restringidos están reservados para el cortejo nupcial. Fuera de eso, ¡luce espléndido/a y celebra con nosotros! ✨</p>
   </div>
 </section>
 
 <div class="divider"></div>
 
+<!-- REGALOS -->
 <section id="regalos" class="band band-cream">
   <div class="inner center">
-    <p class="rune reveal">✦ Agradecemos su cariño ✦</p>
+    <p class="rune reveal">✦ <strong style="color:rgba(201,169,98,.95);">Agradecemos su cariño</strong> ✦</p>
     <h2 class="sec-h reveal">Regalos</h2>
     <div class="hr-row reveal"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
-    <p class="story-body reveal" style="margin-bottom:2.5rem;">Recibimos cualquier muestra de cariño con el corazón abierto. Si deseas sumarte a través de nuestra lista o medios digitales, te lo agradecemos enormemente.</p>
+
+    <!-- Lazo decorativo -->
+    <div class="reveal" style="margin:0 auto 1.5rem;">
+      <svg width="140" height="70" viewBox="0 0 140 70" fill="none">
+        <!-- Cinta horizontal -->
+        <line x1="10" y1="35" x2="130" y2="35" stroke="rgba(168,120,40,.35)" stroke-width="1.5"/>
+        <!-- Lazo izquierdo -->
+        <path d="M70 35 Q50 15 30 22 Q20 28 35 35 Q50 42 70 35Z" fill="rgba(168,120,40,.08)" stroke="rgba(168,120,40,.4)" stroke-width="1.2"/>
+        <!-- Lazo derecho -->
+        <path d="M70 35 Q90 15 110 22 Q120 28 105 35 Q90 42 70 35Z" fill="rgba(168,120,40,.08)" stroke="rgba(168,120,40,.4)" stroke-width="1.2"/>
+        <!-- Nudo centro -->
+        <circle cx="70" cy="35" r="6" fill="rgba(168,120,40,.15)" stroke="rgba(168,120,40,.5)" stroke-width="1.5"/>
+        <circle cx="70" cy="35" r="2.5" fill="rgba(168,120,40,.5)"/>
+        <!-- Puntas cinta -->
+        <path d="M70 35 L58 62 L64 58 L70 65 L76 58 L82 62 Z" fill="rgba(168,120,40,.12)" stroke="rgba(168,120,40,.35)" stroke-width="1"/>
+        <!-- Florecitas -->
+        <circle cx="30" cy="22" r="4" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.4)" stroke-width="1"/>
+        <circle cx="110" cy="22" r="4" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.4)" stroke-width="1"/>
+        <circle cx="30" cy="22" r="1.5" fill="rgba(106,158,132,.4)"/>
+        <circle cx="110" cy="22" r="1.5" fill="rgba(106,158,132,.4)"/>
+      </svg>
+    </div>
+
+    <p class="story-body reveal" style="margin-bottom:2.5rem;">
+      Recibimos cualquier muestra de cariño con el corazón abierto — desde regalos físicos hasta gestos simbólicos.
+      Si deseas consentirte con algo especial de nuestra lista, o sumarte a través de uno de estos medios,
+      te lo agradecemos enormemente. ¡Todo, grande o pequeño, construye nuestro hogar juntos!
+    </p>
 
     <div class="gift-grid">
-      <div class="gcard reveal d1">
+      <div class="gcard reveal d1" style="background:rgba(92,107,58,.08);border:1px solid rgba(92,107,58,.2);">
         <span class="gi">✉️</span>
-        <h3 class="gn">Lluvia de Sobres</h3>
-        <p class="gd">El día del evento habrá una cajita especial para depositar tu sobre con mucho amor.</p>
+        <h3 class="gn" style="color:var(--olive-dk);">Lluvia de Sobres</h3>
+        <p class="gd" style="color:var(--ink-mid);">El día del evento habrá una cajita especial donde podrás depositar tu sobre con mucho amor. ¡Cualquier aporte es un regalo enorme para nosotros!</p>
       </div>
-      <div class="gcard reveal d2">
+      <div class="gcard reveal d2" style="background:rgba(92,107,58,.08);border:1px solid rgba(92,107,58,.2);">
         <span class="gi">📱</span>
-        <h3 class="gn">Transferencia · QR</h3>
-        <p class="gd">Encuentra el código QR disponible el día del evento o consúltalo aquí.</p>
-        <button class="gl" onclick="openQR()">Ver QR</button>
+        <h3 class="gn" style="color:var(--olive-dk);">Transferencia · QR</h3>
+        <p class="gd" style="color:var(--ink-mid);">Si deseas hacer una transferencia, encontrarás el código QR disponible el día del evento — o si prefieres adelantarlo, también puedes hacerlo desde ya.</p>
+        <button class="gl" style="color:var(--olive-dk);border-color:rgba(92,107,58,.75);" onclick="openQR()">Ver QR</button>
       </div>
-      <div class="gcard reveal d3">
+      <div class="gcard reveal d3" style="background:rgba(92,107,58,.08);border:1px solid rgba(92,107,58,.2);">
         <span class="gi">🎁</span>
-        <h3 class="gn">Lista de Regalos</h3>
-        <p class="gd">Hemos preparado una lista con cosas que nos encantaría tener en nuestro nuevo hogar.</p>
-        <button class="gl" onclick="openGiftList()">Ver lista de regalos</button>
+        <h3 class="gn" style="color:var(--olive-dk);">Lista de Regalos</h3>
+        <p class="gd" style="color:var(--ink-mid);">Si prefieres regalar algo concreto, hemos preparado una lista de cosas que nos encantaría tener en nuestro nuevo hogar.</p>
+        <button class="gl" style="color:var(--olive-dk);border-color:rgba(92,107,58,.75);" onclick="openGiftList()">Ver lista de regalos</button>
+      </div>
+    </div>
+
+    <!-- MODAL LISTA DE REGALOS -->
+    <div id="gift-list-modal" onclick="if(event.target===this)closeGiftList()"
+         style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center;">
+      <div style="background:#F5F0E8;border-radius:12px;padding:2rem;width:min(480px,92vw);max-height:80vh;overflow-y:auto;position:relative;">
+        <button onclick="closeGiftList()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--ink-lt);">✕</button>
+        <p style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.25rem;">N · I · 2026</p>
+        <h3 style="font-family:'Cinzel',serif;font-size:1rem;color:var(--olive-dk);margin-bottom:1rem;">Lista de Regalos</h3>
+        <div id="gift-list-items" style="display:flex;flex-direction:column;gap:.6rem;">
+          <!-- Se carga dinámicamente desde localStorage -->
+        </div>
+        <p style="font-size:.7rem;color:var(--ink-lt);margin-top:1.5rem;text-align:center;font-style:italic;">
+          Con cariño, Narda & Ivan 💚
+        </p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Modal Regalos -->
-<div id="gift-list-modal" onclick="if(event.target===this)closeGiftList()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;align-items:center;justify-content:center;">
-  <div style="background:#F5F0E8;border-radius:12px;padding:2rem;width:min(480px,92vw);max-height:80vh;overflow-y:auto;position:relative;">
-    <button onclick="closeGiftList()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--ink-lt);">✕</button>
-    <h3 style="font-family:'Cinzel',serif;font-size:1.1rem;color:var(--olive-dk);margin-bottom:1rem;">Lista de Regalos</h3>
-    <div id="gift-list-items" style="display:flex;flex-direction:column;gap:.75rem;"></div>
-  </div>
-</div>
-
 <div class="divider"></div>
 
+<!-- RSVP -->
 <section id="rsvp" class="band band-euca">
   <div class="inner-sm center">
-    <p class="rune reveal">✦ Te esperamos ✦</p>
+    <p class="rune reveal">✦ <strong style="color:rgba(201,169,98,.95);">Te esperamos</strong> ✦</p>
     <h2 class="sec-h reveal">Confirma tu Asistencia</h2>
     <div class="hr-row reveal" style="margin-bottom:30px;"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
-    <p class="rsvp-body reveal">Estamos ansiosos por verte y porque formes parte de este día tan especial.</p>
+
+    <!-- Sobre elegante -->
+    <div class="reveal" style="margin:0 auto 2rem;">
+      <svg width="120" height="80" viewBox="0 0 120 80" fill="none">
+        <!-- Cuerpo sobre -->
+        <rect x="10" y="20" width="100" height="55" rx="3" fill="rgba(250,244,232,.06)" stroke="rgba(221,176,80,.85)" stroke-width="1.5"/>
+        <!-- Solapa -->
+        <path d="M10 20 L60 50 L110 20" stroke="rgba(221,176,80,.85)" stroke-width="1.5" fill="none"/>
+        <!-- Pliegues base -->
+        <line x1="10" y1="75" x2="60" y2="50" stroke="rgba(221,176,80,.25)" stroke-width="1"/>
+        <line x1="110" y1="75" x2="60" y2="50" stroke="rgba(221,176,80,.25)" stroke-width="1"/>
+        <!-- Sello lacre -->
+        <circle cx="60" cy="52" r="9" fill="rgba(168,120,40,.2)" stroke="rgba(168,120,40,.5)" stroke-width="1.2"/>
+        <circle cx="60" cy="52" r="5" fill="rgba(168,120,40,.15)" stroke="rgba(168,120,40,.4)" stroke-width=".8"/>
+        <!-- N&I en sello -->
+        <text x="60" y="55.5" text-anchor="middle" font-family="Cinzel, serif" font-size="5" fill="rgba(221,176,80,.7)" font-weight="500">N·I</text>
+        <!-- Flores esquinas -->
+        <circle cx="16" cy="26" r="3" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width=".8"/>
+        <circle cx="104" cy="26" r="3" fill="rgba(106,158,132,.2)" stroke="rgba(106,158,132,.4)" stroke-width=".8"/>
+        <!-- Hojitas -->
+        <ellipse cx="10" cy="20" rx="5" ry="2.5" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.3)" stroke-width=".7" transform="rotate(-45 10 20)"/>
+        <ellipse cx="110" cy="20" rx="5" ry="2.5" fill="rgba(106,158,132,.15)" stroke="rgba(106,158,132,.3)" stroke-width=".7" transform="rotate(45 110 20)"/>
+      </svg>
+    </div>
+    <p class="rsvp-body reveal">
+      Estamos ansiosos por verte y porque formes parte de este día tan especial para nosotros.
+    </p>
     <div class="deadline reveal d1">📅 Confirma tu asistencia antes del <strong>05 de noviembre de 2026</strong></div>
     <br>
-    <a href="rsvp-narda-ivan.html" target="_blank" class="rsvp-cta reveal d2">Confirmar Asistencia</a>
+    <a href="https://boda-ivan-narda.pages.dev/rsvp-narda-ivan.html" target="_blank" class="rsvp-cta reveal d2">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012 .95h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.77a16 16 0 006.29 6.29l1.18-1.18a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+      </svg>
+      Confirmar Asistencia
+    </a>
   </div>
 </section>
 
 <div class="divider"></div>
 
+<!-- MESAS -->
 <section id="mesas" class="band band-dark">
   <div class="inner center">
-    <p class="rune reveal">✦ Tu lugar en la celebración ✦</p>
+    <p class="rune reveal">✦ <strong style="color:rgba(201,169,98,.95);">Tu lugar en la celebración</strong> ✦</p>
     <h2 class="sec-h reveal">Distribución de Mesas</h2>
     <div class="hr-row reveal"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
+
+    <!-- Visual: mesa con flores -->
+    <div class="reveal" style="margin:0 auto 2.5rem;opacity:.7;">
+      <svg width="180" height="120" viewBox="0 0 180 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Mesa -->
+        <ellipse cx="90" cy="72" rx="70" ry="18" fill="none" stroke="rgba(221,176,80,.5)" stroke-width="1.5"/>
+        <rect x="86" y="72" width="8" height="32" fill="none" stroke="rgba(221,176,80,.85)" stroke-width="1.5" rx="2"/>
+        <ellipse cx="90" cy="104" rx="18" ry="5" fill="none" stroke="rgba(221,176,80,.3)" stroke-width="1.2"/>
+        <!-- Platos -->
+        <ellipse cx="60" cy="68" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
+        <ellipse cx="90" cy="66" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
+        <ellipse cx="120" cy="68" rx="12" ry="4" fill="none" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
+        <!-- Copas -->
+        <path d="M55 58 Q55 64 60 66" stroke="rgba(221,176,80,.35)" stroke-width="1" fill="none"/>
+        <path d="M65 58 Q65 64 60 66" stroke="rgba(221,176,80,.35)" stroke-width="1" fill="none"/>
+        <line x1="60" y1="58" x2="60" y2="54" stroke="rgba(221,176,80,.35)" stroke-width="1"/>
+        <path d="M85 56 Q85 62 90 64" stroke="rgba(221,176,80,.35)" stroke-width="1" fill="none"/>
+        <path d="M95 56 Q95 62 90 64" stroke="rgba(221,176,80,.35)" stroke-width="1" fill="none"/>
+        <line x1="90" y1="56" x2="90" y2="52" stroke="rgba(221,176,80,.35)" stroke-width="1"/>
+        <!-- Flores centro -->
+        <circle cx="90" cy="58" r="3" fill="rgba(221,176,80,.3)" stroke="rgba(221,176,80,.5)" stroke-width="1"/>
+        <circle cx="82" cy="55" r="2" fill="rgba(168,197,176,.3)" stroke="rgba(168,197,176,.5)" stroke-width="1"/>
+        <circle cx="98" cy="55" r="2" fill="rgba(168,197,176,.3)" stroke="rgba(168,197,176,.5)" stroke-width="1"/>
+        <circle cx="86" cy="52" r="2" fill="rgba(221,176,80,.25)" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
+        <circle cx="94" cy="52" r="2" fill="rgba(221,176,80,.25)" stroke="rgba(221,176,80,.85)" stroke-width="1"/>
+        <!-- Tarjeta de lugar -->
+        <rect x="74" y="43" width="32" height="20" rx="2" fill="none" stroke="rgba(221,176,80,.88)" stroke-width="1"/>
+        <line x1="80" y1="50" x2="100" y2="50" stroke="rgba(221,176,80,.3)" stroke-width="1"/>
+        <line x1="82" y1="55" x2="98" y2="55" stroke="rgba(221,176,80,.25)" stroke-width=".8"/>
+        <!-- Velas -->
+        <rect x="36" y="56" width="4" height="14" rx="1" fill="none" stroke="rgba(221,176,80,.35)" stroke-width="1"/>
+        <ellipse cx="38" cy="56" rx="2" ry="1" fill="rgba(221,176,80,.2)"/>
+        <path d="M38 53 Q39 51 38 49 Q37 51 38 53Z" fill="rgba(221,176,80,.5)"/>
+        <rect x="140" y="56" width="4" height="14" rx="1" fill="none" stroke="rgba(221,176,80,.35)" stroke-width="1"/>
+        <ellipse cx="142" cy="56" rx="2" ry="1" fill="rgba(221,176,80,.2)"/>
+        <path d="M142 53 Q143 51 142 49 Q141 51 142 53Z" fill="rgba(221,176,80,.5)"/>
+        <!-- Ramas decorativas -->
+        <path d="M20 80 Q35 65 50 72" stroke="rgba(106,158,132,.4)" stroke-width="1.5" fill="none"/>
+        <path d="M20 80 Q28 72 35 68" stroke="rgba(106,158,132,.3)" stroke-width="1" fill="none"/>
+        <path d="M160 80 Q145 65 130 72" stroke="rgba(106,158,132,.4)" stroke-width="1.5" fill="none"/>
+        <path d="M160 80 Q152 72 145 68" stroke="rgba(106,158,132,.3)" stroke-width="1" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Tarjetas de info de mesas + livestream -->
     <div class="reveal d1" style="max-width:600px;margin:0 auto;display:flex;flex-direction:column;gap:1rem;">
+
+      <!-- Mesa por WhatsApp -->
       <div style="background:rgba(255,255,255,.06);border:1px solid rgba(221,176,80,.2);padding:32px;text-align:center;">
         <span style="font-size:2rem;display:block;margin-bottom:1rem;">📱</span>
-        <h3 style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-lt);margin-bottom:14px;">Asignación de Mesa</h3>
-        <p style="font-family:'Crimson Text',serif;font-size:17px;color:rgba(250,244,232,.92);line-height:1.85;">Una semana antes del gran día recibirás por WhatsApp el nombre y ubicación de tu mesa junto al plano del salón.</p>
+        <h3 style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold-lt);margin-bottom:14px;"><strong style="color:rgba(201,169,98,.95);">Tu lugar en la celebración</strong></h3>
+        <p style="font-family:'Crimson Text',serif;font-size:17px;color:rgba(250,244,232,.92);line-height:1.85;">
+          Una semana antes del gran día recibirás por WhatsApp
+          el nombre y ubicación de tu mesa — con el plano del salón
+          para que llegues tranquilo/a y sin preocupaciones.
+        </p>
+        <p style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(221,176,80,.75);margin-top:18px;">
+          📅 Lo recibirás en noviembre 2026
+        </p>
       </div>
+
+      <!-- Livestream -->
+      <div style="background:rgba(255,255,255,.04);border:1px solid rgba(168,197,176,.2);padding:28px;text-align:center;">
+        <span style="font-size:1.8rem;display:block;margin-bottom:.75rem;">📺</span>
+        <h3 style="font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:rgba(168,197,176,.85);margin-bottom:12px;">¿No puedes estar en persona?</h3>
+        <p style="font-family:'Crimson Text',serif;font-size:16px;color:rgba(250,244,232,.85);line-height:1.8;">
+          Transmitiremos el evento en vivo para que ningún ser querido
+          se pierda este momento especial, sin importar la distancia.
+        </p>
+        <p style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(168,197,176,.6);margin-top:16px;">
+          🔗 El link de transmisión llegará por WhatsApp el día del evento
+        </p>
+      </div>
+
     </div>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
   <div class="footer-n">Ivan &amp; Narda</div>
   <p class="footer-d">05 · Diciembre · 2026 · La Paz, Bolivia</p>
   <p class="footer-quote">"Nos elegimos con amor, con libertad y con la certeza de caminar juntos."</p>
 </footer>
 
-<div id="qr-modal" onclick="if(event.target===this)closeQR()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;justify-content:center;align-items:center;padding:20px;">
-  <div style="background:var(--cream);max-width:400px;width:100%;padding:30px;position:relative;text-align:center;border-radius:8px;">
-    <button onclick="closeQR()" style="position:absolute;top:10px;right:10px;background:none;border:none;font-size:1.2rem;cursor:pointer;">✕</button>
-    <h3 style="font-family:'Cinzel',serif;color:var(--olive-dk);margin-bottom:15px;">QR de Transferencia BNB</h3>
-    <p style="font-size:14px;margin-bottom:10px;"><strong>A nombre de:</strong> Arze Mariño Narda Lenny</p>
-    <div style="width:200px;height:200px;margin:0 auto;background:#eee;display:flex;align-items:center;justify-content:center;border:1px dashed #999;">
-      <p style="font-size:11px;color:#666;">Coloca tu imagen QR aquí (ej: qr.jpg)</p>
+<!-- QR MODAL -->
+<div id="qr-modal" onclick="if(event.target===this)closeQR()">
+  <div class="qr-box">
+    <button class="qr-close" onclick="closeQR()">✕</button>
+    <span class="qr-label">Transferencia · QR</span>
+    <h3 class="qr-title">Pago por BNB</h3>
+    <p class="qr-info"><strong>A nombre de:</strong> Arze Mariño Narda Lenny</p>
+    <p class="qr-info" style="font-style:italic;opacity:.7;">Concepto: Regalo de Bodas</p>
+    <div class="qr-img-wrap">
+      <!-- Reemplaza con tu imagen QR: <img src="tu-qr.jpg" style="width:100%;height:100%;object-fit:contain;"> -->
+      <div class="qr-ph">COLOCA AQUÍ<br>TU IMAGEN QR<br><br>photo_5008…_y.jpg</div>
     </div>
+    <p style="font-size:13px;color:var(--ink-lt);font-style:italic;">Escanea con tu cámara o app BNB</p>
   </div>
 </div>
 
 <script>
+/* ══ CARRUSEL ══ */
 let cur=0;
 const track=document.getElementById('car-track');
 const slides=document.querySelectorAll('.car-slide');
 const dots=document.querySelectorAll('.cdot');
 let autoInt=setInterval(()=>goSlide((cur+1)%slides.length),6000);
-function goSlide(i){cur=i;if(track)track.style.transform=`translateX(-${i*100}%)`;dots.forEach((d,j)=>d.classList.toggle('on',j===i));}
+
+function goSlide(i){
+  cur=i;track.style.transform=`translateX(-${i*100}%)`;
+  dots.forEach((d,j)=>d.classList.toggle('on',j===i));
+  clearInterval(autoInt);autoInt=setInterval(()=>goSlide((cur+1)%slides.length),6000);
+}
 function prevSlide(){goSlide((cur-1+slides.length)%slides.length);}
 function nextSlide(){goSlide((cur+1)%slides.length);}
-function toggleMenu(){document.getElementById('nav-links').classList.toggle('open');}
 
+/* ══ NAV ══ */
+function toggleMenu(){document.getElementById('nav-links').classList.toggle('open');}
+let lastScroll=0;
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  const s=window.pageYOffset;
+  nav.classList.toggle('show',s<=lastScroll||s<=100);
+  lastScroll=s;
+},{passive:true});
+// Active nav
+const secs=document.querySelectorAll('section[id]');
+window.addEventListener('scroll',()=>{
+  let c='';
+  secs.forEach(s=>{if(window.pageYOffset>=s.offsetTop-120)c=s.id;});
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.classList.toggle('on',a.getAttribute('href')==='#'+c);
+  });
+},{passive:true});
+
+/* ══ AUDIO ══ */
 const audio = document.getElementById('audio-fondo');
 let playing = false;
+
 function toggleAudio(){
-  const disc = document.getElementById('v-disc'), needle = document.getElementById('v-needle'), tip = document.getElementById('v-tip');
-  if(playing){audio.pause();disc.classList.remove('spin');needle.classList.remove('on');tip.textContent='Reproducir música';playing=false;}
-  else{disc.classList.add('spin');needle.classList.add('on');tip.textContent='Pausar música';playing=true;audio.play().catch(()=>{playing=false;});}
+  const disc   = document.getElementById('v-disc');
+  const needle = document.getElementById('v-needle');
+  const tip    = document.getElementById('v-tip');
+
+  if(playing){
+    audio.pause();
+    disc.classList.remove('spin');
+    needle.classList.remove('on');
+    tip.textContent = 'Reproducir música';
+    playing = false;
+  } else {
+    disc.classList.add('spin');
+    needle.classList.add('on');
+    tip.textContent = 'Pausar música';
+    playing = true;
+    audio.play().catch(()=>{
+      disc.classList.remove('spin');
+      needle.classList.remove('on');
+      tip.textContent = 'Reproducir música';
+      playing = false;
+    });
+  }
 }
 
+/* ══ COUNTDOWN ══ */
 function tick(){
   const diff=new Date('December 5, 2026 10:00:00 GMT-4').getTime()-Date.now();
   if(diff<=0)return;
@@ -435,67 +1379,93 @@ function tick(){
 }
 tick();setInterval(tick,1000);
 
+/* ══ SCROLL REVEAL ══ */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});
+},{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+/* ══ CALENDAR ══ */
 function addToCalendar(){
   const title = encodeURIComponent('Boda de Ivan & Narda 🌿');
-  const details = encodeURIComponent('Recepción: 16:00 — Salón Don Quijote, La Paz, Bolivia');
-  const location = encodeURIComponent('Salón Don Quijote, La Paz, Bolivia');
-  window.open(`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=20261205T140000Z/20261206T020000Z&details=${details}&location=${location}`,'_blank');
-}
-
-var SHEETS_URL_PUBLIC = 'https://script.google.com/macros/s/AKfycbyJQrHWJl6funXGKFb73lQN9T5wuXLqtXkea1DBecRTY-fHf4lr0kHTZ5yCo8rYyiMLFw/exec';
-var _publicGifts = null; var _publicCron = null;
-
-function fetchPublicConfig() {
-  return new Promise(function(resolve) {
-    var cb = 'pubCfg_' + Date.now();
-    var script = document.createElement('script');
-    var to = setTimeout(function(){ try{document.head.removeChild(script);}catch(e){} delete window[cb]; resolve(false); }, 8000);
-    window[cb] = function(data) {
-      clearTimeout(to); try{document.head.removeChild(script);}catch(e){} delete window[cb];
-      if (data && data.ok) {
-        if (Array.isArray(data.gifts)) _publicGifts = data.gifts;
-        if (Array.isArray(data.cronograma)) { _publicCron = data.cronograma; }
-        resolve(true);
-      } else resolve(false);
-    };
-    script.src = SHEETS_URL_PUBLIC + '?action=getConfig&callback=' + cb;
-    script.onerror = function(){ clearTimeout(to); try{document.head.removeChild(script);}catch(e){} delete window[cb]; resolve(false); };
-    document.head.appendChild(script);
-  });
+  const details = encodeURIComponent('Ceremonia civil: 14:00\nRecepción: 16:00 — Salón Don Quijote, La Paz, Bolivia');
+  const location = encodeURIComponent('La Paz, Bolivia');
+  const start = '20261205T140000Z'; // 10:00 AM GMT-4
+  const end   = '20261206T020000Z'; // end evening
+  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
+  window.open(url,'_blank');
 }
 
 function openGiftList() {
-  var items = _publicGifts;
-  if (!items) { try { items = JSON.parse(localStorage.getItem('ni-gift-list') || '[]'); } catch(e) { items = []; } }
+  var items = JSON.parse(localStorage.getItem('ni-gift-list') || '[]');
   var container = document.getElementById('gift-list-items');
   if (!items.length) {
-    container.innerHTML = '<p style="text-align:center;color:var(--ink-lt);font-style:italic;">Pronto habilitaremos la lista de regalos.</p>';
+    container.innerHTML = '<p style="text-align:center;color:var(--ink-lt);font-style:italic;font-size:.85rem;">La lista de regalos estará disponible pronto.</p>';
   } else {
-    container.innerHTML = items.map(function(item) {
-      var media = item.imagen
-        ? '<img src="'+item.imagen+'" alt="" style="width:50px;height:50px;object-fit:cover;border-radius:6px;flex-shrink:0;">'
-        : '<span style="font-size:1.3rem;width:50px;text-align:center;">'+(item.emoji||'🎁')+'</span>';
-      return '<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;background:rgba(92,107,58,.05);border-radius:8px;">'+media+'<span style="font-size:0.9rem;color:var(--ink);">'+item.nombre+'</span></div>';
+    container.innerHTML = items.map(function(item, i) {
+      return '<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem .75rem;background:rgba(92,107,58,.06);border-radius:8px;border:1px solid rgba(92,107,58,.15);">'
+        + '<span style="font-size:1.1rem;">' + (item.emoji||'🎁') + '</span>'
+        + '<span style="font-family:Montserrat,sans-serif;font-size:.82rem;color:var(--ink);">' + item.nombre + '</span>'
+        + '</div>';
     }).join('');
   }
   document.getElementById('gift-list-modal').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 }
-function closeGiftList() { document.getElementById('gift-list-modal').style.display = 'none'; }
-function openQR() { document.getElementById('qr-modal').style.display = 'flex'; }
-function closeQR() { document.getElementById('qr-modal').style.display = 'none'; }
+function closeGiftList() {
+  document.getElementById('gift-list-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+
+/* ══════════════════════════════════════
+   CRONOGRAMA DINÁMICO
+══════════════════════════════════════ */
+var DEFAULT_CRONOGRAMA = [
+  { hora:'14:00', evento:'⚖️ Ceremonia Civil', destacado: true },
+  { hora:'16:00', evento:'🥂 Recepción', destacado: false }
+];
+
+function loadCronograma() {
+  try {
+    var saved = localStorage.getItem('ni-cronograma');
+    return saved ? JSON.parse(saved) : DEFAULT_CRONOGRAMA;
+  } catch(e) { return DEFAULT_CRONOGRAMA; }
+}
 
 function renderCronograma() {
-  var items = _publicCron || JSON.parse(localStorage.getItem('ni-cronograma') || '[{"hora":"14:00","evento":"⚖️ Ceremonia Civil","destacado":true},{"hora":"16:00","evento":"🥂 Recepción","destacado":false}]');
+  var items = loadCronograma();
   var container = document.getElementById('cronograma-items');
-  if(!container) return;
-  container.innerHTML = items.map(function(item){
-    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(58,69,32,.06);border-radius:6px;">'
-      + '<strong style="font-family:Cinzel,serif;color:var(--gold);font-size:1rem;min-width:55px;">'+item.hora+'</strong>'
-      + '<span style="font-size:0.95rem;color:var(--ink);">'+item.evento+'</span>'
+  if (!container) return;
+  container.innerHTML = items.map(function(item, i) {
+    var isPrimero = i === 0;
+    return '<div style="display:flex;align-items:center;gap:1.25rem;padding:'
+      + (item.destacado ? '1.25rem 1.5rem' : '.75rem 1.25rem')
+      + ';background:'
+      + (item.destacado ? 'rgba(201,169,98,.14)' : 'rgba(58,69,32,.06)')
+      + ';border-radius:10px;margin-bottom:.6rem;border:'
+      + (item.destacado ? '1px solid rgba(201,169,98,.35)' : '1px solid rgba(92,107,58,.1)')
+      + ';">'
+      + '<div style="text-align:center;min-width:'+(item.destacado?'80px':'64px')+';flex-shrink:0;">'
+      + '<div style="font-family:Cinzel,serif;font-size:'
+      + (item.destacado ? '2.2rem' : '1.1rem')
+      + ';font-weight:700;color:#D4A840;line-height:1;text-shadow:0 1px 3px rgba(0,0,0,.3);">' + item.hora + '</div>'
+      + '<div style="font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(201,169,98,.7);margin-top:3px;">hrs</div>'
+      + '</div>'
+      + '<div style="width:1px;height:'+(item.destacado?'60px':'36px')+';background:rgba(201,169,98,.3);flex-shrink:0;"></div>'
+      + '<div>'
+      + '<div style="font-size:'+(item.destacado?'1.05rem':'.9rem')+';color:var(--ink);font-weight:'+(item.destacado?'700':'400')+';line-height:1.2;">'
+      + item.evento + '</div>'
+      + (item.destacado ? '<div style="font-size:.7rem;color:rgba(201,169,98,.85);margin-top:5px;">⏰ Se ruega llegar 15 minutos antes</div>' : '')
+      + '</div>'
       + '</div>';
   }).join('');
 }
-document.addEventListener('DOMContentLoaded', function(){ fetchPublicConfig().then(renderCronograma); renderCronograma(); });
+
+document.addEventListener('DOMContentLoaded', renderCronograma);
+
+function openQR(){document.getElementById('qr-modal').style.display='flex';document.body.style.overflow='hidden';}
+function closeQR(){document.getElementById('qr-modal').style.display='none';document.body.style.overflow='auto';}
 </script>
 </body>
 </html>
