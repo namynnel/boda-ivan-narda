@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Confirmación Virtual — Ivan & Narda</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    :root{
+      --olive:#5C6B3A;--olive-dk:#3A4520;--gold:#C9A962;--gold-lt:#DFC07A;
+      --cream:#F5F0E8;--ink:#2A3018;--ink-mid:#4A5528;--ink-lt:#7A8560;
+      --euca:#5C8A78;--red:#C04040;
+    }
+    body{background:var(--olive-dk);min-height:100vh;font-family:'Montserrat',sans-serif;
+      display:flex;flex-direction:column;align-items:center;padding:2rem 1rem;}
+    .card{background:var(--cream);border-radius:16px;padding:2.5rem 2rem;
+      width:min(480px,100%);box-shadow:0 20px 60px rgba(0,0,0,.3);}
+    .logo{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.35em;
+      color:var(--gold);text-transform:uppercase;text-align:center;margin-bottom:.5rem;}
+    h1{font-family:'Cinzel',serif;font-size:1.4rem;color:var(--olive-dk);
+      text-align:center;margin-bottom:.25rem;}
+    .subtitle{font-family:'Crimson Text',serif;font-size:1rem;color:var(--ink-lt);
+      text-align:center;margin-bottom:2rem;font-style:italic;}
+    .info-box{background:rgba(92,138,120,.1);border:1px solid rgba(92,138,120,.3);
+      border-radius:8px;padding:.75rem 1rem;margin-bottom:1.5rem;}
+    .info-box p{font-size:.78rem;color:var(--ink-mid);line-height:1.6;}
+    label{display:block;font-size:.72rem;font-weight:600;color:var(--olive-dk);
+      margin-bottom:.3rem;letter-spacing:.03em;}
+    input,select,textarea{width:100%;padding:.7rem .9rem;border:1px solid rgba(92,107,58,.3);
+      border-radius:8px;font-family:'Montserrat',sans-serif;font-size:.82rem;
+      color:var(--ink);background:white;outline:none;transition:border .2s;}
+    input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+    .field{margin-bottom:1.1rem;}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.1rem;}
+    .hint{font-size:.65rem;color:var(--ink-lt);margin-top:.3rem;}
+    .phone-row{display:flex;gap:.5rem;}
+    .phone-country{width:100px;flex-shrink:0;}
+    .section-title{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;
+      text-transform:uppercase;color:var(--gold);margin:1.5rem 0 .75rem;
+      padding-bottom:.4rem;border-bottom:1px solid rgba(201,169,98,.2);}
+    .radio-group{display:flex;flex-direction:column;gap:.5rem;}
+    .radio-opt{display:flex;align-items:flex-start;gap:.75rem;padding:.6rem .75rem;
+      border:1px solid rgba(92,107,58,.2);border-radius:8px;cursor:pointer;
+      transition:border .2s,background .2s;}
+    .radio-opt:has(input:checked){border-color:var(--gold);background:rgba(201,169,98,.06);}
+    .radio-opt input{margin-top:3px;accent-color:var(--gold);flex-shrink:0;}
+    .radio-opt .opt-text{font-size:.82rem;color:var(--ink);}
+    .radio-opt .opt-sub{font-size:.68rem;color:var(--ink-lt);margin-top:2px;}
+    .submit-btn{width:100%;padding:.9rem;background:var(--olive-dk);color:var(--cream);
+      border:none;border-radius:8px;font-family:'Cinzel',serif;font-size:.8rem;
+      letter-spacing:.15em;cursor:pointer;margin-top:1.5rem;transition:opacity .2s;}
+    .submit-btn:hover{opacity:.85;}
+    .error{background:rgba(192,64,64,.08);border:1px solid rgba(192,64,64,.3);
+      border-radius:8px;padding:.6rem .9rem;font-size:.75rem;color:var(--red);
+      margin-bottom:1rem;display:none;}
+    /* Step código */
+    #step-codigo{text-align:center;}
+    #step-codigo input{text-align:center;font-size:1.4rem;letter-spacing:.5em;
+      font-family:'Cinzel',serif;color:var(--olive-dk);}
+    /* Step success */
+    #step-success{text-align:center;display:none;}
+    .success-icon{font-size:3rem;margin-bottom:1rem;}
+    #step-form{display:none;}
+    .required{color:var(--red);}
+    .optional{color:var(--ink-lt);font-weight:400;}
+    .deadline-box{background:rgba(201,169,98,.1);border:1px solid rgba(201,169,98,.3);
+      border-radius:8px;padding:.6rem 1rem;margin-bottom:1.5rem;text-align:center;
+      font-size:.75rem;color:var(--ink-mid);}
+    .deadline-box strong{color:var(--gold);}
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <!-- LOGO -->
+  <p class="logo">N · I · 2026</p>
+  <h1>Asistencia Virtual</h1>
+  <p class="subtitle">Boda de Ivan & Narda · 5 de diciembre</p>
+
+  <!-- STEP 1: Código -->
+  <div id="step-codigo">
+    <div class="info-box" style="margin-bottom:1.5rem;">
+      <p>🌍 Esta confirmación es para <strong>invitados virtuales</strong> que seguirán la ceremonia en vivo desde cualquier parte del mundo.</p>
+    </div>
+    <div class="deadline-box">
+      Confirma antes del <strong>05 de noviembre de 2026</strong>
+    </div>
+    <div class="field">
+      <label>Tu código de invitación</label>
+      <input type="text" id="code-input" maxlength="4" placeholder="0000"
+        inputmode="numeric" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+      <p class="hint">Ingresa el código de 4 dígitos que recibiste.</p>
+    </div>
+    <div class="error" id="code-error"></div>
+    <button class="submit-btn" onclick="verifyCode()">
+      <span id="verify-text">Verificar código</span>
+      <span id="verify-loading" style="display:none;">Verificando...</span>
+    </button>
+  </div>
+
+  <!-- STEP 2: Formulario -->
+  <div id="step-form">
+    <div class="info-box">
+      <p id="welcome-msg"></p>
+    </div>
+
+    <p class="section-title">Tu información</p>
+
+    <div class="field">
+      <label>Nombre o apodo <span class="required">*</span></label>
+      <input type="text" id="virt-nombre" placeholder="Como prefieres que te llamemos"
+        name="nombre">
+      <p class="hint">Puede ser tu nombre real, apodo, usuario — como prefieras.</p>
+    </div>
+
+    <p class="section-title">¿Cómo te contactamos?</p>
+
+    <div class="field">
+      <label>WhatsApp <span class="optional">(opcional)</span></label>
+      <div class="phone-row">
+        <select id="virt-country" class="phone-country">
+          <option value="591">🇧🇴 +591</option>
+          <option value="54">🇦🇷 +54</option>
+          <option value="56">🇨🇱 +56</option>
+          <option value="51">🇵🇪 +51</option>
+          <option value="55">🇧🇷 +55</option>
+          <option value="1">🇺🇸 +1</option>
+          <option value="34">🇪🇸 +34</option>
+          <option value="44">🇬🇧 +44</option>
+          <option value="49">🇩🇪 +49</option>
+          <option value="33">🇫🇷 +33</option>
+          <option value="81">🇯🇵 +81</option>
+          <option value="82">🇰🇷 +82</option>
+          <option value="otro">🌍 Otro</option>
+        </select>
+        <input type="tel" id="virt-telefono" placeholder="Número sin código de país">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Instagram <span class="optional">(opcional)</span></label>
+      <input type="text" id="virt-instagram" placeholder="@tu_usuario">
+    </div>
+
+    <div class="field">
+      <label>TikTok <span class="optional">(opcional)</span></label>
+      <input type="text" id="virt-tiktok" placeholder="@tu_usuario">
+    </div>
+
+    <div class="field">
+      <label>Correo electrónico <span class="optional">(opcional)</span></label>
+      <input type="email" id="virt-email" placeholder="tu@correo.com">
+    </div>
+
+    <p class="hint" style="margin-top:-.5rem;margin-bottom:1rem;">
+      Déjanos al menos un medio de contacto para enviarte el link de transmisión en vivo. 💚
+    </p>
+
+    <p class="section-title">¿Asistirás al evento virtual?</p>
+    <div class="radio-group">
+      <label class="radio-opt">
+        <input type="radio" name="virt-asistencia" value="virtual">
+        <div>
+          <div class="opt-text">📺 Sí, veré el evento en vivo</div>
+          <div class="opt-sub">Te enviaremos el link antes del 5 de diciembre</div>
+        </div>
+      </label>
+      <label class="radio-opt">
+        <input type="radio" name="virt-asistencia" value="no">
+        <div>
+          <div class="opt-text">😔 No podré acompañarles</div>
+          <div class="opt-sub">Gracias por avisarnos</div>
+        </div>
+      </label>
+    </div>
+
+    <div class="field" style="margin-top:1.1rem;">
+      <label>Mensaje para los novios <span class="optional">(opcional)</span></label>
+      <textarea id="virt-mensaje" rows="3" placeholder="¡Felicidades! o lo que quieras decirles..."></textarea>
+    </div>
+
+    <div class="error" id="form-error"></div>
+    <button class="submit-btn" onclick="submitForm()">
+      <span id="submit-text">Confirmar asistencia virtual</span>
+      <span id="submit-loading" style="display:none;">Enviando...</span>
+    </button>
+  </div>
+
+  <!-- STEP 3: Éxito -->
+  <div id="step-success">
+    <div class="success-icon">💚</div>
+    <h2 style="font-family:'Cinzel',serif;color:var(--olive-dk);margin-bottom:.5rem;">¡Gracias!</h2>
+    <p style="font-family:'Crimson Text',serif;font-size:1.05rem;color:var(--ink-mid);
+      line-height:1.7;margin-bottom:1.5rem;" id="success-msg">
+      Tu confirmación fue recibida. Te enviaremos el link de transmisión próximamente.
+    </p>
+    <p style="font-size:.7rem;color:var(--ink-lt);">— Narda & Ivan 💍</p>
+  </div>
+</div>
+
+<script>
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwKd-9DQRH-LY6qIdBjaIDbleaWUJnfvdf8lmZbQh-3FqpHKNNy9nYhmk9RiYnx1a0iXg/exec';
+const DEADLINE   = new Date('2026-11-05T23:59:59-04:00');
+
+var serverData = { loaded:false, usedCodes:new Set(), guestMap:{} };
+var currentCode = '';
+
+// Bloquear si ya pasó la fecha
+if (Date.now() > DEADLINE.getTime()) {
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('step-codigo').innerHTML =
+      '<div style="text-align:center;padding:1rem;">' +
+      '<p style="font-size:2rem;margin-bottom:1rem;">📅</p>' +
+      '<h3 style="font-family:Cinzel,serif;color:var(--olive-dk);margin-bottom:.75rem;">Fecha límite alcanzada</h3>' +
+      '<p style="font-size:.82rem;color:var(--ink-mid);line-height:1.7;margin-bottom:1.5rem;">' +
+      'El plazo venció el <strong>05 de noviembre de 2026</strong>.<br>' +
+      'Contáctanos si crees que es un error:</p>' +
+      '<a href="https://wa.me/59161144206" target="_blank" style="display:block;padding:.6rem;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#2d7a50;text-decoration:none;margin-bottom:.5rem;font-size:.8rem;">💬 Narda · +591 61144206</a>' +
+      '<a href="https://wa.me/59160552435" target="_blank" style="display:block;padding:.6rem;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#2d7a50;text-decoration:none;font-size:.8rem;">💬 Ivan · +591 60552435</a>' +
+      '</div>';
+  });
+}
+
+// Precargar datos desde Sheets
+(function preload() {
+  var cb = 'virtPreload_' + Date.now();
+  var s  = document.createElement('script');
+  var to = setTimeout(function(){ try{document.head.removeChild(s);}catch(e){} delete window[cb]; }, 8000);
+  window[cb] = function(data) {
+    clearTimeout(to); try{document.head.removeChild(s);}catch(e){} delete window[cb];
+    if (data && data.ok) {
+      serverData.usedCodes = new Set(data.usedCodes || []);
+      serverData.guestMap  = data.guestMap || {};
+      serverData.loaded    = true;
+    }
+  };
+  s.src = SHEETS_URL + '?action=preloadData&callback=' + cb;
+  s.onerror = function(){ clearTimeout(to); try{document.head.removeChild(s);}catch(e){}; delete window[cb]; };
+  document.head.appendChild(s);
+})();
+
+function verifyCode() {
+  var code = document.getElementById('code-input').value.trim();
+  var err  = document.getElementById('code-error');
+  err.style.display = 'none';
+
+  if (!/^[0-9]{4}$/.test(code)) {
+    err.textContent = 'Ingresa un código de 4 dígitos.';
+    err.style.display = 'block'; return;
+  }
+  // Verificar que el código existe y es del grupo VIRTUAL/INTERNACIONAL
+  if (serverData.loaded) {
+    if (!serverData.guestMap[code]) {
+      err.innerHTML = '❌ Este código no existe. Verifica o <a href="https://wa.me/59161144206" style="color:inherit;">contáctanos</a>.';
+      err.style.display = 'block'; return;
+    }
+    if (serverData.usedCodes.has(code)) {
+      err.innerHTML = '⚠️ Este código ya fue utilizado. <a href="https://wa.me/59161144206" style="color:inherit;">Contáctanos si es un error</a>.';
+      err.style.display = 'block'; return;
+    }
+    var guest = serverData.guestMap[code];
+    if (guest.grupo !== 'VIRTUAL' && guest.grupo !== 'INTERNACIONAL') {
+      err.innerHTML = '⚠️ Este código corresponde a una invitación presencial. <a href="rsvp-narda-ivan.html">Confirma aquí</a>.';
+      err.style.display = 'block'; return;
+    }
+    currentCode = code;
+    showForm(guest);
+  } else {
+    // Fallback: aceptar cualquier código de 4 dígitos si no cargaron datos
+    currentCode = code;
+    showForm({ nombre: '', grupo: 'VIRTUAL' });
+  }
+}
+
+function showForm(guest) {
+  document.getElementById('step-codigo').style.display = 'none';
+  document.getElementById('step-form').style.display   = 'block';
+  var nombre = guest.nombre || '';
+  document.getElementById('welcome-msg').textContent =
+    nombre ? '¡Hola, ' + nombre + '! Completa el formulario para confirmar.' :
+             'Completa el formulario para confirmar tu participación virtual.';
+}
+
+function submitForm() {
+  var nombre     = document.getElementById('virt-nombre').value.trim();
+  var country    = document.getElementById('virt-country').value;
+  var telefono   = document.getElementById('virt-telefono').value.trim();
+  var instagram  = document.getElementById('virt-instagram').value.trim();
+  var tiktok     = document.getElementById('virt-tiktok').value.trim();
+  var email      = document.getElementById('virt-email').value.trim();
+  var asistencia = document.querySelector('input[name="virt-asistencia"]:checked');
+  var mensaje    = document.getElementById('virt-mensaje').value.trim();
+  var err        = document.getElementById('form-error');
+  err.style.display = 'none';
+
+  if (!nombre) {
+    err.textContent = 'Por favor ingresa tu nombre o apodo.';
+    err.style.display = 'block'; return;
+  }
+  if (!asistencia) {
+    err.textContent = 'Por favor indica si asistirás al evento virtual.';
+    err.style.display = 'block'; return;
+  }
+  if (!telefono && !instagram && !tiktok && !email) {
+    err.textContent = 'Por favor déjanos al menos un medio de contacto.';
+    err.style.display = 'block'; return;
+  }
+
+  document.getElementById('submit-text').style.display    = 'none';
+  document.getElementById('submit-loading').style.display = 'block';
+
+  var phoneCompleto = telefono ? country + telefono : '';
+  var record = {
+    codigo:     currentCode,
+    nombre:     nombre,
+    apellido:   '',
+    telefono:   phoneCompleto,
+    asistencia: asistencia.value,
+    acompanantes: 0,
+    alergia:    'no',
+    mensaje:    mensaje,
+    contacto_social: (instagram || tiktok),
+    contacto_email:  email,
+    es_virtual: 'si'
+  };
+
+  var params = new URLSearchParams();
+  Object.entries(record).forEach(function(e){ params.append(e[0], e[1]); });
+
+  var img = new Image();
+  img.onload = img.onerror = function() {
+    document.getElementById('step-form').style.display    = 'none';
+    document.getElementById('step-success').style.display = 'block';
+    var msg = asistencia.value === 'virtual'
+      ? '¡Confirmado! Te enviaremos el link de la transmisión en vivo antes del gran día. ¡Nos emociona tenerte con nosotros desde la distancia! 💚'
+      : 'Gracias por avisarnos. Te deseamos lo mejor y esperamos que pronto podamos celebrar juntos. 💚';
+    document.getElementById('success-msg').textContent = msg;
+  };
+  img.src = SHEETS_URL + '?' + params.toString();
+}
+</script>
+</body>
+</html>
