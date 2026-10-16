@@ -1,0 +1,1112 @@
+<!doctype html>
+<html lang="es" class="h-full">
+<head>
+  <meta charset="UTF-8">
+<meta name="robots" content="noindex, nofollow">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSVP - Ivan & Narda</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            olive: '#5C6B4D', 'olive-dark': '#4A5840',
+            eucalyptus: '#7B9E87', 'eucalyptus-light': '#A8C5B0',
+            cream: '#FDFBF7', gold: '#C9A962', 'gold-light': '#D4BA7A'
+          },
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'Georgia', 'serif'],
+            sans: ['Montserrat', 'system-ui', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html, body { height: 100%; }
+    .paper-texture {
+      background-color: #FDFBF7;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23d4c5a9' fill-opacity='0.08'%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .input-focus:focus { outline: none; border-color: #7B9E87; box-shadow: 0 0 0 3px rgba(123,158,135,0.15); }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .radio-option input[type="radio"]:checked + label {
+      background-color: rgba(123,158,135,0.1);
+      border-color: #7B9E87;
+    }
+    .radio-option input[type="radio"]:checked + label .radio-dot {
+      transform: scale(1);
+    }
+    .radio-dot { transform: scale(0); transition: transform 0.2s; }
+    .leaf-decoration::before, .leaf-decoration::after {
+      content: ''; position: absolute; width: 60px; height: 60px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5c-5 15-20 30-40 35 20 5 35 20 40 40 5-20 20-35 40-40C70 35 55 20 50 5z' fill='none' stroke='%237B9E87' stroke-width='1.5' opacity='0.3'/%3E%3C/svg%3E");
+      background-size: contain; background-repeat: no-repeat;
+    }
+    .leaf-decoration::before { top:-20px; left:-20px; transform:rotate(-15deg); }
+    .leaf-decoration::after  { bottom:-20px; right:-20px; transform:rotate(165deg); }
+  </style>
+</head>
+<body class="h-full paper-texture overflow-auto">
+<div class="w-full min-h-full py-8 px-4 sm:px-6 lg:px-8">
+
+  <!-- HEADER -->
+  <header class="text-center mb-10">
+    <div class="inline-block relative leaf-decoration px-8 py-4">
+      <p class="font-serif text-gold text-xl tracking-widest mb-2">Ivan &amp; Narda</p>
+      <div class="w-16 h-px bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mb-4"></div>
+      <p class="font-sans text-olive text-sm tracking-wide">05 de diciembre de 2026</p>
+      <p class="font-sans text-olive/70 text-xs tracking-wide mt-1">La Paz, Bolivia</p>
+    </div>
+  </header>
+
+  <!-- STEP 1: Verificacion de codigo -->
+  <div id="step-codigo" class="max-w-2xl mx-auto">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
+      <div class="bg-gradient-to-r from-olive/5 via-eucalyptus/10 to-olive/5 px-6 sm:px-10 py-8 border-b border-eucalyptus-light/20 text-center">
+        <h1 class="font-serif text-3xl sm:text-4xl text-olive font-semibold tracking-wide">Confirmacion de Asistencia</h1>
+        <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-4 mb-6"></div>
+        <p class="font-sans text-olive/80 text-sm leading-relaxed max-w-lg mx-auto">
+          Nos encantaria contar con tu presencia en este dia tan especial.
+        </p>
+      </div>
+      <div class="px-6 sm:px-10 py-10 text-center">
+        <p class="font-sans text-olive font-semibold text-base mb-2">Para comenzar, ingresa tu codigo de invitacion</p>
+        <p class="font-sans text-olive/60 text-sm mb-8 leading-relaxed max-w-sm mx-auto">
+          Lo encontraras en el mensaje que te enviamos por WhatsApp y en tu pase digital. Si tienes dudas, contactanos directamente.
+        </p>
+        <div class="max-w-xs mx-auto">
+          <input type="text" id="code-input" inputmode="numeric" maxlength="4" placeholder="0000"
+            class="w-full px-4 py-4 border-2 border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white text-center text-3xl tracking-[0.5em] font-medium input-focus transition-all duration-200"
+            oninput="this.value=this.value.replace(/[^0-9]/g,''); clearCodeError()">
+          <p id="code-error" class="hidden text-red-500 text-sm mt-3 font-sans leading-relaxed"></p>
+          <button onclick="verifyCode()" id="verify-btn"
+            class="w-full mt-4 py-4 bg-gradient-to-r from-olive to-olive-dark text-white font-sans font-medium tracking-wide rounded-lg hover:from-olive-dark hover:to-olive transition-all duration-300 shadow-md">
+            <span id="verify-text">Verificar codigo</span>
+            <span id="verify-loading" class="hidden">Verificando...</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Formulario (oculto hasta verificar) -->
+  <div id="step-form" class="max-w-2xl mx-auto hidden">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
+
+      <div class="bg-gradient-to-r from-olive/5 via-eucalyptus/10 to-olive/5 px-6 sm:px-10 py-8 border-b border-eucalyptus-light/20">
+        <h1 class="font-serif text-3xl sm:text-4xl text-olive text-center font-semibold tracking-wide">Confirmacion de Asistencia</h1>
+        <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mt-4 mb-6"></div>
+        <p id="guest-welcome" class="hidden font-sans text-olive/80 text-center text-sm leading-relaxed max-w-lg mx-auto"></p>
+        <p class="font-sans text-olive/80 text-center text-sm leading-relaxed max-w-lg mx-auto mt-2">
+          Por favor completa este formulario para confirmar tu asistencia.
+        </p>
+      </div>
+
+      <div class="bg-gold/5 px-6 sm:px-10 py-4 border-b border-gold/20">
+        <p class="font-sans text-center text-sm">
+          <span class="text-olive font-medium">Confirmacion obligatoria hasta el </span>
+          <span class="text-gold font-semibold">05 de noviembre de 2026</span>
+        </p>
+        <p class="font-sans text-olive/60 text-center text-xs mt-1">Despues de esta fecha, la disponibilidad no podra ser garantizada.</p>
+      </div>
+
+      <form id="rsvp-form" class="px-6 sm:px-10 py-8 space-y-6">
+        <input type="hidden" id="hidden-code" name="codigo">
+
+        <!-- Nombre -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="name-section">
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Nombre <span class="text-gold">*</span></label>
+            <input type="text" id="first-name" name="first_name" required placeholder="Tu nombre"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Apellido <span class="text-gold">*</span></label>
+            <input type="text" id="last-name" name="last_name" required placeholder="Tu apellido"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+        </div>
+
+        <!-- Campos bloqueados hasta completar nombre -->
+        <div id="fields-locked" class="hidden space-y-6">
+
+        <!-- Telefono -->
+        <div class="space-y-2" id="phone-section">
+          <label class="block font-sans text-olive font-medium text-sm" id="phone-label">
+            Numero de WhatsApp <span class="text-gold" id="phone-required-star">*</span>
+            <span id="phone-optional-tag" class="text-gold/60 font-normal hidden">(opcional)</span>
+          </label>
+          <div class="flex gap-2">
+            <select id="phone-country" class="px-3 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus text-sm" style="min-width:110px;" onchange="onCountryChange()">
+              <option value="591">🇧🇴 +591</option>
+              <option value="54">🇦🇷 +54</option>
+              <option value="56">🇨🇱 +56</option>
+              <option value="51">🇵🇪 +51</option>
+              <option value="55">🇧🇷 +55</option>
+              <option value="595">🇵🇾 +595</option>
+              <option value="598">🇺🇾 +598</option>
+              <option value="57">🇨🇴 +57</option>
+              <option value="58">🇻🇪 +58</option>
+              <option value="1">🇺🇸 +1</option>
+              <option value="34">🇪🇸 +34</option>
+              <option value="otro">🌍 Otro</option>
+            </select>
+            <input type="text" id="phone" name="phone" inputmode="tel" placeholder="Numero (sin codigo de pais)"
+              class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200"
+              oninput="this.value=this.value.replace(/[^0-9+\-\s]/g,'')">
+          </div>
+          <p class="font-sans text-olive/60 text-xs" id="phone-hint">Te enviaremos la información de tu mesa a este número.</p>
+        </div>
+
+        <!-- Contacto alternativo (internacionales / sin WhatsApp) -->
+        <div class="space-y-4 hidden" id="alt-contact-section">
+          <div style="background:rgba(92,107,58,.06);border-left:3px solid var(--euca-light,#7BAE95);padding:.75rem 1rem;border-radius:0 8px 8px 0;">
+            <p class="font-sans text-sm" style="color:var(--olive-dk,#3A4520);font-weight:600;margin-bottom:.25rem;">¿Cómo podemos contactarte? 🌍</p>
+            <p class="font-sans text-xs" style="color:var(--ink-mid,#4A5528);line-height:1.5;">
+              Tu confirmación la haremos por este medio — déjanos al menos uno.
+            </p>
+          </div>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Instagram o TikTok</label>
+            <input type="text" id="contact-social" name="contact_social" placeholder="@tu_usuario"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+          <div class="space-y-2">
+            <label class="block font-sans text-olive font-medium text-sm">Correo electrónico</label>
+            <input type="email" id="contact-email" name="contact_email" placeholder="tu@correo.com"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+        </div>
+
+        </div><!-- /fields-locked -->
+
+        <!-- Asistencia (también bloqueada) -->
+        <div class="space-y-3 hidden" id="attendance-section">
+          <label class="block font-sans text-olive font-medium text-sm">Asistencia <span class="text-gold">*</span></label>
+          <div class="space-y-2" id="attendance-options">
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-both" name="attendance" value="both" required class="sr-only">
+              <label for="att-both" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  Si, a la ceremonia y recepcion
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-ceremony" name="attendance" value="ceremony" class="sr-only">
+              <label for="att-ceremony" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  Solo a la ceremonia civil
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-reception" name="attendance" value="reception" class="sr-only">
+              <label for="att-reception" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  Solo a la recepcion
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center hidden" id="att-virtual-wrap">
+              <input type="radio" id="att-virtual" name="attendance" value="virtual" class="sr-only">
+              <label for="att-virtual" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  <span>
+                    Asistire virtualmente 📺
+                    <span class="block text-xs text-olive/60 mt-0.5">Te compartiremos el link de transmision en vivo</span>
+                  </span>
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center">
+              <input type="radio" id="att-no" name="attendance" value="no" class="sr-only">
+              <label for="att-no" class="flex-1 px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-3">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span>
+                  No podre asistir
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Campos condicionales (si asiste) -->
+        <div id="attending-fields" class="space-y-6 hidden fade-in">
+
+          <!-- Alergia -->
+          <div class="space-y-3">
+            <label class="block font-sans text-olive font-medium text-sm">Tienes alguna alergia alimentaria grave? <span class="text-gold">*</span></label>
+            <div class="flex gap-4">
+              <div class="radio-option flex items-center">
+                <input type="radio" id="allergy-yes" name="has_allergy" value="yes" class="sr-only">
+                <label for="allergy-yes" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> Si
+                  </span>
+                </label>
+              </div>
+              <div class="radio-option flex items-center">
+                <input type="radio" id="allergy-no" name="has_allergy" value="no" class="sr-only">
+                <label for="allergy-no" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> No
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div id="allergy-detail" class="hidden fade-in">
+              <input type="text" id="dietary" name="dietary_restrictions" placeholder="Ej: Alergia a mariscos, mani..."
+                class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+            </div>
+          </div>
+
+          <!-- Acompanante -->
+          <div id="companion-section" class="space-y-3">
+            <label class="block font-sans text-olive font-medium text-sm">Vendras con acompanante? <span class="text-gold">*</span></label>
+            <div class="flex gap-4">
+              <div class="radio-option flex items-center">
+                <input type="radio" id="comp-yes" name="has_companion" value="yes" class="sr-only">
+                <label for="comp-yes" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> Si
+                  </span>
+                </label>
+              </div>
+              <div class="radio-option flex items-center">
+                <input type="radio" id="comp-no" name="has_companion" value="no" class="sr-only">
+                <label for="comp-no" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> No
+                  </span>
+                </label>
+              </div>
+            </div>
+            <p class="font-sans text-xs" style="color:var(--ink-mid,#4A5528);line-height:1.6;">
+              👤 Cada acompañante ocupa un cupo y se cuenta <strong>desde los 16 años</strong>. Los menores de 16 años no ocupan cupo: los indicas en la pregunta siguiente.
+            </p>
+          </div>
+
+          <!-- Numero acompanantes -->
+          <div id="comp-count-section" class="space-y-2 hidden fade-in">
+            <label class="block font-sans text-olive font-medium text-sm">Numero de acompanantes <span class="text-gold">*</span> <span class="text-xs" style="font-weight:400;opacity:.75;">(personas de 16 años o más)</span></label>
+            <select id="companion-count" name="companion_count"
+              class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200 cursor-pointer">
+              <option value="">Selecciona...</option>
+            </select>
+          </div>
+
+          <!-- Nombres acompanantes -->
+          <div id="comp-names-section" class="space-y-4 hidden fade-in">
+            <label class="block font-sans text-olive font-medium text-sm">Nombre y apellido de acompanantes <span class="text-gold">*</span></label>
+            <div id="comp-fields-container" class="space-y-4"></div>
+          </div>
+
+          <!-- Menores de 16 años -->
+          <div id="kids-section" class="space-y-3">
+            <label class="block font-sans text-olive font-medium text-sm">¿Vendrás con niños menores de 16 años? <span class="text-gold">*</span></label>
+            <p class="font-sans text-xs" style="color:var(--ink-mid,#4A5528);line-height:1.6;">Los menores de 16 años no ocupan cupo ni cuentan como acompañantes, pero sí siguen las reglas para los pequeños que te contamos a continuación.</p>
+            <div class="flex gap-4">
+              <div class="radio-option flex items-center">
+                <input type="radio" id="kids-yes" name="has_kids" value="yes" class="sr-only">
+                <label for="kids-yes" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> Sí
+                  </span>
+                </label>
+              </div>
+              <div class="radio-option flex items-center">
+                <input type="radio" id="kids-no" name="has_kids" value="no" class="sr-only">
+                <label for="kids-no" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                  <span class="flex items-center gap-2">
+                    <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                      <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                    </span> No
+                  </span>
+                </label>
+              </div>
+            </div>
+            <div id="kids-count-section" class="hidden fade-in space-y-3">
+              <label class="block font-sans text-olive font-medium text-sm">¿Cuántos menores te acompañarán? <span class="text-gold">*</span></label>
+              <select id="kids-count" name="kids_count"
+                class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200 cursor-pointer">
+                <option value="">Selecciona...</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              </select>
+              <div class="font-sans text-sm" style="background:rgba(201,169,98,.12);border:1px solid rgba(201,169,98,.45);padding:.9rem 1rem;border-radius:10px;color:var(--olive-dk,#3A4520);line-height:1.7;">
+                <strong style="display:block;margin-bottom:.35rem;">💛 Información importante para las familias: sobre los más pequeños ♡</strong>
+                Nos encantará compartir con ustedes los primeros momentos de nuestra celebración.
+                Para que puedan organizarse con anticipación, les recordamos que los pequeños podrán acompañarnos durante la ceremonia, el brindis, nuestro primer baile y la cena.
+                A partir de las 20:00, la celebración continuará con actividades y un ambiente exclusivamente para adultos, por lo que los menores deberán retirarse junto a su adulto responsable.
+                Les agradecemos mucho su comprensión y cariño. 🤍
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Mensaje -->
+        <div class="space-y-2">
+          <label class="block font-sans text-olive font-medium text-sm">
+            Mensaje para los novios <span class="text-olive/50">(opcional)</span>
+          </label>
+          <textarea id="message" name="message" rows="4" maxlength="500"
+            placeholder="Escribe aqui tus buenos deseos..."
+            class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200 resize-none"></textarea>
+        </div>
+
+        <!-- Error -->
+        <div id="form-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm text-center"></div>
+
+        <!-- Submit -->
+        <div class="pt-4">
+          <button type="submit" id="submit-btn"
+            class="w-full py-4 bg-gradient-to-r from-olive to-olive-dark text-white font-sans font-medium tracking-wide rounded-lg hover:from-olive-dark hover:to-olive transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+            <span id="submit-text">Confirmar asistencia</span>
+            <span id="submit-loading" class="hidden">
+              <svg class="animate-spin inline-block w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+              </svg>
+              Enviando...
+            </span>
+          </button>
+        </div>
+      </form>
+
+      <!-- ════════ FORMULARIO INTERNACIONAL ════════ -->
+      <form id="intl-form" class="hidden px-6 sm:px-10 py-8 space-y-6" novalidate>
+        <div style="background:rgba(92,107,58,.06);border-left:3px solid var(--euca-light,#7BAE95);padding:.75rem 1rem;border-radius:0 8px 8px 0;">
+          <p class="font-sans text-sm" style="color:var(--olive-dk,#3A4520);font-weight:600;margin-bottom:.25rem;">Te esperamos desde donde estés 🌍</p>
+          <p class="font-sans text-xs" style="color:var(--ink-mid,#4A5528);line-height:1.5;">Podrás acompañarnos en vivo de forma virtual. Cuéntanos un poco para poder contactarte.</p>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block font-sans text-olive font-medium text-sm">Nombre completo o apodo <span class="text-gold">*</span></label>
+          <input type="text" id="intl-name" placeholder="Como prefieres que te llamemos" class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+        </div>
+
+        <div class="space-y-3">
+          <label class="block font-sans text-olive font-medium text-sm">Número de WhatsApp <span class="text-gold/60 font-normal">(opcional)</span></label>
+          <div id="intl-phone-row" class="flex gap-2">
+            <select id="intl-country" class="px-3 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus text-sm" style="min-width:110px;">
+              <option value="1">🇺🇸 +1</option>
+              <option value="34">🇪🇸 +34</option>
+              <option value="39">🇮🇹 +39</option>
+              <option value="33">🇫🇷 +33</option>
+              <option value="49">🇩🇪 +49</option>
+              <option value="44">🇬🇧 +44</option>
+              <option value="52">🇲🇽 +52</option>
+              <option value="54">🇦🇷 +54</option>
+              <option value="55">🇧🇷 +55</option>
+              <option value="56">🇨🇱 +56</option>
+              <option value="51">🇵🇪 +51</option>
+              <option value="57">🇨🇴 +57</option>
+              <option value="58">🇻🇪 +58</option>
+              <option value="593">🇪🇨 +593</option>
+              <option value="598">🇺🇾 +598</option>
+              <option value="591">🇧🇴 +591</option>
+              <option value="otro">🌍 Otro</option>
+            </select>
+            <input type="text" id="intl-phone" inputmode="tel" placeholder="Número (sin código de país)" class="flex-1 w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+          </div>
+          <label class="flex items-start gap-3 cursor-pointer font-sans text-olive text-sm">
+            <input type="checkbox" id="intl-no-phone" class="mt-1">
+            <span>No quiero compartir mi número de teléfono</span>
+          </label>
+        </div>
+
+        <div id="intl-social-box" class="hidden space-y-3 fade-in p-4 bg-eucalyptus/5 rounded-lg border border-eucalyptus-light/30">
+          <p class="font-sans text-sm" style="color:var(--olive-dk,#3A4520);font-weight:600;">Sin problema 💚 Déjanos otra forma de contactarte</p>
+          <p class="font-sans text-xs" style="color:var(--ink-mid,#4A5528);line-height:1.5;">Por ahí te haremos llegar la información del evento en vivo.</p>
+          <select id="intl-social-net" class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus text-sm">
+              <option value="Instagram">Instagram</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Facebook">Facebook</option>
+              <option value="Telegram">Telegram</option>
+              <option value="X (Twitter)">X (Twitter)</option>
+              <option value="Discord">Discord</option>
+              <option value="Otra">Otra</option>
+          </select>
+          <input type="text" id="intl-social-link" placeholder="Link de tu perfil (https://...)" class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200">
+        </div>
+
+        <div class="space-y-3">
+          <label class="block font-sans text-olive font-medium text-sm">¿Podrás asistir virtualmente al evento? 📺 <span class="text-gold">*</span></label>
+          <div class="flex gap-4">
+            <div class="radio-option flex items-center">
+              <input type="radio" id="intl-virt-yes" name="intl_virtual" value="yes" class="sr-only">
+              <label for="intl-virt-yes" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span> Sí
+                </span>
+              </label>
+            </div>
+            <div class="radio-option flex items-center">
+              <input type="radio" id="intl-virt-no" name="intl_virtual" value="no" class="sr-only">
+              <label for="intl-virt-no" class="px-6 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm cursor-pointer hover:bg-eucalyptus/5 transition-all duration-200">
+                <span class="flex items-center gap-2">
+                  <span class="w-4 h-4 rounded-full border-2 border-eucalyptus flex items-center justify-center flex-shrink-0">
+                    <span class="radio-dot w-2 h-2 rounded-full bg-eucalyptus"></span>
+                  </span> No
+                </span>
+              </label>
+            </div>
+          </div>
+          <div id="intl-virtual-yes" class="hidden fade-in font-sans text-sm" style="background:rgba(92,158,122,.1);border:1px solid rgba(92,158,122,.3);padding:.75rem 1rem;border-radius:8px;color:var(--olive-dk,#3A4520);line-height:1.6;">
+            ¡Qué alegría! 🎉 El link del evento en vivo te llegará al <strong>número de teléfono</strong> o a la <strong>red social</strong> que registraste en este formulario.
+          </div>
+          <div id="intl-virtual-no" class="hidden fade-in font-sans text-sm" style="background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.08);padding:.75rem 1rem;border-radius:8px;color:var(--ink-mid,#4A5528);line-height:1.6;">
+            Lamentamos que no puedas acompañarnos. Aun así, nos encantará leer tu mensaje 💚
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block font-sans text-olive font-medium text-sm">Mensaje para los novios <span class="text-gold">*</span></label>
+          <textarea id="intl-message" rows="4" maxlength="500" placeholder="Escribe aquí tus buenos deseos..." class="w-full px-4 py-3 border border-eucalyptus-light/50 rounded-lg font-sans text-olive bg-white/50 input-focus transition-all duration-200 resize-none"></textarea>
+          <p class="font-sans text-xs" style="color:var(--ink-mid,#4A5528);line-height:1.5;">🎥 Tu mensaje será mostrado en video durante el evento presencial.</p>
+        </div>
+
+        <div id="intl-error" class="hidden p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm text-center"></div>
+
+        <div class="pt-4">
+          <button type="submit" id="intl-submit" class="w-full py-4 bg-gradient-to-r from-olive to-olive-dark text-white font-sans font-medium tracking-wide rounded-lg hover:from-olive-dark hover:to-olive transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
+            <span id="intl-submit-text">Confirmar</span>
+            <span id="intl-submit-loading" class="hidden">Enviando...</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="step-success" class="max-w-2xl mx-auto hidden">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
+      <div class="px-6 sm:px-10 py-12 text-center">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-eucalyptus to-olive flex items-center justify-center">
+          <svg class="w-10 h-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <h2 id="success-title" class="font-serif text-2xl sm:text-3xl text-olive font-semibold mb-4"></h2>
+        <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mb-6"></div>
+        <p id="success-message" class="font-sans text-olive/80 text-sm leading-relaxed max-w-md mx-auto mb-8"></p>
+        <a id="whatsapp-btn" href="#" target="_blank" class="hidden inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white font-sans font-medium rounded-lg hover:shadow-lg transition-all duration-300">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Recibir confirmacion por WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-center mt-8">
+    <div class="w-12 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent mx-auto mb-4"></div>
+    <p class="font-serif text-olive/50 text-sm italic">Con amor, Ivan &amp; Narda</p>
+  </footer>
+</div>
+
+<script>
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw2oFoVu8tyjObTvUus049eYdQKD5mpZC_yZRf-YE3NE3_9yJ71Eir3IWA5ac5tQxyvDg/exec';
+const INACTIVITY_MS    = 30 * 60 * 1000;
+
+// El RSVP ya no descarga la lista de invitados: consulta un solo código a la vez.
+var serverData = { usedCodes: new Set() };
+
+function validateCodeRemote(code) {
+  return new Promise(function(resolve) {
+    var cb = 'vc_' + Date.now();
+    var script = document.createElement('script');
+    var done = false;
+    var t = setTimeout(function(){ finish(null); }, 15000);
+    function finish(v) {
+      if (done) return; done = true; clearTimeout(t);
+      try { document.head.removeChild(script); } catch(e) {}
+      delete window[cb];
+      resolve(v);
+    }
+    window[cb] = function(data) { finish(data || null); };
+    script.onerror = function() { finish(null); };
+    script.src = SHEETS_URL + '?action=validateCode&codigo=' + encodeURIComponent(code) + '&callback=' + cb;
+    document.head.appendChild(script);
+  });
+}
+
+function clearCodeError() {
+  document.getElementById('code-error').classList.add('hidden');
+  document.getElementById('code-input').classList.remove('border-red-400');
+}
+
+async function verifyCode() {
+  var input   = document.getElementById('code-input');
+  var errEl   = document.getElementById('code-error');
+  var btnText = document.getElementById('verify-text');
+  var btnLoad = document.getElementById('verify-loading');
+  var code    = input.value.trim();
+  var wa = '<a href="https://wa.me/59161144206" style="text-decoration:underline;color:inherit;">contactanos por WhatsApp</a>';
+
+  errEl.classList.add('hidden');
+  input.classList.remove('border-red-400');
+
+  if (!/^[0-9]{4}$/.test(code)) {
+    errEl.textContent = 'Por favor ingresa un codigo de 4 digitos.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+
+  btnText.classList.add('hidden');
+  btnLoad.classList.remove('hidden');
+  var data = await validateCodeRemote(code);
+  btnText.classList.remove('hidden');
+  btnLoad.classList.add('hidden');
+
+  if (!data) {
+    errEl.innerHTML = '⚠️ No pudimos verificar tu codigo. Revisa tu conexion e intenta de nuevo.';
+    errEl.classList.remove('hidden');
+    return;
+  }
+  if (!data.ok) {
+    if (data.error === 'ya_usado') {
+      errEl.innerHTML = '⚠️ Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.<br><span style="font-size:.8em;opacity:.8;">Si crees que es un error, ' + wa + '.</span>';
+    } else if (data.error === 'no_existe') {
+      errEl.innerHTML = '❌ Este codigo no existe. Verifica que lo hayas escrito correctamente o ' + wa + '.';
+    } else {
+      errEl.innerHTML = '❌ Este codigo no es valido. Verifica que lo hayas copiado correctamente.';
+    }
+    errEl.classList.remove('hidden');
+    input.classList.add('border-red-400');
+    return;
+  }
+  showForm(code, data.cupos || 1, data.nombre || '', data.grupo || '');
+}
+
+function showForm(code, cupos, nombre, grupo) {
+  document.getElementById('hidden-code').value = code;
+
+  // Configurar según grupo: INTERNACIONAL usa su propio formulario; el resto es presencial
+  var isIntl    = String(grupo || '').toUpperCase().trim() === 'INTERNACIONAL';
+  var presForm  = document.getElementById('rsvp-form');
+  var intlForm  = document.getElementById('intl-form');
+  if (presForm) presForm.classList.toggle('hidden', isIntl);
+  if (intlForm) intlForm.classList.toggle('hidden', !isIntl);
+  var virtWrap   = document.getElementById('att-virtual-wrap');
+  var altContact = document.getElementById('alt-contact-section');
+  var countryEl  = document.getElementById('phone-country');
+  var reqStar    = document.getElementById('phone-required-star');
+  var optTag     = document.getElementById('phone-optional-tag');
+  var phoneEl    = document.getElementById('phone');
+  var phoneHint  = document.getElementById('phone-hint');
+  if (virtWrap)   virtWrap.classList.add('hidden');
+  if (altContact) altContact.classList.add('hidden');
+  if (countryEl)  countryEl.value = '591';
+  if (reqStar)    reqStar.classList.remove('hidden');
+  if (optTag)     optTag.classList.add('hidden');
+  if (phoneEl)    phoneEl.setAttribute('required','required');
+  if (phoneHint)  phoneHint.textContent = 'Obligatorio — te enviaremos la información de tu mesa a este número.';
+  if (isIntl && nombre) { var inEl = document.getElementById('intl-name'); if (inEl && !inEl.value) inEl.value = nombre; }
+  document.getElementById('step-codigo').classList.add('hidden');
+  document.getElementById('step-form').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Show welcome message
+  if (nombre) {
+    var w = document.getElementById('guest-welcome');
+    w.textContent = 'Hola, ' + nombre + '!';
+    w.classList.remove('hidden');
+  }
+
+  // Set up companion count options
+  var maxAcomp = Math.max(0, cupos - 1);
+  var sel = document.getElementById('companion-count');
+  sel.innerHTML = '<option value="">Selecciona...</option>';
+  for (var i = 1; i <= maxAcomp; i++) {
+    sel.innerHTML += '<option value="' + i + '">' + i + '</option>';
+  }
+
+  // Hide companion section if only 1 cupo
+  if (maxAcomp === 0) {
+    document.getElementById('companion-section').style.display = 'none';
+    document.getElementById('comp-count-section').classList.add('hidden');
+  }
+}
+
+// Radio buttons visual
+document.querySelectorAll('.radio-option input[type="radio"]').forEach(function(radio) {
+  radio.addEventListener('change', function() {
+    var name = this.name;
+    document.querySelectorAll('input[name="' + name + '"]').forEach(function(r) {
+      var dot = r.nextElementSibling.querySelector('.radio-dot');
+      var lbl = r.nextElementSibling;
+      if (dot) dot.style.transform = 'scale(0)';
+      lbl.classList.remove('bg-eucalyptus/10', 'border-eucalyptus');
+    });
+    var myDot = this.nextElementSibling.querySelector('.radio-dot');
+    if (myDot) myDot.style.transform = 'scale(1)';
+    this.nextElementSibling.classList.add('bg-eucalyptus/10', 'border-eucalyptus');
+  });
+});
+
+// ── LÓGICA PROGRESIVA ──
+var nameUnlocked = false;
+
+function checkNameUnlock() {
+  var fn = document.getElementById('first-name').value.trim();
+  var ln = document.getElementById('last-name').value.trim();
+  if (fn.length >= 2 && ln.length >= 2 && !nameUnlocked) {
+    nameUnlocked = true;
+    document.getElementById('fields-locked').classList.remove('hidden');
+    document.getElementById('fields-locked').classList.add('fade-in');
+  }
+}
+
+document.getElementById('first-name').addEventListener('input', checkNameUnlock);
+document.getElementById('last-name').addEventListener('input', checkNameUnlock);
+
+// ── CÓDIGO DE PAÍS — controla virtual y contacto alternativo ──
+function onCountryChange() {
+  // Presencial: el teléfono es siempre obligatorio, sin importar el país
+  var attSection = document.getElementById('attendance-section');
+  if (attSection) attSection.classList.remove('hidden');
+  updateAttendanceFields();
+}
+
+// También desbloquear la sección de asistencia cuando completen el teléfono
+document.getElementById('phone').addEventListener('input', function() {
+  var country  = document.getElementById('phone-country').value;
+  var isBolivia = country === '591';
+  var phoneVal  = this.value.trim();
+  var attSection = document.getElementById('attendance-section');
+  if (!attSection) return;
+  if (phoneVal.length >= 6) {
+    attSection.classList.remove('hidden');
+    attSection.classList.add('fade-in');
+  }
+});
+
+// ── CAMBIO DE ASISTENCIA ──
+function updateAttendanceFields() {
+  var val = '';
+  document.querySelectorAll('input[name="attendance"]').forEach(function(r) {
+    if (r.checked) val = r.value;
+  });
+  var isPresencial = (val === 'both' || val === 'ceremony' || val === 'reception');
+  var af = document.getElementById('attending-fields');
+  if (isPresencial) {
+    af.classList.remove('hidden');
+    af.classList.add('fade-in');
+  } else {
+    af.classList.add('hidden');
+    document.getElementById('comp-count-section').classList.add('hidden');
+    document.getElementById('comp-names-section').classList.add('hidden');
+    document.getElementById('comp-fields-container').innerHTML = '';
+  }
+}
+
+document.querySelectorAll('input[name="attendance"]').forEach(function(r) {
+  r.addEventListener('change', updateAttendanceFields);
+});
+
+// Mostrar sección asistencia si es Bolivia y el tel ya tiene datos (recarga)
+(function() {
+  var phone = document.getElementById('phone').value.trim();
+  if (phone.length >= 7) {
+    var attSection = document.getElementById('attendance-section');
+    if (attSection) attSection.classList.remove('hidden');
+  }
+})();
+
+// Allergy
+document.querySelectorAll('input[name="has_allergy"]').forEach(function(r) {
+  r.addEventListener('change', function() {
+    var d = document.getElementById('allergy-detail');
+    if (this.value === 'yes') d.classList.remove('hidden');
+    else { d.classList.add('hidden'); document.getElementById('dietary').value = ''; }
+  });
+});
+
+// Companion yes/no
+document.querySelectorAll('input[name="has_companion"]').forEach(function(r) {
+  r.addEventListener('change', function() {
+    var cf = document.getElementById('comp-count-section');
+    if (this.value === 'yes') cf.classList.remove('hidden');
+    else {
+      cf.classList.add('hidden');
+      document.getElementById('comp-names-section').classList.add('hidden');
+      document.getElementById('companion-count').value = '';
+      document.getElementById('comp-fields-container').innerHTML = '';
+    }
+  });
+});
+
+// Companion count
+document.getElementById('companion-count').addEventListener('change', function() {
+  var count = parseInt(this.value) || 0;
+  var ns = document.getElementById('comp-names-section');
+  var container = document.getElementById('comp-fields-container');
+  if (count > 0) {
+    ns.classList.remove('hidden');
+    container.innerHTML = '';
+    for (var i = 1; i <= count; i++) {
+      var div = document.createElement('div');
+      div.className = 'p-4 bg-eucalyptus/5 rounded-lg border border-eucalyptus-light/30 space-y-3 fade-in';
+      div.innerHTML = '<p class="font-sans text-olive/70 text-xs font-medium uppercase tracking-wide">Acompanante ' + i + '</p>'
+        + '<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">'
+        + '<input type="text" name="companion_' + i + '_first" required placeholder="Nombre" class="w-full px-3 py-2 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm bg-white/80 input-focus transition-all duration-200">'
+        + '<input type="text" name="companion_' + i + '_last" required placeholder="Apellido" class="w-full px-3 py-2 border border-eucalyptus-light/50 rounded-lg font-sans text-olive text-sm bg-white/80 input-focus transition-all duration-200">'
+        + '</div>';
+      container.appendChild(div);
+    }
+  } else {
+    ns.classList.add('hidden');
+    container.innerHTML = '';
+  }
+});
+
+// Menores de 16: mostrar cuántos
+document.querySelectorAll('input[name="has_kids"]').forEach(function(r) {
+  r.addEventListener('change', function() {
+    document.getElementById('kids-count-section').classList.toggle('hidden', this.value !== 'yes');
+    if (this.value !== 'yes') document.getElementById('kids-count').value = '';
+  });
+});
+
+// Phone input
+document.getElementById('phone').addEventListener('input', function() {
+  this.value = this.value.replace(/[^0-9]/g, '');
+});
+
+// Enter key on code input
+document.getElementById('code-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') verifyCode();
+});
+
+// Form submit
+document.getElementById('rsvp-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var submitBtn  = document.getElementById('submit-btn');
+  var submitText = document.getElementById('submit-text');
+  var submitLoad = document.getElementById('submit-loading');
+  var formErr    = document.getElementById('form-error');
+
+  var formData   = new FormData(this);
+  var attendance = formData.get('attendance');
+  var phoneRaw    = document.getElementById('phone').value.trim();
+  var phoneCountry = document.getElementById('phone-country').value;
+  var phone = phoneRaw ? (phoneCountry !== 'otro' ? phoneCountry + phoneRaw : phoneRaw) : '';
+  var code       = document.getElementById('hidden-code').value;
+
+  if (!attendance) {
+    formErr.textContent = 'Por favor selecciona tu opcion de asistencia.';
+    formErr.classList.remove('hidden');
+    return;
+  }
+  // Teléfono: obligatorio si es presencial Y código Bolivia
+  var isPresencial = (attendance === 'both' || attendance === 'ceremony' || attendance === 'reception');
+  var isVirtual    = (attendance === 'virtual');
+  var country      = document.getElementById('phone-country').value;
+  var isBolivia    = (country === '591');
+  var contactEmail  = document.getElementById('contact-email') ? document.getElementById('contact-email').value.trim() : '';
+  var contactSocial = document.getElementById('contact-social') ? document.getElementById('contact-social').value.trim() : '';
+
+  if (isPresencial && !phone) {
+    formErr.textContent = 'Por favor ingresa tu número de WhatsApp — lo necesitamos para enviarte la información de tu mesa.';
+    formErr.classList.remove('hidden');
+    return;
+  }
+  if (phone && !/^[0-9+\-\s]{6,15}$/.test(phone)) {
+    formErr.textContent = 'Por favor ingresa un número válido.';
+    formErr.classList.remove('hidden');
+    return;
+  }
+  var hasKids   = formData.get('has_kids');
+  var kidsCount = 0;
+  if (isPresencial) {
+    if (!hasKids) {
+      formErr.textContent = 'Por favor indícanos si vendrás con niños menores de 16 años.';
+      formErr.classList.remove('hidden');
+      return;
+    }
+    if (hasKids === 'yes') {
+      kidsCount = parseInt(formData.get('kids_count')) || 0;
+      if (!kidsCount) {
+        formErr.textContent = 'Por favor indícanos cuántos menores te acompañarán.';
+        formErr.classList.remove('hidden');
+        return;
+      }
+    }
+  }
+  formErr.classList.add('hidden');
+
+  submitBtn.disabled = true;
+  submitText.classList.add('hidden');
+  submitLoad.classList.remove('hidden');
+
+  // Build companion names
+  var companionCount = parseInt(formData.get('companion_count')) || 0;
+  var companions = [];
+  for (var i = 1; i <= companionCount; i++) {
+    var cf = ((formData.get('companion_' + i + '_first') || '') + ' ' + (formData.get('companion_' + i + '_last') || '')).trim();
+    if (cf) companions.push(cf);
+  }
+
+  var contactEmail  = document.getElementById('contact-email').value.trim();
+  var contactSocial = document.getElementById('contact-social').value.trim();
+
+  var record = {
+    codigo:               code,
+    nombre:               formData.get('first_name'),
+    apellido:             formData.get('last_name'),
+    telefono:             phone,
+    contacto_email:       contactEmail,
+    contacto_social:      contactSocial,
+    asistencia:           attendance,
+    acompanantes:         companionCount,
+    menores:              kidsCount,
+    nombres_acompanantes: companions.join(', '),
+    alergia:              formData.get('has_allergy') || 'no',
+    detalle_alergia:      formData.get('dietary_restrictions') || '',
+    mensaje:              formData.get('message') || ''
+  };
+
+  try {
+    // Send data via image trick - works from any domain
+    var params = new URLSearchParams();
+    Object.keys(record).forEach(function(k) { params.append(k, record[k]); });
+    
+    await new Promise(function(resolve) {
+      var img = new Image();
+      img.onload = img.onerror = function() { resolve(); };
+      img.src = SHEETS_URL + '?' + params.toString();
+      setTimeout(resolve, 5000); // timeout after 5s
+    });
+
+    // Mark code as used locally
+    serverData.usedCodes.add(code);
+
+    // Success
+    var titulo  = attendance === 'no' ? 'Lamentamos que no puedas acompanarnos' : 'Tu asistencia ha sido confirmada';
+    var mensaje = attendance === 'no'
+      ? 'Gracias por confirmarnos. Esperamos contar contigo en otra oportunidad.'
+      : 'Hemos reservado tu lugar. Te enviaremos una confirmacion al numero que proporcionaste.';
+
+    document.getElementById('success-title').textContent   = titulo;
+    document.getElementById('success-message').textContent = mensaje;
+    document.getElementById('step-form').classList.add('hidden');
+    document.getElementById('step-success').classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // WhatsApp button
+    var waMsg = attendance === 'no'
+      ? 'Hola ' + record.nombre + ', hemos recibido tu respuesta para la boda de Ivan & Narda. Lamentamos que no puedas acompanarnos.'
+      : 'Hola ' + record.nombre + ', tu asistencia a la boda de Ivan & Narda ha sido confirmada. Nos alegra contar contigo el 5 de diciembre!';
+    var waBtn = document.getElementById('whatsapp-btn');
+    if (phone) {
+      waBtn.href = 'https://wa.me/' + phone.replace(/[^0-9]/g,'') + '?text=' + encodeURIComponent(waMsg);
+    } else {
+      // Internacional sin teléfono — mostrar mensaje diferente
+      waBtn.style.display = 'none';
+      var intlNote = document.getElementById('intl-confirm-note');
+      if (intlNote) {
+        var social = document.getElementById('contact-social') ? document.getElementById('contact-social').value.trim() : '';
+        var email  = document.getElementById('contact-email')  ? document.getElementById('contact-email').value.trim()  : '';
+        var medio  = social || email || 'el medio que dejaste';
+        intlNote.textContent = '¡Listo! Te contactaremos a través de ' + medio + ' para confirmar tu participación en la transmisión en vivo. 💚';
+        intlNote.classList.remove('hidden');
+      }
+    }
+    setTimeout(function() { waBtn.classList.remove('hidden'); }, 800);
+
+  } catch(err) {
+    submitBtn.disabled = false;
+    submitText.classList.remove('hidden');
+    submitLoad.classList.add('hidden');
+    formErr.textContent = 'Hubo un error al enviar. Por favor intenta de nuevo.';
+    formErr.classList.remove('hidden');
+  }
+});
+
+
+/* ══════════════════════════════════════
+   RSVP INTERNACIONAL
+══════════════════════════════════════ */
+(function() {
+  var form = document.getElementById('intl-form');
+  if (!form) return;
+  var noPhone   = document.getElementById('intl-no-phone');
+  var phoneRow  = document.getElementById('intl-phone-row');
+  var socialBox = document.getElementById('intl-social-box');
+  var errEl     = document.getElementById('intl-error');
+
+  noPhone.addEventListener('change', function() {
+    phoneRow.classList.toggle('hidden', this.checked);
+    socialBox.classList.toggle('hidden', !this.checked);
+    if (this.checked) document.getElementById('intl-phone').value = '';
+  });
+  document.getElementById('intl-phone').addEventListener('input', function() {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+  form.querySelectorAll('input[name="intl_virtual"]').forEach(function(r) {
+    r.addEventListener('change', function() {
+      document.getElementById('intl-virtual-yes').classList.toggle('hidden', this.value !== 'yes');
+      document.getElementById('intl-virtual-no').classList.toggle('hidden', this.value !== 'no');
+    });
+  });
+
+  function showErr(msg) { errEl.textContent = msg; errEl.classList.remove('hidden'); errEl.scrollIntoView({behavior:'smooth', block:'center'}); }
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    errEl.classList.add('hidden');
+    var name    = document.getElementById('intl-name').value.trim();
+    var message = document.getElementById('intl-message').value.trim();
+    var virtEl  = form.querySelector('input[name="intl_virtual"]:checked');
+    var country = document.getElementById('intl-country').value;
+    var phoneRaw = document.getElementById('intl-phone').value.trim();
+    var sinTel  = noPhone.checked;
+    var net     = document.getElementById('intl-social-net').value;
+    var link    = document.getElementById('intl-social-link').value.trim();
+    var code    = document.getElementById('hidden-code').value;
+
+    if (name.length < 2)  { showErr('Por favor escribe tu nombre completo o apodo.'); return; }
+    if (!virtEl)          { showErr('Por favor cuéntanos si podrás asistir virtualmente.'); return; }
+    var asistira = (virtEl.value === 'yes');
+    var phone = (!sinTel && phoneRaw) ? (country !== 'otro' ? country + phoneRaw : phoneRaw) : '';
+    if (phone && !/^[0-9+\-\s]{6,16}$/.test(phone)) { showErr('Por favor ingresa un número válido.'); return; }
+    if (asistira && !phone && !(sinTel && link.length >= 3)) {
+      showErr(sinTel
+        ? 'Por favor déjanos el link de tu perfil para poder enviarte el link del evento en vivo.'
+        : 'Déjanos tu número de WhatsApp o marca la casilla para dejar el link de otra red social. Por ahí te enviaremos el link del evento en vivo.');
+      return;
+    }
+    if (message.length < 3) { showErr('El mensaje para los novios es obligatorio. ¡Nos encantará leerlo!'); return; }
+
+    var btn = document.getElementById('intl-submit');
+    btn.disabled = true;
+    document.getElementById('intl-submit-text').classList.add('hidden');
+    document.getElementById('intl-submit-loading').classList.remove('hidden');
+
+    var social = (sinTel && link) ? (net + ': ' + link) : '';
+    var record = {
+      codigo: code, nombre: name, apellido: '',
+      telefono: phone, contacto_social: social, contacto_email: '',
+      asistencia: asistira ? 'virtual' : 'no',
+      acompanantes: 0, nombres_acompanantes: '',
+      alergia: 'no', detalle_alergia: '', mensaje: message
+    };
+    try {
+      var params = new URLSearchParams();
+      Object.keys(record).forEach(function(k) { params.append(k, record[k]); });
+      await new Promise(function(resolve) {
+        var img = new Image();
+        img.onload = img.onerror = function() { resolve(); };
+        img.src = SHEETS_URL + '?' + params.toString();
+        setTimeout(resolve, 5000);
+      });
+      serverData.usedCodes.add(code);
+      document.getElementById('success-title').textContent = asistira ? '¡Gracias por confirmar!' : 'Gracias por tu mensaje';
+      document.getElementById('success-message').textContent = asistira
+        ? 'El link del evento en vivo te llegará al ' + (phone ? 'número de teléfono' : 'perfil de red social') + ' que registraste. Tu mensaje será mostrado en video durante el evento presencial.'
+        : 'Lamentamos que no puedas acompañarnos. Tu mensaje será mostrado en video durante el evento presencial.';
+      var note = document.getElementById('intl-confirm-note');
+      if (note) note.classList.add('hidden');
+      var wa = document.getElementById('whatsapp-btn');
+      if (wa) wa.style.display = 'none';
+      document.getElementById('step-form').classList.add('hidden');
+      document.getElementById('step-success').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      btn.disabled = false;
+      document.getElementById('intl-submit-text').classList.remove('hidden');
+      document.getElementById('intl-submit-loading').classList.add('hidden');
+      showErr('Hubo un error al enviar. Por favor intenta de nuevo.');
+    }
+  });
+})();
+
+/* Enlace personalizado: ...rsvp-narda-ivan.html?codigo=1234 rellena y verifica el código automáticamente */
+(function() {
+  var c = new URLSearchParams(location.search).get('codigo');
+  var input = document.getElementById('code-input');
+  if (c && /^[0-9]{4}$/.test(c) && input) {
+    input.value = c;
+    setTimeout(function(){ verifyCode(); }, 400);
+  }
+})();
+
+/* ══════════════════════════════════════
+   BLOQUEO POR FECHA LÍMITE
+══════════════════════════════════════ */
+(function() {
+  var DEADLINE    = new Date('2026-11-05T23:59:59-04:00'); // Bolivia UTC-4
+  var NARDA_WA    = 'https://wa.me/59161144206';
+  var IVAN_WA     = 'https://wa.me/59160552435';
+
+  if (Date.now() > DEADLINE.getTime()) {
+    document.addEventListener('DOMContentLoaded', function() {
+      // Ocultar todo el contenido del RSVP y mostrar mensaje
+      var body = document.querySelector('.rsvp-wrap') || document.body;
+      var overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#1E2410;display:flex;align-items:center;justify-content:center;padding:2rem;';
+      overlay.innerHTML = '<div style="max-width:420px;text-align:center;font-family:Montserrat,sans-serif;">'
+        + '<p style="font-family:Cinzel,serif;font-size:.6rem;letter-spacing:.3em;color:rgba(201,169,98,.6);text-transform:uppercase;margin-bottom:1rem;">N · I · 2026</p>'
+        + '<h2 style="font-family:Cinzel,serif;color:#C9A962;font-size:1.1rem;margin-bottom:1rem;">Fecha límite alcanzada</h2>'
+        + '<p style="color:rgba(250,244,232,.8);font-size:.85rem;line-height:1.7;margin-bottom:1.5rem;">'
+        + 'El plazo para confirmar asistencia venció el <strong style="color:#C9A962;">05 de noviembre de 2026</strong>.<br><br>'
+        + 'Si crees que se trata de un error, contáctanos directamente:'
+        + '</p>'
+        + '<div style="display:flex;flex-direction:column;gap:.75rem;">'
+        + '<a href="' + NARDA_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#A8D4B0;text-decoration:none;font-size:.82rem;">'
+        + '💬 Narda · +591 61144206</a>'
+        + '<a href="' + IVAN_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#A8D4B0;text-decoration:none;font-size:.82rem;">'
+        + '💬 Ivan · +591 60552435</a>'
+        + '</div>'
+        + '</div>';
+      document.body.appendChild(overlay);
+    });
+  }
+})();
+
+</script>
+</body>
+</html>
