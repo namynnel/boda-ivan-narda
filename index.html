@@ -785,6 +785,15 @@ footer{
 .rune strong{color:inherit !important;}
 .band-cream .rune,.band-linen .rune,.band-light .rune{color:#A35F00 !important;text-shadow:none;}
 .band-olive .rune,.band-euca .rune,.band-sage .rune,.band-dark .rune{color:#FFD05A !important;text-shadow:0 1px 3px rgba(0,0,0,.45);}
+
+/* ── PADRINOS Y TESTIGOS ── */
+.pad-wrap{margin:2.8rem auto 0;max-width:700px;}
+.pad-group{margin-bottom:1.9rem;}
+.pad-title{display:block;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:#A35F00;margin-bottom:1rem;}
+.pad-people{display:flex;flex-wrap:wrap;justify-content:center;gap:1.1rem 2.6rem;}
+.pad-person{flex:1 1 220px;max-width:310px;}
+.pad-name{font-family:'Cinzel',serif;font-size:clamp(14px,2.4vw,17px);font-weight:500;letter-spacing:.08em;line-height:1.55;text-transform:uppercase;color:var(--olive-dk);}
+.pad-detail{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--ink-lt);margin-top:3px;}
 </style>
 </head>
 <body>
@@ -948,6 +957,13 @@ footer{
       en algo que ninguno supo nombrar al principio —
       pero que ambos reconocieron en silencio: <em>aquí es donde pertenecemos.</em>
     </p>
+
+    <!-- Padrinos y testigos (editable desde el dashboard → Ajustes) -->
+    <div id="padrinos-section" class="pad-wrap reveal d2" style="display:none;">
+      <div class="hr-row" style="margin:0 0 22px;"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
+      <p class="rune">✦ Nos acompañan en este día ✦</p>
+      <div id="padrinos-list"></div>
+    </div>
 
     <span class="historia-date reveal d3">05 de Diciembre de 2026</span>
 
@@ -1482,7 +1498,7 @@ function closeGiftList() {
 /* ══════════════════════════════════════
    CRONOGRAMA DINÁMICO
 ══════════════════════════════════════ */
-var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw2oFoVu8tyjObTvUus049eYdQKD5mpZC_yZRf-YE3NE3_9yJ71Eir3IWA5ac5tQxyvDg/exec';
+var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwYz81KX_UtaldVLDH1xSeTk8-8mxt1Y2fmvCLgbidmF6Rm3dGaKrnPIIOHw7OdAfJ7dA/exec';
 var DEFAULT_CRONOGRAMA = [
   {
     "hora": "13:30",
@@ -1618,7 +1634,67 @@ function loadSitio() {
   document.head.appendChild(s);
 }
 
+/* ══════════════════════════════════════
+   PADRINOS Y TESTIGOS (se editan en el dashboard → Ajustes; se guardan en Sheets, clave "padrinos")
+══════════════════════════════════════ */
+var DEFAULT_PADRINOS = [
+  { rol: 'Padrinos de aros',  nombre: 'BORIS RENÉ HIDALGO QUIROGA',  detalle: '' },
+  { rol: 'Padrinos de aros',  nombre: 'FATIMA ZELADA CONDE',          detalle: '' },
+  { rol: 'Testigos de civil', nombre: 'KARLA SOFIA TELLEZ MAYAN',     detalle: 'Por parte de la novia' },
+  { rol: 'Testigos de civil', nombre: 'BRYAN FRANCI ALANZ AYAVIRI',   detalle: 'Por parte del novio' }
+];
+function loadPadrinosLocal() {
+  try {
+    var s = localStorage.getItem('ni-padrinos');
+    var a = s ? JSON.parse(s) : DEFAULT_PADRINOS;
+    return Array.isArray(a) ? a : DEFAULT_PADRINOS;
+  } catch (e) { return DEFAULT_PADRINOS; }
+}
+function renderPadrinos() {
+  var sec = document.getElementById('padrinos-section'), box = document.getElementById('padrinos-list');
+  if (!sec || !box) return;
+  var items = loadPadrinosLocal().filter(function(p){ return p && String(p.nombre || '').trim(); });
+  if (!items.length) { sec.style.display = 'none'; return; }
+  var order = [], groups = {};
+  items.forEach(function(p) {
+    var rol = String(p.rol || '').trim(), k = rol.toLowerCase();
+    if (!groups[k]) { groups[k] = { rol: rol, people: [] }; order.push(k); }
+    groups[k].people.push(p);
+  });
+  box.innerHTML = order.map(function(k) {
+    var g = groups[k];
+    return '<div class="pad-group">'
+      + (g.rol ? '<span class="pad-title">' + cronEsc(g.rol) + '</span>' : '')
+      + '<div class="pad-people">'
+      + g.people.map(function(p) {
+          var det = String(p.detalle || '').trim();
+          return '<div class="pad-person"><div class="pad-name">' + cronEsc(p.nombre) + '</div>'
+            + (det ? '<div class="pad-detail">' + cronEsc(det) + '</div>' : '') + '</div>';
+        }).join('')
+      + '</div></div>';
+  }).join('');
+  sec.style.display = 'block';
+}
+function loadPadrinos() {
+  var cb = 'cfg_padrinos_' + Date.now(), s = document.createElement('script');
+  var timer = setTimeout(function(){ try { document.head.removeChild(s); } catch(e) {} delete window[cb]; }, 8000);
+  window[cb] = function(data) {
+    clearTimeout(timer);
+    try { document.head.removeChild(s); } catch(e) {}
+    delete window[cb];
+    if (data && data.ok && Array.isArray(data.value)) {
+      try { localStorage.setItem('ni-padrinos', JSON.stringify(data.value)); } catch(e) {}
+      renderPadrinos();
+    }
+  };
+  s.onerror = function(){ clearTimeout(timer); delete window[cb]; };
+  s.src = SHEETS_URL + '?action=getConfig&key=padrinos&callback=' + cb;
+  document.head.appendChild(s);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+  renderPadrinos();
+  loadPadrinos();
   loadSitio();
   renderCronograma();
   loadConfigFromSheets('cronograma', 'ni-cronograma', renderCronograma);

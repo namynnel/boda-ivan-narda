@@ -135,6 +135,7 @@ select.edit-input{cursor:pointer;}
 .form-input:focus,.form-select:focus{border-color:var(--olive);}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
 .modal-footer{padding:1rem 1.5rem;border-top:1px solid rgba(168,197,176,.2);display:flex;gap:.6rem;justify-content:flex-end;}
+
 /* MODAL ASIGNAR MESA */
 #mesa-modal-overlay{position:fixed;inset:0;background:rgba(20,28,10,.7);backdrop-filter:blur(6px);z-index:600;align-items:center;justify-content:center;padding:1rem;}
 
@@ -469,11 +470,12 @@ select.edit-input{cursor:pointer;}
   <div style="background:rgba(220,107,107,.06);border:1px solid rgba(220,107,107,.25);border-radius:10px;padding:1rem;margin-bottom:1rem;">
     <strong style="font-family:'Cinzel',serif;font-size:.78rem;color:var(--olive-dk);display:block;margin-bottom:.35rem;">🧹 Reparar lista de invitados</strong>
     <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.7rem;line-height:1.6;">
-      Si ves invitados repetidos o la lista no coincide entre tu computadora y tu celular. <strong>Quitar duplicados</strong> borra de la hoja las filas con el mismo código (queda copia en «Archivados») y avisa si hay nombres repetidos con códigos distintos.
+      Si ves invitados repetidos o la lista no coincide entre tu computadora y tu celular. <strong>Quitar duplicados</strong> borra de la hoja las filas con el mismo código (queda copia en «Archivados») y revisa la hoja. <strong>Buscar nombres repetidos</strong> detecta personas con el mismo nombre y apellido (sin importar tildes ni mayúsculas) en la lista del dashboard y en las confirmaciones, sin tocar Sheets.
       <strong>Recargar desde Sheets</strong> descarta lo que haya en este dispositivo y deja la lista exactamente como está en Sheets.
     </p>
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
       <button class="btn btn-olive" style="font-size:.7rem;" type="button" onclick="repairDuplicates()">🧹 Quitar duplicados</button>
+      <button class="btn btn-ghost" style="font-size:.7rem;" type="button" onclick="showNameDupes()">🔎 Buscar nombres repetidos</button>
       <button class="btn btn-ghost" style="font-size:.7rem;" type="button" onclick="reloadFromSheets()">⬇️ Recargar desde Sheets</button>
     </div>
     <div id="repair-result" style="font-size:.72rem;line-height:1.7;margin-top:.7rem;"></div>
@@ -495,10 +497,10 @@ select.edit-input{cursor:pointer;}
     </p>
     <div style="margin-bottom:1.1rem;">
       <strong style="font-family:'Cinzel',serif;font-size:.72rem;color:var(--olive-dk);display:block;margin-bottom:.25rem;">1. Invitación</strong>
-      <p style="font-size:.64rem;color:var(--ink-lt);margin-bottom:.4rem;line-height:1.5;">Se envía desde la pestaña Invitados.</p>
+      <p style="font-size:.64rem;color:var(--ink-lt);margin-bottom:.4rem;line-height:1.5;">Se envía desde la pestaña Invitados. <code>{nombre_completo}</code> pone nombre, apellido y sufijo (ej. «Ana Pérez y Sr.»). <code>{reserva}</code> dice cuántos espacios tiene reservados (para el grupo INTERNACIONAL avisa que es virtual). <code>{espacios}</code> es solo la cantidad («2 espacios»). Si ya habías editado este mensaje, pulsa ↺ Restaurar para cargar la versión nueva.</p>
       <textarea id="tpl-inv" rows="7" style="width:100%;padding:.6rem;border:1px solid rgba(92,107,58,.2);border-radius:8px;font-size:.75rem;font-family:'Montserrat',sans-serif;resize:vertical;box-sizing:border-box;line-height:1.6;" oninput="saveTplFromEditor('inv',this.value)"></textarea>
       <div style="display:flex;gap:.4rem;margin-top:.35rem;flex-wrap:wrap;align-items:center;">
-        <button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{nombre}')">+ {nombre}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{link}')">+ {link}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{codigo}')">+ {codigo}</button>
+        <button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{nombre}')">+ {nombre}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{link}')">+ {link}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{codigo}')">+ {codigo}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{nombre_completo}')">+ {nombre_completo}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{reserva}')">+ {reserva}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('inv','{espacios}')">+ {espacios}</button>
         <button class="btn btn-ghost" style="font-size:.62rem;margin-left:auto;" type="button" onclick="resetTpl('inv')">↺ Restaurar</button>
         <span id="tpl-inv-saved" style="font-size:.62rem;color:var(--green);min-width:70px;"></span>
       </div>
@@ -573,6 +575,23 @@ select.edit-input{cursor:pointer;}
     </div>
     <div style="display:flex;gap:.4rem;margin-top:.5rem;"><button class="btn btn-olive" style="font-size:.65rem;flex:1;" type="button" onclick="saveCronogramaDB(loadCronogramaDB());syncConfigToSheets('cronograma',loadCronogramaDB());var b=this;b.textContent='✓ Guardado';setTimeout(function(){b.textContent='💾 Guardar cronograma';},2000);">💾 Guardar cronograma</button><button class="btn btn-ghost" style="font-size:.65rem;" onclick="resetCronograma()">↺ Restaurar</button></div>
     <p id="cron-status" style="font-size:.66rem;margin-top:.4rem;min-height:1em;color:var(--ink-lt);"></p>
+  </div>
+
+  <!-- Padrinos y testigos -->
+  <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">💍 Padrinos y testigos</strong>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.75rem;line-height:1.5;">
+      Aparecen en la invitación, justo antes de la fecha grande. Cada persona tiene una <strong>categoría</strong> (por ejemplo «Padrinos de aros» o «Testigos de civil»); las personas con la misma categoría se muestran juntas. Los cambios se guardan al salir del campo y se publican solos en la invitación.
+    </p>
+    <div id="padrinos-editor-list" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem;"></div>
+    <datalist id="padrinos-roles"><option value="Padrinos de aros"></option><option value="Testigos de civil"></option></datalist>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+      <input type="text" id="pad-rol-input" list="padrinos-roles" placeholder="Categoría (ej. Padrinos de aros)" style="flex:1 1 150px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
+      <input type="text" id="pad-nombre-input" placeholder="Nombre completo" style="flex:2 1 220px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
+      <input type="text" id="pad-detalle-input" placeholder="Detalle opcional (ej. Por parte de la novia)" style="flex:1 1 100%;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.72rem;font-family:'Montserrat',sans-serif;">
+    </div>
+    <div style="display:flex;gap:.4rem;margin-top:.5rem;"><button class="btn btn-olive" style="font-size:.7rem;flex:1;" type="button" onclick="addPadrino()">+ Agregar persona</button><button class="btn btn-ghost" style="font-size:.65rem;" type="button" onclick="resetPadrinos()">↺ Restaurar originales</button></div>
+    <p id="pad-status" style="font-size:.66rem;margin-top:.4rem;min-height:1em;color:var(--ink-lt);"></p>
   </div>
 
   <!-- Lista de regalos editable -->
@@ -858,7 +877,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw2oFoVu8tyjObTvUus049eYdQKD5mpZC_yZRf-YE3NE3_9yJ71Eir3IWA5ac5tQxyvDg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwYz81KX_UtaldVLDH1xSeTk8-8mxt1Y2fmvCLgbidmF6Rm3dGaKrnPIIOHw7OdAfJ7dA/exec';
 function adminKey() { return localStorage.getItem('ni-pk') || ''; }
 const MAX_CUPOS  = 409;
 const MAX_MESA   = 14;
@@ -1504,7 +1523,7 @@ function guestRow(g, i) {
   const grupoOpts = getGroups().map(gr=>
     `<option value="${gr}" ${g.grupo===gr?'selected':''}>${gr}</option>`).join('');
   return `<tr>
-    <td style="color:var(--ink-lt);font-size:.72rem;">${i+1}</td>
+    <td style="color:var(--ink-lt);font-size:.72rem;">${i+1}${dupBadge(g)}</td>
     <td><input class="edit-input" value="${g.nombre}" onchange="updateGuest(${i},'nombre',this.value)" style="min-width:80px;"></td>
     <td><input class="edit-input" value="${g.apellido}" onchange="updateGuest(${i},'apellido',this.value)" style="min-width:80px;"></td>
     <td><select class="edit-input" onchange="updateGuest(${i},'sufijo',this.value)" style="min-width:90px;">${sufijoOpts}</select></td>
@@ -1521,6 +1540,7 @@ function guestRow(g, i) {
 }
 
 function renderGuests() {
+  computeDupCounts();
   const q = document.getElementById('guest-search').value.toLowerCase();
   updateCuposBar();
   renderGroupChips();
@@ -1615,6 +1635,10 @@ function updateGuest(i, field, val) {
     if (e2) { alert('⚠️ ' + e2); renderGuests(); return; }
   }
   guests[i][field] = val;
+  if (field === 'nombre' || field === 'apellido') {
+    computeDupCounts();
+    if (dupCounts[normFull((guests[i].nombre || '') + ' ' + (guests[i].apellido || ''))] > 1) showSyncStatus('⚠️ Ya existe otro invitado con el mismo nombre y apellido', 'error');
+  }
   saveGuests(guests);
   markDirty(guests[i].codigo);
   updateCuposBar();
@@ -1667,6 +1691,9 @@ function saveGuest() {
 
   const eG = groupLimitError(grupo, cupos);
   if (eG) { errEl.textContent = '⚠️ ' + eG; errEl.style.display = 'block'; return; }
+  const kNew = normFull(nombre + ' ' + apellido);
+  const igual = guests.filter(function(x){ return normFull((x.nombre || '') + ' ' + (x.apellido || '')) === kNew; });
+  if (igual.length && !confirm('⚠️ Ya hay ' + (igual.length === 1 ? 'un invitado' : igual.length + ' invitados') + ' con el nombre "' + nombre + ' ' + apellido + '" (código ' + igual.map(function(x){ return x.codigo; }).join(', ') + ').\n\n¿Agregar de todas formas?')) return;
   guests.push({nombre,apellido,sufijo,cupos,grupo,codigo,enviado:false});
   saveGuests(guests);
   markDirty(codigo);
@@ -1682,7 +1709,7 @@ function openWAModal(i) {
   const g = guests[i];
   const fullName = [g.nombre, g.apellido, g.sufijo].filter(Boolean).join(' ');
   document.getElementById('wa-guest-name').textContent = fullName;
-  waVars = { nombre: g.nombre, link: INVITE_URL, codigo: g.codigo };
+  waVars = inviteVars(g);
   document.getElementById('wa-text').value = fillTpl('inv', waVars);
   document.getElementById('wa-tpl-note').textContent = '';
   document.getElementById('wa-modal-overlay').classList.add('open');
@@ -2191,12 +2218,34 @@ var planoDragOffset = {x:0, y:0};
    MENSAJES — un solo mensaje para todos
 ══════════════════════════════════════ */
 var DEFAULT_TPL = {
-  inv:    'Hola {nombre} 🌿\n\nPor fin podemos compartir contigo esta noticia tan especial —\nel 5 de diciembre de 2026 nos casamos,\ny queremos que seas parte de ese momento.\n\nAquí encontrarás todos los detalles:\n{link}\n\nTu código de confirmación: {codigo}\n(Lo necesitarás para confirmar tu asistencia)\n\nCon cariño,\nIvan & Narda 💍',
+  inv:    'Hola {nombre_completo} 🌿\n\nPor fin podemos compartir contigo esta noticia tan especial —\nel 5 de diciembre de 2026 nos casamos,\ny queremos que seas parte de ese momento.\n\n{reserva}\n\nAquí encontrarás todos los detalles:\n{link}\n\nTu código de confirmación: {codigo}\n(Lo necesitarás para confirmar tu asistencia)\n\nCon cariño,\nIvan & Narda 💍',
   mesa:   '¡Hola {nombre}! 💍\n\nGracias por confirmar tu asistencia a nuestra boda. Tu lugar en la celebración será:\n\n📍 *{mesa}*\n\n{plano}¡Nos vemos el 5 de diciembre! 🥂\n\n— Narda & Ivan 💚',
   recordatorio:'Hola {nombre} 🌿\n\nTe escribimos con cariño para recordarte que aún no hemos recibido tu confirmación de asistencia a nuestra boda (5 de diciembre de 2026).\n\n📅 La fecha límite para confirmar es el *{fecha_limite}*.\n\nTu código de confirmación: *{codigo}*\n\n💌 Tu invitación: {link}\n✅ Confirma aquí: {rsvp}\n\n¡Nos encantaría contar contigo! 💍\n\nCon cariño,\nIvan & Narda',
   menores:'¡Hola {nombre}! 💛\n\nGracias por confirmar tu asistencia a nuestra boda. Registraste que vendrás con {menores}.\n\nQueremos recordarte con mucho cariño que los pequeños son bienvenidos en la ceremonia, el brindis, nuestro primer baile y la cena. A partir de las *20:00* comenzará nuestra fiesta para adultos, por lo que te pedimos que ellos se retiren junto a su adulto responsable a esa hora.\n\nTe sugerimos ir organizando con anticipación quién se los llevará. 🤍\n\n¡Gracias por tu comprensión y cariño!\n\n— Narda & Ivan 💚',
   stream: '¡Hola {nombre}! 💍\n\nGracias por acompañarnos desde la distancia. Este es el link para ver la transmisión en vivo de nuestra boda el 5 de diciembre (la ceremonia inicia a las 14:00, hora de Bolivia):\n\n📺 {transmision}\n\n¡Nos vemos allí! 🥂\n\n— Narda & Ivan 💚'
 };
+
+/* Variables del mensaje de invitación: nombre completo y cupos reservados */
+function inviteVars(g) {
+  var n = parseInt(g.cupos) || 1;
+  var espacios = n + (n === 1 ? ' espacio' : ' espacios');
+  var reserva;
+  if (g.grupo === 'INTERNACIONAL') {
+    reserva = '📺 Podrás acompañarnos en vivo de forma virtual, estés donde estés.';
+  } else if (n === 1) {
+    reserva = '💌 Hemos reservado ' + espacios + ' para ti.';
+  } else {
+    reserva = '💌 Hemos reservado ' + espacios + ' para ti, incluyéndote a ti.\n(Se cuentan desde los 16 años; los menores de 16 no ocupan espacio)';
+  }
+  return {
+    reserva: reserva,
+    nombre_completo: [g.nombre, g.apellido, g.sufijo].filter(Boolean).join(' '),
+    nombre: g.nombre,
+    espacios: espacios,
+    link: INVITE_URL,
+    codigo: g.codigo
+  };
+}
 
 function waNumber(p) {
   var d = String(p || '').replace(/\D/g, '');
@@ -2285,6 +2334,8 @@ switchTab = function(name, el) {
 function initAjustesTab() {
   loadGiftsFromSheets();
   loadCronogramaFromSheets();
+  loadPadrinosFromSheets();
+  renderPadrinosEditor();
   renderGiftItems();
   renderCronogramaEditor();
   ['inv','mesa','stream','menores','recordatorio'].forEach(function(k) {
@@ -2780,25 +2831,106 @@ function repairDuplicates() {
     if (!data.ok) { out.innerHTML = '❌ ' + escHtml(data.error || 'error desconocido'); return; }
     var h = '✅ Hoja revisada: <strong>' + data.total + '</strong> invitados únicos. ';
     h += data.removed ? 'Se quitaron <strong>' + data.removed + '</strong> filas repetidas (copia en la pestaña «Archivados»).' : 'No había filas repetidas por código.';
-    if (data.nameDupes && data.nameDupes.length) {
-      h += '<br><br>⚠️ <strong>Nombres repetidos con códigos distintos</strong> (revisa si son la misma persona; si lo son, elimina la copia que sobre):';
-      data.nameDupes.forEach(function(grp) {
-        h += '<div style="margin:.4rem 0;padding:.5rem .6rem;background:#fff;border:1px solid rgba(220,107,107,.3);border-radius:8px;"><strong>' + escHtml(grp[0].nombre + ' ' + grp[0].apellido) + '</strong>';
-        grp.forEach(function(x) {
-          h += '<div style="display:flex;gap:.5rem;align-items:center;margin-top:.2rem;">código <code>' + escHtml(x.codigo) + '</code> · ' + escHtml(x.grupo) + ' · ' + x.cupos + ' cupo(s)' + (x.entrega ? ' · ' + escHtml(x.entrega) : '')
-            + ' <button class="btn btn-ghost" style="font-size:.6rem;margin-left:auto;" onclick="deleteGuestByCode(\'' + escHtml(x.codigo) + '\')">🗑 Eliminar</button></div>';
-        });
-        h += '</div>';
-      });
-    }
     out.innerHTML = h;
-    pullAndRender();
+    pullAndRender().then(function() {
+      out.innerHTML = h + '<div style="margin-top:.8rem;padding-top:.7rem;border-top:1px solid rgba(92,107,58,.2);">' + nameDupesHtml() + '</div>';
+    });
   }
 }
+/* ══════════════════════════════════════
+   NOMBRES REPETIDOS (mismo nombre y apellido, sin importar tildes ni mayúsculas)
+══════════════════════════════════════ */
+function normFull(s) {
+  return String(s == null ? '' : s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+}
+var dupCounts = {};
+function computeDupCounts() {
+  dupCounts = {};
+  guests.forEach(function(g) {
+    var k = normFull((g.nombre || '') + ' ' + (g.apellido || ''));
+    if (k.length >= 3) dupCounts[k] = (dupCounts[k] || 0) + 1;
+  });
+}
+function dupBadge(g) {
+  var k = normFull((g.nombre || '') + ' ' + (g.apellido || ''));
+  return dupCounts[k] > 1
+    ? ' <span title="Hay otro invitado con este mismo nombre y apellido (Ajustes → Buscar nombres repetidos)" style="color:#c0392b;cursor:help;">⚠️</span>'
+    : '';
+}
+function nameDupeGroups() {
+  var map = {};
+  guests.forEach(function(g) {
+    var k = normFull((g.nombre || '') + ' ' + (g.apellido || ''));
+    if (k.length < 3) return;
+    (map[k] = map[k] || []).push(g);
+  });
+  return Object.keys(map).filter(function(k){ return map[k].length > 1; }).map(function(k){ return map[k]; });
+}
+// Confirmaciones: quien confirmó y sus acompañantes (una misma persona no debería aparecer dos veces)
+function rsvpNameDupes() {
+  var map = {};
+  function add(name, code, rol) {
+    var k = normFull(name);
+    if (k.length < 5) return;
+    (map[k] = map[k] || []).push({ nombre: name, code: code, rol: rol });
+  }
+  rsvpRows.forEach(function(r) {
+    var code = String(r.codigo || '').trim();
+    var full = ((r.nombre || '') + ' ' + (r.apellido || '')).trim();
+    add(full, code, 'confirmó con su código');
+    String(r.nombres_acompanantes || '').split(',').forEach(function(n) {
+      n = n.trim();
+      if (n) add(n, code, 'acompañante de ' + (full || code));
+    });
+  });
+  return Object.keys(map).filter(function(k){ return map[k].length > 1; }).map(function(k){ return map[k]; });
+}
+function nameDupesHtml() {
+  var gg = nameDupeGroups(), rr = rsvpNameDupes(), h = '';
+  if (!gg.length) {
+    h += '✅ <strong>Lista de invitados:</strong> no hay dos personas con el mismo nombre y apellido (' + guests.length + ' revisados).';
+  } else {
+    h += '⚠️ <strong>Lista de invitados:</strong> ' + gg.length + (gg.length === 1 ? ' nombre repetido' : ' nombres repetidos') + '. Revisa si son la misma persona; si lo son, elimina la copia que sobre.';
+    gg.forEach(function(grp) {
+      h += '<div style="margin:.4rem 0;padding:.5rem .6rem;background:#fff;border:1px solid rgba(220,107,107,.3);border-radius:8px;"><strong>' + escHtml(((grp[0].nombre || '') + ' ' + (grp[0].apellido || '')).trim()) + '</strong>';
+      grp.forEach(function(x) {
+        var conf = findRsvp(x.codigo), ent = entregaOf(x);
+        h += '<div style="display:flex;gap:.5rem;align-items:center;margin-top:.25rem;flex-wrap:wrap;">código <code>' + escHtml(x.codigo) + '</code> · ' + escHtml(x.grupo || '—') + ' · ' + (parseInt(x.cupos) || 1) + ' cupo(s)'
+          + (x.sufijo ? ' · ' + escHtml(x.sufijo) : '')
+          + (ent ? ' · ' + (ent === 'entregada' ? '📬 entregada' : '📤 enviada') : '')
+          + (conf ? ' · <strong style="color:var(--green);">✓ ya confirmó</strong>' : '')
+          + ' <button class="btn btn-ghost" style="font-size:.6rem;margin-left:auto;" onclick="deleteGuestByCode(\'' + escHtml(x.codigo) + '\')">🗑 Eliminar</button></div>';
+      });
+      h += '</div>';
+    });
+  }
+  h += '<br><br>';
+  if (!rsvpRows.length) {
+    h += 'ℹ️ <strong>Confirmaciones:</strong> aún no se cargaron (pulsa «Actualizar» arriba y vuelve a buscar).';
+  } else if (!rr.length) {
+    h += '✅ <strong>Confirmaciones:</strong> ninguna persona aparece dos veces (se revisó también a los acompañantes).';
+  } else {
+    h += '⚠️ <strong>Confirmaciones:</strong> ' + rr.length + (rr.length === 1 ? ' persona aparece' : ' personas aparecen') + ' más de una vez (como invitado o como acompañante). Puede ser una persona contada dos veces.';
+    rr.forEach(function(grp) {
+      h += '<div style="margin:.4rem 0;padding:.5rem .6rem;background:#fff;border:1px solid rgba(201,160,64,.45);border-radius:8px;"><strong>' + escHtml(grp[0].nombre) + '</strong>';
+      grp.forEach(function(x) {
+        h += '<div style="margin-top:.2rem;">código <code>' + escHtml(x.code) + '</code> · ' + escHtml(x.rol) + '</div>';
+      });
+      h += '</div>';
+    });
+  }
+  return h;
+}
+function showNameDupes() {
+  var out = document.getElementById('repair-result');
+  if (out) out.innerHTML = nameDupesHtml();
+}
+
 function deleteGuestByCode(code) {
   var i = guests.findIndex(function(g){ return normCode(g.codigo) === normCode(code); });
   if (i < 0) { alert('No encontré ese invitado en este dispositivo. Usa «Recargar desde Sheets» y vuelve a intentar.'); return; }
   deleteGuest(i);
+  showNameDupes();
 }
 async function reloadFromSheets() {
   if (!confirm('Se descartarán los cambios de este dispositivo que no estén en Sheets y la lista quedará exactamente como está en Sheets.\n\n¿Continuar?')) return;
@@ -3234,6 +3366,90 @@ function resetCronograma() {
   if (!confirm('¿Restaurar el cronograma a los valores originales?')) return;
   saveCronogramaDB(DEFAULT_CRONOGRAMA_DB);
   renderCronogramaEditor();
+}
+
+/* ══════════════════════════════════════
+   PADRINOS Y TESTIGOS — editable desde Ajustes (se publica en Sheets, clave "padrinos")
+══════════════════════════════════════ */
+var DEFAULT_PADRINOS_DB = [
+  { rol: 'Padrinos de aros',  nombre: 'BORIS RENÉ HIDALGO QUIROGA',  detalle: '' },
+  { rol: 'Padrinos de aros',  nombre: 'FATIMA ZELADA CONDE',          detalle: '' },
+  { rol: 'Testigos de civil', nombre: 'KARLA SOFIA TELLEZ MAYAN',     detalle: 'Por parte de la novia' },
+  { rol: 'Testigos de civil', nombre: 'BRYAN FRANCI ALANZ AYAVIRI',   detalle: 'Por parte del novio' }
+];
+function loadPadrinosDB() {
+  try {
+    var s = localStorage.getItem('ni-padrinos');
+    var a = s ? JSON.parse(s) : DEFAULT_PADRINOS_DB;
+    return Array.isArray(a) ? a : DEFAULT_PADRINOS_DB;
+  } catch (e) { return DEFAULT_PADRINOS_DB; }
+}
+function savePadrinosDB(items) {
+  localStorage.setItem('ni-padrinos', JSON.stringify(items));
+  publishVerified('padrinos', items, 'pad-status');
+}
+function renderPadrinosEditor() {
+  var c = document.getElementById('padrinos-editor-list');
+  if (!c) return;
+  var items = loadPadrinosDB();
+  if (!items.length) {
+    c.innerHTML = '<p style="font-size:.7rem;color:var(--ink-lt);font-style:italic;">Sin personas: la sección se oculta en la invitación. Agrega una abajo.</p>';
+    return;
+  }
+  var inp = 'padding:.35rem .5rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:Montserrat,sans-serif;background:#fff;';
+  c.innerHTML = items.map(function(it, i) {
+    return '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:.35rem;padding:.5rem .6rem;background:rgba(92,107,58,.05);border-radius:8px;border:1px solid rgba(92,107,58,.15);">'
+      + '<input type="text" list="padrinos-roles" value="' + ea(it.rol) + '" onchange="updatePadrino(' + i + ',\'rol\',this.value)" style="' + inp + 'flex:1 1 150px;font-weight:600;" title="Categoría">'
+      + '<input type="text" value="' + ea(it.nombre) + '" onchange="updatePadrino(' + i + ',\'nombre\',this.value)" style="' + inp + 'flex:2 1 220px;" title="Nombre completo">'
+      + '<button type="button" onclick="removePadrino(' + i + ')" style="background:none;border:none;cursor:pointer;color:var(--ink-lt);font-size:.8rem;padding:2px 6px;" title="Eliminar">✕</button>'
+      + '<input type="text" value="' + ea(it.detalle || '') + '" placeholder="Detalle opcional (ej. Por parte de la novia)" onchange="updatePadrino(' + i + ',\'detalle\',this.value)" style="' + inp + 'flex:1 1 100%;font-size:.7rem;">'
+      + '</div>';
+  }).join('');
+}
+function updatePadrino(i, campo, valor) {
+  var items = loadPadrinosDB().map(function(x){ return Object.assign({}, x); });
+  if (!items[i]) return;
+  items[i][campo] = String(valor).trim();
+  savePadrinosDB(items);
+}
+function addPadrino() {
+  var rol = document.getElementById('pad-rol-input').value.trim();
+  var nombre = document.getElementById('pad-nombre-input').value.trim();
+  var detalle = document.getElementById('pad-detalle-input').value.trim();
+  if (!rol || !nombre) { alert('Escribe la categoría (por ejemplo «Padrinos de aros») y el nombre.'); return; }
+  var items = loadPadrinosDB().map(function(x){ return Object.assign({}, x); });
+  items.push({ rol: rol, nombre: nombre, detalle: detalle });
+  savePadrinosDB(items);
+  document.getElementById('pad-nombre-input').value = '';
+  document.getElementById('pad-detalle-input').value = '';
+  renderPadrinosEditor();
+}
+function removePadrino(i) {
+  var items = loadPadrinosDB().map(function(x){ return Object.assign({}, x); });
+  if (!items[i]) return;
+  if (!confirm('¿Quitar a ' + items[i].nombre + ' de la invitación?')) return;
+  items.splice(i, 1);
+  savePadrinosDB(items);
+  renderPadrinosEditor();
+}
+function resetPadrinos() {
+  if (!confirm('¿Restaurar la lista original de padrinos y testigos?')) return;
+  savePadrinosDB(DEFAULT_PADRINOS_DB.map(function(x){ return Object.assign({}, x); }));
+  renderPadrinosEditor();
+}
+function loadPadrinosFromSheets() {
+  var cb = 'cfgPad_' + Date.now(), s = document.createElement('script');
+  window[cb] = function(data) {
+    try { document.head.removeChild(s); } catch(e) {}
+    delete window[cb];
+    if (data && data.ok && Array.isArray(data.value)) {
+      localStorage.setItem('ni-padrinos', JSON.stringify(data.value));
+      renderPadrinosEditor();
+    }
+  };
+  s.onerror = function() { try { document.head.removeChild(s); } catch(e) {} delete window[cb]; };
+  s.src = SHEETS_URL + '?action=getConfig&key=padrinos&callback=' + cb + '&t=' + Date.now();
+  document.head.appendChild(s);
 }
 
 function loadGiftItems() {
