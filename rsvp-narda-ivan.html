@@ -111,7 +111,7 @@
       <div class="bg-gold/5 px-6 sm:px-10 py-4 border-b border-gold/20">
         <p class="font-sans text-center text-sm">
           <span class="text-olive font-medium">Confirmacion obligatoria hasta el </span>
-          <span class="text-gold font-semibold">05 de noviembre de 2026</span>
+          <span class="text-gold font-semibold plazo-texto">05 de noviembre de 2026</span>
         </p>
         <p class="font-sans text-olive/60 text-center text-xs mt-1">Despues de esta fecha, la disponibilidad no podra ser garantizada.</p>
       </div>
@@ -548,7 +548,7 @@
 </div>
 
 <script>
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwYz81KX_UtaldVLDH1xSeTk8-8mxt1Y2fmvCLgbidmF6Rm3dGaKrnPIIOHw7OdAfJ7dA/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzh5KnVkNnOIpgYSgnIh5TtuYjEXKTJDvU_uPzhyMqmYJEK4Uk5DRVhFjOV9-781ZSN_Q/exec';
 const INACTIVITY_MS    = 30 * 60 * 1000;
 
 // El RSVP ya no descarga la lista de invitados: consulta un solo código a la vez.
@@ -1078,33 +1078,71 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
    BLOQUEO POR FECHA LÍMITE
 ══════════════════════════════════════ */
 (function() {
-  var DEADLINE    = new Date('2026-11-05T23:59:59-04:00'); // Bolivia UTC-4
-  var NARDA_WA    = 'https://wa.me/59161144206';
-  var IVAN_WA     = 'https://wa.me/59160552435';
+  var NARDA_WA = 'https://wa.me/59161144206';
+  var IVAN_WA  = 'https://wa.me/59160552435';
+  var SHEETS   = 'https://script.google.com/macros/s/AKfycbw2oFoVu8tyjObTvUus049eYdQKD5mpZC_yZRf-YE3NE3_9yJ71Eir3IWA5ac5tQxyvDg/exec';
+  var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var iso = '2026-11-05';   // respaldo si no se puede leer la configuración (se cambia desde el dashboard)
+  try { var c = localStorage.getItem('ni-plazo-iso'); if (/^\d{4}-\d{2}-\d{2}$/.test(c || '')) iso = c; } catch (e) {}
 
-  if (Date.now() > DEADLINE.getTime()) {
-    document.addEventListener('DOMContentLoaded', function() {
-      // Ocultar todo el contenido del RSVP y mostrar mensaje
-      var body = document.querySelector('.rsvp-wrap') || document.body;
-      var overlay = document.createElement('div');
-      overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#1E2410;display:flex;align-items:center;justify-content:center;padding:2rem;';
-      overlay.innerHTML = '<div style="max-width:420px;text-align:center;font-family:Montserrat,sans-serif;">'
-        + '<p style="font-family:Cinzel,serif;font-size:.6rem;letter-spacing:.3em;color:rgba(201,169,98,.6);text-transform:uppercase;margin-bottom:1rem;">N · I · 2026</p>'
-        + '<h2 style="font-family:Cinzel,serif;color:#C9A962;font-size:1.1rem;margin-bottom:1rem;">Fecha límite alcanzada</h2>'
-        + '<p style="color:rgba(250,244,232,.8);font-size:.85rem;line-height:1.7;margin-bottom:1.5rem;">'
-        + 'El plazo para confirmar asistencia venció el <strong style="color:#C9A962;">05 de noviembre de 2026</strong>.<br><br>'
-        + 'Si crees que se trata de un error, contáctanos directamente:'
-        + '</p>'
-        + '<div style="display:flex;flex-direction:column;gap:.75rem;">'
-        + '<a href="' + NARDA_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#A8D4B0;text-decoration:none;font-size:.82rem;">'
-        + '💬 Narda · +591 61144206</a>'
-        + '<a href="' + IVAN_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#A8D4B0;text-decoration:none;font-size:.82rem;">'
-        + '💬 Ivan · +591 60552435</a>'
-        + '</div>'
-        + '</div>';
-      document.body.appendChild(overlay);
-    });
+  function texto() {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+    return m ? m[3] + ' de ' + MESES[parseInt(m[2], 10) - 1] + ' de ' + m[1] : '';
   }
+  function vencido() { return Date.now() > new Date(iso + 'T23:59:59-04:00').getTime(); }   // Bolivia UTC-4
+  function cuandoListo(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn();
+  }
+  function bloquear() {
+    var overlay = document.createElement('div');
+    overlay.id = 'plazo-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#1E2410;display:flex;align-items:center;justify-content:center;padding:2rem;overflow-y:auto;';
+    overlay.innerHTML = '<div style="max-width:420px;text-align:center;font-family:Montserrat,sans-serif;">'
+      + '<p style="font-family:Cinzel,serif;font-size:.6rem;letter-spacing:.3em;color:rgba(201,169,98,.6);text-transform:uppercase;margin-bottom:1rem;">N · I · 2026</p>'
+      + '<h2 style="font-family:Cinzel,serif;color:#C9A962;font-size:1.1rem;margin-bottom:1rem;">Fecha límite alcanzada</h2>'
+      + '<p style="color:rgba(250,244,232,.8);font-size:.85rem;line-height:1.7;margin-bottom:1.5rem;">'
+      + 'El plazo para confirmar asistencia venció el <strong class="plazo-texto" style="color:#C9A962;"></strong>.<br><br>'
+      + 'Si crees que se trata de un error, contáctanos directamente:'
+      + '</p>'
+      + '<div style="display:flex;flex-direction:column;gap:.75rem;">'
+      + '<a href="' + NARDA_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#25D366;font-size:.8rem;text-decoration:none;">'
+      + '💬 Narda · +591 61144206</a>'
+      + '<a href="' + IVAN_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#25D366;font-size:.8rem;text-decoration:none;">'
+      + '💬 Ivan · +591 60552435</a>'
+      + '</div>'
+      + '</div>';
+    document.body.appendChild(overlay);
+  }
+  function pintar() {
+    var ov = document.getElementById('plazo-overlay');
+    if (vencido()) { if (!ov) bloquear(); }
+    else if (ov) ov.parentNode.removeChild(ov);
+    var t = texto();
+    Array.prototype.forEach.call(document.querySelectorAll('.plazo-texto'), function(el) { el.textContent = t; });
+  }
+
+  // 1) texto inmediato (sin bloquear nada todavía)
+  cuandoListo(function() {
+    var t = texto();
+    Array.prototype.forEach.call(document.querySelectorAll('.plazo-texto'), function(el) { el.textContent = t; });
+  });
+  // 2) fecha real desde Sheets; si tarda más de 4 s se decide con la última conocida
+  var cb = 'plz_' + Date.now(), s = document.createElement('script'), fin = false;
+  function terminar() { if (fin) return; fin = true; cuandoListo(pintar); }
+  var timer = setTimeout(terminar, 4000);
+  window[cb] = function(data) {
+    clearTimeout(timer);
+    try { document.head.removeChild(s); } catch (e) {}
+    if (data && data.ok && data.value && /^\d{4}-\d{2}-\d{2}$/.test(String(data.value.iso || ''))) {
+      iso = data.value.iso;
+      try { localStorage.setItem('ni-plazo-iso', iso); } catch (e) {}
+    }
+    fin = true;
+    cuandoListo(pintar);
+  };
+  s.onerror = function() { clearTimeout(timer); terminar(); };
+  s.src = SHEETS + '?action=getConfig&key=plazo&callback=' + cb + '&t=' + Date.now();
+  document.head.appendChild(s);
 })();
 
 </script>

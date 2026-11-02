@@ -786,14 +786,23 @@ footer{
 .band-cream .rune,.band-linen .rune,.band-light .rune{color:#A35F00 !important;text-shadow:none;}
 .band-olive .rune,.band-euca .rune,.band-sage .rune,.band-dark .rune{color:#FFD05A !important;text-shadow:0 1px 3px rgba(0,0,0,.45);}
 
-/* ── PADRINOS Y TESTIGOS ── */
-.pad-wrap{margin:2.8rem auto 0;max-width:700px;}
-.pad-group{margin-bottom:1.9rem;}
-.pad-title{display:block;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:.32em;text-transform:uppercase;color:#A35F00;margin-bottom:1rem;}
-.pad-people{display:flex;flex-wrap:wrap;justify-content:center;gap:1.1rem 2.6rem;}
-.pad-person{flex:1 1 220px;max-width:310px;}
-.pad-name{font-family:'Cinzel',serif;font-size:clamp(14px,2.4vw,17px);font-weight:500;letter-spacing:.08em;line-height:1.55;text-transform:uppercase;color:var(--olive-dk);}
-.pad-detail{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--ink-lt);margin-top:3px;}
+/* ── PADRES, PADRINOS Y TESTIGOS ── */
+.pad-wrap{margin:2.6rem auto 0;max-width:720px;text-align:center;}
+.pad-wrap .rune{font-size:11px;letter-spacing:.3em;line-height:1.9;margin-bottom:1.3rem;}
+.pad-block{margin-bottom:2.3rem;}
+.pad-group{margin-bottom:1.8rem;}
+.pad-group:last-child{margin-bottom:0;}
+.pad-title{display:block;font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#A35F00;margin-bottom:.95rem;}
+.pad-people{display:flex;flex-wrap:wrap;justify-content:center;row-gap:1.15rem;}
+.pad-person{flex:0 0 50%;max-width:50%;box-sizing:border-box;padding:0 .9rem;}
+.pad-people.solo .pad-person{flex-basis:100%;max-width:340px;}
+.pad-name{font-family:'Cinzel',serif;font-size:clamp(11.5px,3vw,16px);font-weight:500;letter-spacing:.07em;line-height:1.6;text-transform:uppercase;color:var(--olive-dk);overflow-wrap:anywhere;}
+.pad-name + .pad-name{margin-top:.4rem;}
+.pad-detail{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(14px,3.4vw,16px);color:var(--ink-lt);margin-top:3px;}
+.pad-parents{display:flex;justify-content:center;align-items:stretch;}
+.pad-parents .pad-col{flex:0 0 50%;max-width:50%;box-sizing:border-box;padding:0 .9rem;}
+.pad-parents.one .pad-col{flex-basis:100%;max-width:340px;}
+.pad-parents.two .pad-col:first-child{border-right:1px solid rgba(168,120,40,.4);}
 </style>
 </head>
 <body>
@@ -961,7 +970,6 @@ footer{
     <!-- Padrinos y testigos (editable desde el dashboard → Ajustes) -->
     <div id="padrinos-section" class="pad-wrap reveal d2" style="display:none;">
       <div class="hr-row" style="margin:0 0 22px;"><div class="hr-l"></div><div class="hr-d"></div><div class="hr-l r"></div></div>
-      <p class="rune">✦ Nos acompañan en este día ✦</p>
       <div id="padrinos-list"></div>
     </div>
 
@@ -1265,13 +1273,13 @@ footer{
     <p class="rsvp-body reveal">
       Estamos ansiosos por verte y porque formes parte de este día tan especial para nosotros.
     </p>
-    <div class="deadline reveal d1">📅 Confirma tu asistencia antes del <strong>05 de noviembre de 2026</strong></div>
+    <div class="deadline reveal d1" id="plazo-box">📅 Confirma tu asistencia antes del <strong id="plazo-texto">05 de noviembre de 2026</strong></div>
     <br>
     <a href="https://namynnel.github.io/boda-ivan-narda/rsvp-narda-ivan.html" target="_blank" class="rsvp-cta reveal d2">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012 .95h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.77a16 16 0 006.29 6.29l1.18-1.18a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
       </svg>
-      Haz click aqui para confirmar tu asistencia
+      Confirmar Asistencia
     </a>
   </div>
 </section>
@@ -1498,7 +1506,7 @@ function closeGiftList() {
 /* ══════════════════════════════════════
    CRONOGRAMA DINÁMICO
 ══════════════════════════════════════ */
-var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwYz81KX_UtaldVLDH1xSeTk8-8mxt1Y2fmvCLgbidmF6Rm3dGaKrnPIIOHw7OdAfJ7dA/exec';
+var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzh5KnVkNnOIpgYSgnIh5TtuYjEXKTJDvU_uPzhyMqmYJEK4Uk5DRVhFjOV9-781ZSN_Q/exec';
 var DEFAULT_CRONOGRAMA = [
   {
     "hora": "13:30",
@@ -1650,29 +1658,58 @@ function loadPadrinosLocal() {
     return Array.isArray(a) ? a : DEFAULT_PADRINOS;
   } catch (e) { return DEFAULT_PADRINOS; }
 }
+// Detecta si una categoría es de padres (y de qué lado): "Padres del novio" / "Padres de la novia"
+function padSide(p) {
+  var t = (String(p.rol || '') + ' ' + String(p.detalle || '')).toLowerCase();
+  if (!/\b(padres?|madres?|pap[aá]s?|mam[aá]s?)\b/.test(t)) return '';
+  if (/novio|ivan|iv[aá]n/.test(t)) return 'novio';
+  if (/novia|narda/.test(t)) return 'novia';
+  return 'otro';
+}
 function renderPadrinos() {
   var sec = document.getElementById('padrinos-section'), box = document.getElementById('padrinos-list');
   if (!sec || !box) return;
   var items = loadPadrinosLocal().filter(function(p){ return p && String(p.nombre || '').trim(); });
   if (!items.length) { sec.style.display = 'none'; return; }
-  var order = [], groups = {};
+  var left = [], right = [], rest = [];
   items.forEach(function(p) {
-    var rol = String(p.rol || '').trim(), k = rol.toLowerCase();
-    if (!groups[k]) { groups[k] = { rol: rol, people: [] }; order.push(k); }
-    groups[k].people.push(p);
+    var side = padSide(p);
+    if (side === 'novio') left.push(p);
+    else if (side === 'novia') right.push(p);
+    else if (side === 'otro') (left.length <= right.length ? left : right).push(p);
+    else rest.push(p);
   });
-  box.innerHTML = order.map(function(k) {
-    var g = groups[k];
-    return '<div class="pad-group">'
-      + (g.rol ? '<span class="pad-title">' + cronEsc(g.rol) + '</span>' : '')
-      + '<div class="pad-people">'
-      + g.people.map(function(p) {
-          var det = String(p.detalle || '').trim();
-          return '<div class="pad-person"><div class="pad-name">' + cronEsc(p.nombre) + '</div>'
-            + (det ? '<div class="pad-detail">' + cronEsc(det) + '</div>' : '') + '</div>';
+  var hasParents = left.length || right.length, html = '';
+  if (hasParents) {
+    var col = function(list) {
+      return '<div class="pad-col">' + list.map(function(p){ return '<div class="pad-name">' + cronEsc(p.nombre) + '</div>'; }).join('') + '</div>';
+    };
+    html += '<div class="pad-block"><p class="rune">✦ Con la bendición de nuestros padres ✦</p>'
+      + '<div class="pad-parents ' + (left.length && right.length ? 'two' : 'one') + '">'
+      + (left.length ? col(left) : '') + (right.length ? col(right) : '') + '</div></div>';
+  }
+  if (rest.length) {
+    var order = [], groups = {};
+    rest.forEach(function(p) {
+      var rol = String(p.rol || '').trim(), k = rol.toLowerCase();
+      if (!groups[k]) { groups[k] = { rol: rol, people: [] }; order.push(k); }
+      groups[k].people.push(p);
+    });
+    html += '<div class="pad-block"><p class="rune">' + (hasParents ? '✦ Y con nuestros ✦' : '✦ Nos acompañan en este día ✦') + '</p>'
+      + order.map(function(k) {
+          var g = groups[k];
+          return '<div class="pad-group">' + (g.rol ? '<span class="pad-title">' + cronEsc(g.rol) + '</span>' : '')
+            + '<div class="pad-people' + (g.people.length === 1 ? ' solo' : '') + '">'
+            + g.people.map(function(p) {
+                var det = String(p.detalle || '').trim();
+                return '<div class="pad-person"><div class="pad-name">' + cronEsc(p.nombre) + '</div>'
+                  + (det ? '<div class="pad-detail">' + cronEsc(det) + '</div>' : '') + '</div>';
+              }).join('')
+            + '</div></div>';
         }).join('')
-      + '</div></div>';
-  }).join('');
+      + '</div>';
+  }
+  box.innerHTML = html;
   sec.style.display = 'block';
 }
 function loadPadrinos() {
@@ -1692,9 +1729,39 @@ function loadPadrinos() {
   document.head.appendChild(s);
 }
 
+/* ══════════════════════════════════════
+   FECHA LÍMITE DE CONFIRMACIÓN (se cambia en el dashboard → Ajustes)
+══════════════════════════════════════ */
+var MESES_ES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function plazoTexto(iso) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+  return m ? m[3] + ' de ' + MESES_ES[parseInt(m[2], 10) - 1] + ' de ' + m[1] : '';
+}
+function aplicarPlazo(iso) {
+  var t = plazoTexto(iso), el = document.getElementById('plazo-texto');
+  if (el && t) el.textContent = t;
+}
+function loadPlazo() {
+  try { var c = localStorage.getItem('ni-plazo-iso'); if (c) aplicarPlazo(c); } catch (e) {}
+  var cb = 'cfg_plazo_' + Date.now(), s = document.createElement('script');
+  var timer = setTimeout(function(){ try { document.head.removeChild(s); } catch(e) {} }, 8000);
+  window[cb] = function(data) {
+    clearTimeout(timer);
+    try { document.head.removeChild(s); } catch(e) {}
+    if (data && data.ok && data.value && /^\d{4}-\d{2}-\d{2}$/.test(String(data.value.iso || ''))) {
+      try { localStorage.setItem('ni-plazo-iso', data.value.iso); } catch(e) {}
+      aplicarPlazo(data.value.iso);
+    }
+  };
+  s.onerror = function(){ clearTimeout(timer); };
+  s.src = SHEETS_URL + '?action=getConfig&key=plazo&callback=' + cb;
+  document.head.appendChild(s);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   renderPadrinos();
   loadPadrinos();
+  loadPlazo();
   loadSitio();
   renderCronograma();
   loadConfigFromSheets('cronograma', 'ni-cronograma', renderCronograma);

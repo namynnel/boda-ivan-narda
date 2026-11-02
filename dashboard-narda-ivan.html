@@ -507,10 +507,10 @@ select.edit-input{cursor:pointer;}
     </div>
     <div style="margin-bottom:1.1rem;">
       <strong style="font-family:'Cinzel',serif;font-size:.72rem;color:var(--olive-dk);display:block;margin-bottom:.25rem;">2. Plano de mesas</strong>
-      <p style="font-size:.64rem;color:var(--ink-lt);margin-bottom:.4rem;line-height:1.5;">Se envía a los invitados presenciales que ya tienen mesa. <code>{plano}</code> agrega el link del plano si lo pegaste abajo.</p>
+      <p style="font-size:.64rem;color:var(--ink-lt);margin-bottom:.4rem;line-height:1.5;">Se envía a los invitados presenciales que ya tienen mesa. <code>{plano}</code> agrega el link del plano si lo pegaste abajo. <code>{resumen}</code> agrega lo que confirmó la persona (cuántas personas, acompañantes, menores y a qué asistirá) para evitar confusiones. Si ya habías editado este mensaje, pulsa ↺ Restaurar para cargar la versión nueva.</p>
       <textarea id="tpl-mesa" rows="7" style="width:100%;padding:.6rem;border:1px solid rgba(92,107,58,.2);border-radius:8px;font-size:.75rem;font-family:'Montserrat',sans-serif;resize:vertical;box-sizing:border-box;line-height:1.6;" oninput="saveTplFromEditor('mesa',this.value)"></textarea>
       <div style="display:flex;gap:.4rem;margin-top:.35rem;flex-wrap:wrap;align-items:center;">
-        <button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('mesa','{nombre}')">+ {nombre}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('mesa','{mesa}')">+ {mesa}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('mesa','{plano}')">+ {plano}</button>
+        <button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('mesa','{nombre}')">+ {nombre}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('mesa','{mesa}')">+ {mesa}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('mesa','{plano}')">+ {plano}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('mesa','{resumen}')">+ {resumen}</button>
         <button class="btn btn-ghost" style="font-size:.62rem;margin-left:auto;" type="button" onclick="resetTpl('mesa')">↺ Restaurar</button>
         <span id="tpl-mesa-saved" style="font-size:.62rem;color:var(--green);min-width:70px;"></span>
       </div>
@@ -538,9 +538,7 @@ select.edit-input{cursor:pointer;}
     <div style="margin-bottom:1.1rem;">
       <strong style="font-family:'Cinzel',serif;font-size:.72rem;color:var(--olive-dk);display:block;margin-bottom:.25rem;">5. Recordatorio de confirmación</strong>
       <p style="font-size:.64rem;color:var(--ink-lt);margin-bottom:.4rem;line-height:1.5;">Se envía desde Invitados → ⏰ Recordatorio de confirmación, a quienes ya recibieron la invitación y aún no confirman. <code>{rsvp}</code> es el link al RSVP con su código ya escrito.</p>
-      <label style="font-size:.66rem;font-weight:600;">Fecha límite que aparece en el mensaje</label>
-      <input type="text" id="deadline-input" oninput="saveDeadlineText(this.value)" placeholder="5 de noviembre de 2026"
-        style="width:100%;box-sizing:border-box;padding:.5rem .7rem;border:1px solid rgba(92,107,58,.25);border-radius:6px;font-size:.74rem;margin:.25rem 0 .6rem;font-family:'Montserrat',sans-serif;">
+      <p style="font-size:.66rem;margin:.25rem 0 .6rem;line-height:1.5;">📅 Fecha límite en el mensaje: <strong id="deadline-current"></strong> <span style="color:var(--ink-lt);">(se cambia en la tarjeta «Fecha límite de confirmación» de esta misma pestaña)</span></p>
       <textarea id="tpl-recordatorio" rows="11" style="width:100%;padding:.6rem;border:1px solid rgba(92,107,58,.2);border-radius:8px;font-size:.75rem;font-family:'Montserrat',sans-serif;resize:vertical;box-sizing:border-box;line-height:1.6;" oninput="saveTplFromEditor('recordatorio',this.value)"></textarea>
       <div style="display:flex;gap:.4rem;margin-top:.35rem;flex-wrap:wrap;align-items:center;">
         <button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('recordatorio','{nombre}')">+ {nombre}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('recordatorio','{fecha_limite}')">+ {fecha_limite}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('recordatorio','{codigo}')">+ {codigo}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('recordatorio','{link}')">+ {link}</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="insertTplVar('recordatorio','{rsvp}')">+ {rsvp}</button>
@@ -577,19 +575,33 @@ select.edit-input{cursor:pointer;}
     <p id="cron-status" style="font-size:.66rem;margin-top:.4rem;min-height:1em;color:var(--ink-lt);"></p>
   </div>
 
-  <!-- Padrinos y testigos -->
+  <!-- Fecha límite de confirmación -->
   <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
-    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">💍 Padrinos y testigos</strong>
+    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">📅 Fecha límite de confirmación</strong>
     <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.75rem;line-height:1.5;">
-      Aparecen en la invitación, justo antes de la fecha grande. Cada persona tiene una <strong>categoría</strong> (por ejemplo «Padrinos de aros» o «Testigos de civil»); las personas con la misma categoría se muestran juntas. Los cambios se guardan al salir del campo y se publican solos en la invitación.
+      Es la fecha que aparece en la invitación, en el formulario RSVP y en los recordatorios por WhatsApp. <strong>Pasada esa fecha (23:59, hora de Bolivia) el formulario RSVP se bloquea</strong> para los invitados. Tú siempre puedes confirmar a alguien manualmente desde la pestaña Invitados. Si la extiendes, el formulario se vuelve a abrir solo.
+    </p>
+    <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
+      <input type="date" id="deadline-date" onchange="saveDeadlineIso(this.value)" style="padding:.45rem .7rem;border:1px solid rgba(92,107,58,.25);border-radius:6px;font-size:.78rem;font-family:'Montserrat',sans-serif;background:#fff;">
+      <span id="deadline-preview" style="font-size:.7rem;color:var(--ink-mid);line-height:1.5;"></span>
+    </div>
+    <p id="plazo-status" style="font-size:.66rem;margin-top:.4rem;min-height:1em;color:var(--ink-lt);"></p>
+  </div>
+
+  <!-- Padres, padrinos y testigos -->
+  <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+    <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">💍 Padres, padrinos y testigos</strong>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.75rem;line-height:1.5;">
+      Aparecen en la invitación, justo antes de la fecha grande. Cada fila tiene una <strong>categoría</strong> y un nombre. Si la categoría es <em>Padres del novio</em> o <em>Padres de la novia</em>, esos nombres salen primero, bajo «Con la bendición de nuestros padres» (novio a la izquierda, novia a la derecha). Lo demás (padrinos de aros, testigos de civil, etc.) sale debajo, bajo «Y con nuestros», en dos columnas; si una categoría tiene una sola persona, queda centrada. Los cambios se guardan al salir del campo y se publican solos.
     </p>
     <div id="padrinos-editor-list" style="display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem;"></div>
-    <datalist id="padrinos-roles"><option value="Padrinos de aros"></option><option value="Testigos de civil"></option></datalist>
+    <datalist id="padrinos-roles"><option value="Padres del novio"></option><option value="Padres de la novia"></option><option value="Padrinos de aros"></option><option value="Testigos de civil"></option><option value="Padrinos de velación"></option><option value="Padrinos de lazo"></option></datalist>
     <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
       <input type="text" id="pad-rol-input" list="padrinos-roles" placeholder="Categoría (ej. Padrinos de aros)" style="flex:1 1 150px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
       <input type="text" id="pad-nombre-input" placeholder="Nombre completo" style="flex:2 1 220px;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.75rem;font-family:'Montserrat',sans-serif;">
       <input type="text" id="pad-detalle-input" placeholder="Detalle opcional (ej. Por parte de la novia)" style="flex:1 1 100%;padding:.4rem .6rem;border:1px solid rgba(92,107,58,.2);border-radius:6px;font-size:.72rem;font-family:'Montserrat',sans-serif;">
     </div>
+    <div style="display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap;"><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="presetPadRol('Padres del novio')">👨‍👩‍👦 Padres del novio</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="presetPadRol('Padres de la novia')">👨‍👩‍👧 Padres de la novia</button></div>
     <div style="display:flex;gap:.4rem;margin-top:.5rem;"><button class="btn btn-olive" style="font-size:.7rem;flex:1;" type="button" onclick="addPadrino()">+ Agregar persona</button><button class="btn btn-ghost" style="font-size:.65rem;" type="button" onclick="resetPadrinos()">↺ Restaurar originales</button></div>
     <p id="pad-status" style="font-size:.66rem;margin-top:.4rem;min-height:1em;color:var(--ink-lt);"></p>
   </div>
@@ -714,11 +726,23 @@ select.edit-input{cursor:pointer;}
       <select id="mc-acomp" class="edit-input" style="width:100%;margin:.25rem 0 .8rem;"></select>
       <label style="font-size:.7rem;font-weight:600;">Menores de 16 años <span style="font-weight:400;color:var(--ink-lt);">(no ocupan cupo)</span></label>
       <select id="mc-menores" class="edit-input" style="width:100%;margin:.25rem 0 .8rem;"></select>
+      <label style="font-size:.7rem;font-weight:600;">Nombres de los acompañantes <span style="font-weight:400;color:var(--ink-lt);">(opcional, separados por coma)</span></label>
+      <input id="mc-nombres" class="edit-input" style="width:100%;margin:.25rem 0 .8rem;" placeholder="Ej. María Pérez, Luis Rojas">
+      <label style="font-size:.7rem;font-weight:600;">¿Alguna alergia o restricción alimentaria?</label>
+      <select id="mc-alergia" class="edit-input" style="width:100%;margin:.25rem 0 .4rem;" onchange="manualToggle()">
+        <option value="no">No</option>
+        <option value="yes">Sí</option>
+      </select>
+      <input id="mc-alergia-det" class="edit-input" style="width:100%;margin:0 0 .8rem;display:none;" placeholder="¿Cuál? (quién y qué)">
     </div>
     <label style="font-size:.7rem;font-weight:600;">Teléfono <span style="font-weight:400;color:var(--ink-lt);">(opcional, con código de país)</span></label>
     <input id="mc-tel" class="edit-input" style="width:100%;margin:.25rem 0 .8rem;" placeholder="59171234567">
-    <label style="font-size:.7rem;font-weight:600;">Nota <span style="font-weight:400;color:var(--ink-lt);">(opcional)</span></label>
-    <input id="mc-notas" class="edit-input" style="width:100%;margin:.25rem 0 .8rem;" placeholder="Ej. confirmó en persona">
+    <label style="font-size:.7rem;font-weight:600;">Instagram / Facebook / otro contacto <span style="font-weight:400;color:var(--ink-lt);">(opcional)</span></label>
+    <input id="mc-social" class="edit-input" style="width:100%;margin:.25rem 0 .8rem;" placeholder="@usuario o link">
+    <label style="font-size:.7rem;font-weight:600;">Correo <span style="font-weight:400;color:var(--ink-lt);">(opcional)</span></label>
+    <input id="mc-email" class="edit-input" style="width:100%;margin:.25rem 0 .8rem;" placeholder="correo@ejemplo.com">
+    <label style="font-size:.7rem;font-weight:600;">Nota o mensaje <span style="font-weight:400;color:var(--ink-lt);">(opcional)</span></label>
+    <input id="mc-notas" class="edit-input" style="width:100%;margin:.25rem 0 .8rem;" placeholder="Ej. confirmó por WhatsApp el 3 de nov.">
     <p id="mc-error" style="display:none;font-size:.72rem;color:var(--red);margin-bottom:.6rem;"></p>
     <div style="display:flex;gap:.5rem;">
       <button onclick="document.getElementById('manual-modal').style.display='none'" style="flex:1;padding:.6rem;background:none;border:1px solid #ddd;border-radius:8px;cursor:pointer;font-size:.75rem;">Cancelar</button>
@@ -836,6 +860,7 @@ select.edit-input{cursor:pointer;}
         <label class="form-label">Invitado</label>
         <input type="text" class="form-input" id="mesa-guest-name" readonly style="background:rgba(92,107,77,.05);">
       </div>
+      <div id="mesa-resumen"></div>
       <div class="form-group">
         <label class="form-label">Mesa *</label>
         <select class="form-select" id="mesa-select">
@@ -877,7 +902,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwYz81KX_UtaldVLDH1xSeTk8-8mxt1Y2fmvCLgbidmF6Rm3dGaKrnPIIOHw7OdAfJ7dA/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzh5KnVkNnOIpgYSgnIh5TtuYjEXKTJDvU_uPzhyMqmYJEK4Uk5DRVhFjOV9-781ZSN_Q/exec';
 function adminKey() { return localStorage.getItem('ni-pk') || ''; }
 const MAX_CUPOS  = 409;
 const MAX_MESA   = 14;
@@ -1812,6 +1837,7 @@ function updateMesa(i, field, val) {
 function openMesaModal(codigo, nombre) {
   document.getElementById('mesa-guest-codigo').value = codigo;
   document.getElementById('mesa-guest-name').value   = nombre;
+  document.getElementById('mesa-resumen').innerHTML = resumenConfirmacionHtml(findRsvp(codigo));
   // Populate mesa options
   const sel = document.getElementById('mesa-select');
   const mesaCounts = {};
@@ -1848,7 +1874,7 @@ function openMsgModal(codigo, nombre, telefono) {
     tplKey: 'mesa',
     title: 'Mensaje de Mesa',
     info: 'Mesa asignada: <strong>' + escHtml(mesaObj.nombre) + '</strong> &nbsp;|&nbsp; Invitado: <strong>' + escHtml(nombre) + '</strong>',
-    vars: { nombre: nombre, mesa: mesaObj.nombre, plano: planoLink ? ('🗺️ Plano del salón:\n' + planoLink + '\n\n') : '' },
+    vars: { nombre: nombre, mesa: mesaObj.nombre, resumen: resumenConfirmacion(findRsvp(codigo)), plano: planoLink ? ('🗺️ Plano del salón:\n' + planoLink + '\n\n') : '' },
     phone: telefono, profile: ''
   });
 }
@@ -2219,7 +2245,7 @@ var planoDragOffset = {x:0, y:0};
 ══════════════════════════════════════ */
 var DEFAULT_TPL = {
   inv:    'Hola {nombre_completo} 🌿\n\nPor fin podemos compartir contigo esta noticia tan especial —\nel 5 de diciembre de 2026 nos casamos,\ny queremos que seas parte de ese momento.\n\n{reserva}\n\nAquí encontrarás todos los detalles:\n{link}\n\nTu código de confirmación: {codigo}\n(Lo necesitarás para confirmar tu asistencia)\n\nCon cariño,\nIvan & Narda 💍',
-  mesa:   '¡Hola {nombre}! 💍\n\nGracias por confirmar tu asistencia a nuestra boda. Tu lugar en la celebración será:\n\n📍 *{mesa}*\n\n{plano}¡Nos vemos el 5 de diciembre! 🥂\n\n— Narda & Ivan 💚',
+  mesa:   '¡Hola {nombre}! 💍\n\nGracias por confirmar tu asistencia a nuestra boda. Tu lugar en la celebración será:\n\n📍 *{mesa}*\n\n{resumen}\n\n{plano}¡Nos vemos el 5 de diciembre! 🥂\n\n— Narda & Ivan 💚',
   recordatorio:'Hola {nombre} 🌿\n\nTe escribimos con cariño para recordarte que aún no hemos recibido tu confirmación de asistencia a nuestra boda (5 de diciembre de 2026).\n\n📅 La fecha límite para confirmar es el *{fecha_limite}*.\n\nTu código de confirmación: *{codigo}*\n\n💌 Tu invitación: {link}\n✅ Confirma aquí: {rsvp}\n\n¡Nos encantaría contar contigo! 💍\n\nCon cariño,\nIvan & Narda',
   menores:'¡Hola {nombre}! 💛\n\nGracias por confirmar tu asistencia a nuestra boda. Registraste que vendrás con {menores}.\n\nQueremos recordarte con mucho cariño que los pequeños son bienvenidos en la ceremonia, el brindis, nuestro primer baile y la cena. A partir de las *20:00* comenzará nuestra fiesta para adultos, por lo que te pedimos que ellos se retiren junto a su adulto responsable a esa hora.\n\nTe sugerimos ir organizando con anticipación quién se los llevará. 🤍\n\n¡Gracias por tu comprensión y cariño!\n\n— Narda & Ivan 💚',
   stream: '¡Hola {nombre}! 💍\n\nGracias por acompañarnos desde la distancia. Este es el link para ver la transmisión en vivo de nuestra boda el 5 de diciembre (la ceremonia inicia a las 14:00, hora de Bolivia):\n\n📺 {transmision}\n\n¡Nos vemos allí! 🥂\n\n— Narda & Ivan 💚'
@@ -2336,6 +2362,8 @@ function initAjustesTab() {
   loadCronogramaFromSheets();
   loadPadrinosFromSheets();
   renderPadrinosEditor();
+  loadPlazoFromSheets();
+  updateDeadlineUi();
   renderGiftItems();
   renderCronogramaEditor();
   ['inv','mesa','stream','menores','recordatorio'].forEach(function(k) {
@@ -2478,12 +2506,9 @@ function entregaCell(g, i) {
     + '<option value=""' + (ent === '' ? ' selected' : '') + '>⏳ Pendiente</option>'
     + '<option value="enviada"' + (ent === 'enviada' ? ' selected' : '') + '>📤 Enviada (virtual)</option>'
     + '<option value="entregada"' + (ent === 'entregada' ? ' selected' : '') + '>📬 Entregada (física)</option></select>';
-  var extra = '';
-  if (ent === 'entregada') {
-    extra = confirmed
-      ? '<span style="display:block;font-size:.62rem;color:var(--green);margin-top:.25rem;">✓ Ya confirmó</span>'
-      : '<button class="wa-btn" style="margin-top:.3rem;" onclick="openManualConfirm(' + i + ')">✍️ Confirmar cupos</button>';
-  }
+  var extra = confirmed
+    ? '<span style="display:block;font-size:.62rem;color:var(--green);margin-top:.25rem;">✓ Ya confirmó · <a href="#" onclick="openEditConfirm(\'' + String(g.codigo).trim() + '\');return false;" style="color:var(--olive);">✏️ editar</a></span>'
+    : '<button class="wa-btn" style="margin-top:.3rem;" onclick="openManualConfirm(' + i + ')" title="Úsalo cuando la persona te confirma por mensaje o en persona, sin llenar el formulario">✍️ Confirmar manualmente</button>';
   return sel + extra;
 }
 
@@ -2512,6 +2537,43 @@ function renderEntregaBar() {
     + '<span>⏳ ' + n[''] + ' pendientes · 📤 ' + n.enviada + ' enviadas · 📬 ' + n.entregada + ' entregadas</span>';
 }
 
+
+/* ── Resumen de lo que confirmó cada invitado (para el mensaje de mesa y para asignar mesa) ── */
+function resumenDatos(row) {
+  if (!row) return null;
+  var acRaw = (row.acompanantes != null && row.acompanantes !== '') ? row.acompanantes : row['acompañantes'];
+  var ac = parseInt(acRaw) || 0;
+  return { asis: String(row.asistencia || ''), ac: ac, men: parseInt(row.menores) || 0,
+           adultos: 1 + ac, nombres: String(row.nombres_acompanantes || row['nombres_acompañantes'] || '').trim() };
+}
+function resumenConfirmacion(row) {
+  var d = resumenDatos(row);
+  if (!d || d.asis === 'no') return '';
+  if (d.asis === 'virtual') return '📺 Confirmaste que nos acompañarás de forma virtual.';
+  var donde = { both: 'la ceremonia y la recepción', ceremony: 'solo la ceremonia', reception: 'solo la recepción' }[d.asis] || 'nuestra boda';
+  var t = '✅ Confirmaste tu asistencia a ' + donde + ': serán *' + d.adultos + (d.adultos === 1 ? ' persona' : ' personas') + '*'
+    + (d.ac ? ' (tú + ' + d.ac + (d.ac === 1 ? ' acompañante' : ' acompañantes') + ')' : ' (solo tú)');
+  if (d.men) t += ' y *' + d.men + (d.men === 1 ? ' menor' : ' menores') + ' de 16 años*';
+  t += '.';
+  if (d.nombres) t += '\n👥 Acompañantes: ' + d.nombres;
+  return t + '\nSi algo cambia, avísanos para ajustar tu mesa.';
+}
+function resumenConfirmacionHtml(row) {
+  var d = resumenDatos(row);
+  var box = function(inner, warn) {
+    return '<div style="font-size:.72rem;line-height:1.55;border-radius:8px;padding:.55rem .7rem;margin:-.2rem 0 .9rem;'
+      + (warn ? 'background:rgba(201,160,64,.14);color:#7a5a12;' : 'background:rgba(92,107,58,.08);color:var(--ink);') + '">' + inner + '</div>';
+  };
+  if (!d) return box('⚠️ Este invitado todavía no tiene confirmación registrada.', true);
+  if (d.asis === 'no') return box('⚠️ Este invitado confirmó que <strong>no asistirá</strong>: no necesita mesa.', true);
+  if (d.asis === 'virtual') return box('📺 Este invitado confirmó que asistirá <strong>de forma virtual</strong>: no necesita mesa.', true);
+  var donde = { both: 'Ceremonia y recepción', ceremony: 'Solo ceremonia', reception: 'Solo recepción' }[d.asis] || '';
+  return box('✅ <strong>Confirmó ' + d.adultos + (d.adultos === 1 ? ' persona' : ' personas') + '</strong>'
+    + (d.ac ? ' (él/ella + ' + d.ac + (d.ac === 1 ? ' acompañante' : ' acompañantes') + ')' : ' (solo él/ella)')
+    + (d.men ? ' + <strong>' + d.men + (d.men === 1 ? ' menor' : ' menores') + '</strong> de 16 años' : '')
+    + (donde ? '<br>' + donde : '') + (d.nombres ? ' · Acompañantes: ' + escHtml(d.nombres) : ''));
+}
+
 var manualIdx = -1, manualEdit = false;
 function findRsvp(code) { return rsvpRows.find(function(r){ return String(r.codigo).trim() === String(code).trim(); }); }
 
@@ -2520,9 +2582,9 @@ function openManualConfirm(i, edit) {
   manualIdx = i; manualEdit = !!edit;
   var cup = parseInt(g.cupos) || 1;
   var cur = edit ? findRsvp(g.codigo) : null;
-  var curAc  = cur ? (parseInt(cur.acompanantes) || 0) : 0;
+  var curAc  = cur ? (parseInt(cur.acompanantes != null && cur.acompanantes !== '' ? cur.acompanantes : cur['acompañantes']) || 0) : 0;
   var curMen = cur ? (parseInt(cur.menores) || 0) : 0;
-  document.getElementById('mc-title').textContent = edit ? '✏️ Editar confirmación' : '✍️ Confirmar cupos manualmente';
+  document.getElementById('mc-title').textContent = edit ? '✏️ Editar confirmación' : '✍️ Confirmar manualmente';
   document.getElementById('mc-save').textContent  = edit ? 'Guardar cambios' : 'Guardar confirmación';
   document.getElementById('mc-name').textContent = ((g.nombre || '') + ' ' + (g.apellido || '') + ' ' + (g.sufijo || '')).trim();
   document.getElementById('mc-info').textContent = 'Código ' + g.codigo + ' · ' + cup + (cup === 1 ? ' cupo' : ' cupos') + ' (la persona invitada ocupa uno).';
@@ -2533,9 +2595,13 @@ function openManualConfirm(i, edit) {
   document.getElementById('mc-asis').value = (cur && cur.asistencia) ? cur.asistencia : 'both';
   document.getElementById('mc-acomp').value = String(curAc);
   document.getElementById('mc-menores').value = String(curMen);
+  document.getElementById('mc-nombres').value = cur ? String(cur.nombres_acompanantes || cur['nombres_acompañantes'] || '') : '';
+  document.getElementById('mc-alergia').value = (cur && String(cur.alergia).toLowerCase() === 'yes') ? 'yes' : 'no';
+  document.getElementById('mc-alergia-det').value = cur ? String(cur.detalle_alergia || '') : '';
   document.getElementById('mc-tel').value = cur ? String(cur.telefono || '') : '';
-  document.getElementById('mc-notas').value = '';
-  document.getElementById('mc-notas').parentNode.style.display = '';
+  document.getElementById('mc-social').value = cur ? String(cur.contacto_social || '') : '';
+  document.getElementById('mc-email').value = cur ? String(cur.contacto_email || '') : '';
+  document.getElementById('mc-notas').value = cur ? String(cur.mensaje || '') : '';
   document.getElementById('mc-error').style.display = 'none';
   document.getElementById('mc-save').disabled = false;
   manualToggle();
@@ -2549,6 +2615,8 @@ function openEditConfirm(code) {
 function manualToggle() {
   var v = document.getElementById('mc-asis').value;
   document.getElementById('mc-extra').style.display = (v === 'no' || v === 'virtual') ? 'none' : 'block';
+  var det = document.getElementById('mc-alergia-det');
+  if (det) det.style.display = document.getElementById('mc-alergia').value === 'yes' ? 'block' : 'none';
 }
 async function saveManualConfirm() {
   var g = guests[manualIdx]; if (!g) return;
@@ -2556,23 +2624,35 @@ async function saveManualConfirm() {
   var code = String(g.codigo).trim();
   var yaExiste = !!findRsvp(code);
   if (!manualEdit && yaExiste) {
-    err.textContent = 'Este invitado ya tiene una confirmación. Usa el botón ✏️ en la pestaña Confirmaciones para editarla.'; err.style.display = 'block'; return;
+    err.textContent = 'Este invitado ya tiene una confirmación. Usa el botón ✏️ editar para cambiarla.'; err.style.display = 'block'; return;
   }
   var asis  = document.getElementById('mc-asis').value;
   var sinExtra = (asis === 'no' || asis === 'virtual');
   var acomp = sinExtra ? 0 : (parseInt(document.getElementById('mc-acomp').value) || 0);
   var kids  = sinExtra ? 0 : (parseInt(document.getElementById('mc-menores').value) || 0);
+  var nombresAc = sinExtra ? '' : document.getElementById('mc-nombres').value.trim();
+  var alergia = sinExtra ? 'no' : document.getElementById('mc-alergia').value;
+  var detAle = alergia === 'yes' ? document.getElementById('mc-alergia-det').value.trim() : '';
   var tel   = document.getElementById('mc-tel').value.replace(/[^0-9+]/g, '');
+  var social = document.getElementById('mc-social').value.trim();
+  var email  = document.getElementById('mc-email').value.trim();
   var notas = document.getElementById('mc-notas').value.trim();
+  if (nombresAc && nombresAc.split(',').filter(function(x){ return x.trim(); }).length > acomp + kids) {
+    err.textContent = 'Escribiste más nombres de acompañantes (' + nombresAc.split(',').filter(function(x){ return x.trim(); }).length + ') que acompañantes + menores (' + (acomp + kids) + '). Revisa los números o los nombres.'; err.style.display = 'block'; return;
+  }
+  err.style.display = 'none';
   var params;
   if (manualEdit) {
     params = new URLSearchParams({ action: 'updateRecord', codigo: code, asistencia: asis,
-      acompanantes: String(acomp), menores: String(kids), telefono: tel });
+      acompanantes: String(acomp), menores: String(kids), telefono: tel,
+      nombres_acompanantes: nombresAc, alergia: alergia, detalle_alergia: detAle,
+      contacto_social: social, contacto_email: email, mensaje: notas });
   } else {
     params = new URLSearchParams({
       codigo: code, nombre: g.nombre || '', apellido: g.apellido || '', telefono: tel,
-      asistencia: asis, acompanantes: String(acomp), nombres_acompanantes: '',
-      alergia: 'no', detalle_alergia: '',
+      asistencia: asis, acompanantes: String(acomp), nombres_acompanantes: nombresAc,
+      alergia: alergia, detalle_alergia: detAle,
+      contacto_social: social, contacto_email: email,
       mensaje: '✍️ Confirmado manualmente' + (notas ? ' — ' + notas : ''), menores: String(kids)
     });
   }
@@ -2783,9 +2863,7 @@ function loadAdminSettings() {
     if (v.streamLink) localStorage.setItem('ni-stream-link', v.streamLink);
     if (v.kidsReminded && typeof v.kidsReminded === 'object') localStorage.setItem('ni-kids-reminded', JSON.stringify(v.kidsReminded));
     if (v.reminded && typeof v.reminded === 'object') localStorage.setItem('ni-reminded', JSON.stringify(v.reminded));
-    if (v.deadline) localStorage.setItem('ni-deadline-text', v.deadline);
     ['inv','mesa','stream','menores','recordatorio'].forEach(function(k){ var ta = document.getElementById('tpl-' + k); if (ta) ta.value = getTpl(k); });
-    var di = document.getElementById('deadline-input'); if (di) di.value = getDeadlineText();
     var sl = document.getElementById('stream-link-input'); if (sl) sl.value = getStreamLink();
   };
   s.onerror = function(){ try{document.head.removeChild(s);}catch(e){} delete window[cb]; };
@@ -3120,9 +3198,46 @@ function loadSitioFromSheets() {
    Para quienes ya recibieron la invitación (enviada o entregada) y todavía no confirman.
 ══════════════════════════════════════ */
 var RSVP_URL = 'https://namynnel.github.io/boda-ivan-narda/rsvp-narda-ivan.html';
-var RSVP_DEADLINE_ISO = '2026-11-05';
-function getDeadlineText() { return localStorage.getItem('ni-deadline-text') || '5 de noviembre de 2026'; }
-function saveDeadlineText(v) { localStorage.setItem('ni-deadline-text', v.trim()); scheduleSettingsSync(); }
+var DEADLINE_DEFAULT_ISO = '2026-11-05';
+var PLAZO_MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function isoValido(v) { return /^\d{4}-\d{2}-\d{2}$/.test(String(v || '')) && !isNaN(new Date(v + 'T12:00:00').getTime()); }
+function getDeadlineIso() { var v = localStorage.getItem('ni-deadline-iso'); return isoValido(v) ? v : DEADLINE_DEFAULT_ISO; }
+function deadlineTextFromIso(iso, pad) {
+  var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ''));
+  if (!m) return '';
+  return (pad ? m[3] : String(parseInt(m[3], 10))) + ' de ' + PLAZO_MESES[parseInt(m[2], 10) - 1] + ' de ' + m[1];
+}
+function getDeadlineText() { return deadlineTextFromIso(getDeadlineIso(), false); }
+function updateDeadlineUi() {
+  var iso = getDeadlineIso();
+  var di = document.getElementById('deadline-date'); if (di && di.value !== iso) di.value = iso;
+  var dias = Math.ceil((new Date(iso + 'T23:59:59-04:00') - Date.now()) / 86400000);
+  var pv = document.getElementById('deadline-preview');
+  if (pv) pv.innerHTML = 'En la invitación y el RSVP dirá: <strong>«' + escHtml(deadlineTextFromIso(iso, true)) + '»</strong> · '
+    + (dias >= 0 ? 'faltan <strong>' + dias + '</strong> día(s)' : '<span style="color:#b3501f;">ya pasó: el formulario RSVP está bloqueado</span>');
+  var cur = document.getElementById('deadline-current'); if (cur) cur.textContent = getDeadlineText();
+}
+function saveDeadlineIso(v) {
+  if (!isoValido(v)) return;
+  localStorage.setItem('ni-deadline-iso', v);
+  updateDeadlineUi();
+  scheduleSettingsSync();
+  publishVerified('plazo', { iso: v }, 'plazo-status');
+}
+function loadPlazoFromSheets() {
+  var cb = 'cfgPlz_' + Date.now(), s = document.createElement('script');
+  window[cb] = function(data) {
+    try { document.head.removeChild(s); } catch(e) {}
+    delete window[cb];
+    if (data && data.ok && data.value && isoValido(data.value.iso)) {
+      localStorage.setItem('ni-deadline-iso', data.value.iso);
+      updateDeadlineUi();
+    }
+  };
+  s.onerror = function() { try { document.head.removeChild(s); } catch(e) {} delete window[cb]; };
+  s.src = SHEETS_URL + '?action=getConfig&key=plazo&callback=' + cb + '&t=' + Date.now();
+  document.head.appendChild(s);
+}
 function loadReminded() { try { return JSON.parse(localStorage.getItem('ni-reminded') || '{}'); } catch(e) { return {}; } }
 
 function pendingReminderGuests() {
@@ -3137,7 +3252,7 @@ function renderRemindList() {
   var map = loadReminded();
   var pend = pendingReminderGuests();
   var sinEnviar = guests.filter(function(g){ return !entregaOf(g); }).length;
-  var dias = Math.ceil((new Date(RSVP_DEADLINE_ISO + 'T23:59:59-04:00') - Date.now()) / 86400000);
+  var dias = Math.ceil((new Date(getDeadlineIso() + 'T23:59:59-04:00') - Date.now()) / 86400000);
   var info = '📅 Fecha límite en el mensaje: <strong>' + escHtml(getDeadlineText()) + '</strong>'
     + (dias >= 0 ? ' (faltan <strong>' + dias + '</strong> días)' : ' (ya pasó)') + '.<br>'
     + '<strong>' + pend.length + '</strong> invitado(s) recibieron la invitación y aún no confirman.'
@@ -3433,9 +3548,14 @@ function removePadrino(i) {
   renderPadrinosEditor();
 }
 function resetPadrinos() {
-  if (!confirm('¿Restaurar la lista original de padrinos y testigos?')) return;
+  if (!confirm('¿Restaurar la lista original? Esto quita a los padres y a cualquier persona que hayas agregado, y deja solo los 2 padrinos de aros y los 2 testigos de civil originales.')) return;
   savePadrinosDB(DEFAULT_PADRINOS_DB.map(function(x){ return Object.assign({}, x); }));
   renderPadrinosEditor();
+}
+function presetPadRol(rol) {
+  document.getElementById('pad-rol-input').value = rol;
+  var n = document.getElementById('pad-nombre-input'); n.focus();
+  n.placeholder = 'Nombre completo (uno por vez; repite para cada padre/madre)';
 }
 function loadPadrinosFromSheets() {
   var cb = 'cfgPad_' + Date.now(), s = document.createElement('script');
@@ -3605,7 +3725,7 @@ function openBulkMsg() {
     var mesaNombre = mesaObj ? mesaObj.nombre : 'Mesa ' + mesaAssigns[code];
     var nombre = ((r.nombre||'') + ' ' + (r.apellido||'')).trim();
     var tel = String(r.telefono||r['teléfono']).trim();
-    var txt = fillTpl('mesa', { nombre: nombre, mesa: mesaNombre, plano: planoLink ? ('🗺️ Plano del salón:\n' + planoLink + '\n\n') : '' });
+    var txt = fillTpl('mesa', { nombre: nombre, mesa: mesaNombre, resumen: resumenConfirmacion(r), plano: planoLink ? ('🗺️ Plano del salón:\n' + planoLink + '\n\n') : '' });
     item('https://wa.me/' + waNumber(tel) + '?text=' + encodeURIComponent(txt), nombre, mesaNombre + ' · +' + waNumber(tel));
   });
   // Virtuales / internacionales
