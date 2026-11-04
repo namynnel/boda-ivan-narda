@@ -154,6 +154,18 @@ select.edit-input{cursor:pointer;}
 .groups-bar{padding:.6rem 1.5rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;border-bottom:1px solid rgba(168,197,176,.2);background:rgba(92,107,77,.03);}
 .group-chip{display:inline-flex;align-items:center;gap:.3rem;padding:.25rem .7rem;border-radius:20px;background:rgba(92,107,77,.1);border:1px solid rgba(92,107,77,.2);font-size:.65rem;color:var(--olive-dk);font-family:'Montserrat',sans-serif;}
 .group-chip .del-g{background:transparent;border:none;color:var(--red);cursor:pointer;font-size:.7rem;padding:0 .1rem;line-height:1;}
+.group-header.clickable{cursor:pointer;user-select:none;}
+.group-header.clickable:hover{background:linear-gradient(90deg,rgba(92,107,77,.2),transparent);}
+.chev{display:inline-block;width:1em;margin-right:.35rem;color:var(--olive);transition:transform .15s;}
+.group-section.collapsed > table{display:none;}
+.group-section.collapsed .chev{transform:rotate(-90deg);}
+.stat-card.s-intl{--bar:#3B82C4;--col:#2F6FB0;}
+.stat-sub{display:block;font-size:.55rem;color:var(--ink-lt);margin-top:.25rem;line-height:1.35;}
+.rsvp-grp td{padding:.55rem 1rem!important;background:linear-gradient(90deg,rgba(92,107,77,.14),rgba(92,107,77,.03));border-left:3px solid var(--olive);cursor:pointer;user-select:none;}
+.rsvp-grp.intl td{background:linear-gradient(90deg,rgba(59,130,196,.17),rgba(59,130,196,.03));border-left-color:#3B82C4;}
+.rsvp-grp .gname{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--olive-dk);}
+.rsvp-grp.intl .gname{color:#2F6FB0;}
+.rsvp-grp .gcount{font-size:.65rem;color:var(--ink-lt);margin-left:.8rem;}
 .group-section{margin-bottom:1.5rem;}
 .group-header{padding:.5rem 1.5rem;background:linear-gradient(90deg,rgba(92,107,77,.1),transparent);border-left:3px solid var(--olive);display:flex;align-items:center;justify-content:space-between;}
 .group-header-name{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--olive-dk);}
@@ -302,11 +314,12 @@ select.edit-input{cursor:pointer;}
 <!-- ══ TAB 1: RSVP ══ -->
 <div id="tab-rsvp" class="tab-content active">
   <div id="stats">
-    <div class="stat-card s-cupos"><span class="stat-num" id="s-inv">—</span><span class="stat-label">Cupos totales</span></div>
-    <div class="stat-card s-confirmed"><span class="stat-num" id="s-conf">—</span><span class="stat-label">Personas confirmadas</span></div>
+    <div class="stat-card s-cupos"><span class="stat-num" id="s-inv">—</span><span class="stat-label">Cupos presenciales</span></div>
+    <div class="stat-card s-confirmed"><span class="stat-num" id="s-conf">—</span><span class="stat-label">Confirmadas (presencial)</span></div>
     <div class="stat-card s-no"><span class="stat-num" id="s-no">—</span><span class="stat-label">No asisten</span></div>
-    <div class="stat-card s-pending"><span class="stat-num" id="s-pend">—</span><span class="stat-label">Sin respuesta</span></div>
+    <div class="stat-card s-pending"><span class="stat-num" id="s-pend">—</span><span class="stat-label">Sin respuesta (presencial)</span></div>
     <div class="stat-card s-kids"><span class="stat-num" id="s-kids">—</span><span class="stat-label">Menores (barra aparte)</span></div>
+    <div class="stat-card s-intl"><span class="stat-num" id="s-intl">—</span><span class="stat-label">🌍 Virtual / internacional</span><span class="stat-sub" id="s-intl-sub"></span></div>
   </div>
 
   <div class="controls">
@@ -318,6 +331,7 @@ select.edit-input{cursor:pointer;}
     <button class="btn btn-ghost f-pending" data-f="pending" onclick="setRSVPFilter('pending',this)">⏳ Pendientes</button>
     <button class="btn btn-ghost f-kids" data-f="kids" onclick="setRSVPFilter('kids',this)">👶 Con menores</button>
     <span style="font-size:.62rem;color:#6B4BA8;margin-left:.3rem;">🟣 Fila morada = viene con menores</span>
+    <button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="setAllGroups('rsvp',false)" title="Mostrar la lista de todos los grupos">▾ Expandir grupos</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="setAllGroups('rsvp',true)" title="Dejar solo los encabezados de cada grupo">▸ Contraer grupos</button>
     <button class="btn btn-ghost" style="font-size:.62rem;margin-left:auto;" onclick="printEntryList()">🖨️ Lista de ingreso</button>
     <button class="btn btn-ghost" style="font-size:.62rem;" onclick="openEventSummary()">📋 Resumen del evento</button>
     <button class="btn btn-olive" style="font-size:.62rem;" onclick="openKidsReminder()">📣 Recordatorio a familias con menores</button>
@@ -367,6 +381,7 @@ select.edit-input{cursor:pointer;}
     <div id="group-chips"></div>
     <button class="btn btn-ghost" onclick="openAddGroup()" style="font-size:.6rem;">＋ Nuevo grupo</button>
     <div style="margin-left:auto;display:flex;gap:.5rem;align-items:center;">
+      <button class="btn btn-ghost" style="font-size:.6rem;" type="button" onclick="setAllGroups('inv',false)" title="Mostrar la lista de todos los grupos">▾ Expandir todo</button><button class="btn btn-ghost" style="font-size:.6rem;" type="button" onclick="setAllGroups('inv',true)" title="Dejar solo los encabezados de cada grupo">▸ Contraer todo</button>
       <span style="font-size:.65rem;color:var(--ink-lt);">Ordenar:</span>
       <button class="btn btn-ghost active" id="sort-group-btn" onclick="setSortMode('grupo',this)" style="font-size:.6rem;">Por grupo</button>
       <button class="btn btn-ghost" id="sort-name-btn" onclick="setSortMode('nombre',this)" style="font-size:.6rem;">Por nombre</button>
@@ -902,7 +917,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzh5KnVkNnOIpgYSgnIh5TtuYjEXKTJDvU_uPzhyMqmYJEK4Uk5DRVhFjOV9-781ZSN_Q/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw2oFoVu8tyjObTvUus049eYdQKD5mpZC_yZRf-YE3NE3_9yJ71Eir3IWA5ac5tQxyvDg/exec';
 function adminKey() { return localStorage.getItem('ni-pk') || ''; }
 const MAX_CUPOS  = 409;
 const MAX_MESA   = 14;
@@ -1372,19 +1387,76 @@ function refreshRSVP() {
   document.head.appendChild(script);
 }
 
+/* ══════════════════════════════════════
+   GRUPOS: EXPANDIR / CONTRAER (se recuerda en este dispositivo)
+══════════════════════════════════════ */
+var visibleGroups = { rsvp: [], inv: [] };
+function loadCollapsed() { try { return JSON.parse(localStorage.getItem('ni-collapsed') || '{}') || {}; } catch (e) { return {}; } }
+function saveCollapsed(c) { try { localStorage.setItem('ni-collapsed', JSON.stringify(c)); } catch (e) {} }
+function rerenderGroups(scope) { if (scope === 'inv') renderGuests(); else renderRSVP(); }
+function toggleGroup(scope, name) {
+  var c = loadCollapsed(); c[scope] = c[scope] || {};
+  if (c[scope][name]) delete c[scope][name]; else c[scope][name] = 1;
+  saveCollapsed(c); rerenderGroups(scope);
+}
+function setAllGroups(scope, collapse) {
+  var c = loadCollapsed(); c[scope] = {};
+  if (collapse) visibleGroups[scope].forEach(function(n){ c[scope][n] = 1; });
+  saveCollapsed(c); rerenderGroups(scope);
+}
+
+/* ══════════════════════════════════════
+   CONFIRMACIONES: presenciales vs. virtuales / internacionales
+   Los del grupo INTERNACIONAL (y quien elige "virtual") no ocupan espacio presencial.
+══════════════════════════════════════ */
+function guestByCode(code) { var c = String(code || '').trim(); return guests.find(function(g){ return String(g.codigo).trim() === c; }); }
+function rsvpCode(r) { return String(r.codigo || r.confirmation_code || r['código'] || '').trim(); }
+function rsvpAtt(r) { return r.asistencia || r.attendance || ''; }
+function rsvpPersons(r) { return 1 + (parseInt(r['acompanantes'] || r['acompañantes'] || 0) || 0); }
+function rsvpIsIntlGroup(r) { var g = guestByCode(rsvpCode(r)); return !!g && g.grupo === 'INTERNACIONAL'; }
+function rsvpIsVirtual(r) { return rsvpIsIntlGroup(r) || rsvpAtt(r) === 'virtual'; }
+function rsvpGroup(r) { var g = guestByCode(rsvpCode(r)); return g ? (g.grupo || 'Sin grupo') : 'Sin grupo'; }
+
+// Cifras de confirmación: presenciales aparte de virtuales/internacionales (compartido por las tarjetas, la lista de ingreso y el resumen)
+function confStats() {
+  var pres = 0, noPres = 0, virt = 0, kids = 0, virtLocalCupos = 0;
+  rsvpRows.forEach(function(r) {
+    var a = rsvpAtt(r); if (!a) return;
+    var v = rsvpIsVirtual(r);
+    if (a === 'no') { if (!v) noPres += rsvpPersons(r); return; }
+    if (v) {
+      virt += rsvpPersons(r);
+      if (!rsvpIsIntlGroup(r)) { var g = guestByCode(rsvpCode(r)); virtLocalCupos += g ? (parseInt(g.cupos) || 1) : 0; }
+      return;
+    }
+    pres += rsvpPersons(r);
+    kids += parseInt(r.menores) || 0;
+  });
+  var totalCup = totalCupos();
+  return { pres: pres, noPres: noPres, virt: virt, kids: kids, virtLocalCupos: virtLocalCupos, totalCup: totalCup,
+           sinResp: Math.max(0, totalCup - pres - noPres - virtLocalCupos) };
+}
+
 function updateStats() {
-  const conf = rsvpRows.filter(r=>(r.asistencia||r.attendance) && (r.asistencia||r.attendance)!=='no');
-  const no   = rsvpRows.filter(r=>(r.asistencia||r.attendance)==='no');
-  const pplConf = conf.reduce((a,r)=>a+1+(parseInt(r['acompanantes']||r['acompañantes']||0)||0),0);
-  const pplNo   = no.reduce((a,r)=>a+1+(parseInt(r['acompanantes']||r['acompañantes']||0)||0),0);
-  const totalCup = totalCupos();
-  const sinResp = Math.max(0, totalCup - pplConf - pplNo);
+  var st = confStats(), pres = st.pres, noPres = st.noPres, virt = st.virt, kids = st.kids, totalCup = st.totalCup, sinResp = st.sinResp;
   document.getElementById('s-inv').textContent  = totalCup;
-  document.getElementById('s-conf').textContent = pplConf;
-  document.getElementById('s-no').textContent   = pplNo;
+  document.getElementById('s-conf').textContent = pres;
+  document.getElementById('s-no').textContent   = noPres;
   document.getElementById('s-pend').textContent = sinResp;
-  const kidsEl = document.getElementById('s-kids');
-  if (kidsEl) kidsEl.textContent = conf.reduce(function(a,r){ return a + (parseInt(r.menores)||0); }, 0);
+  var kidsEl = document.getElementById('s-kids'); if (kidsEl) kidsEl.textContent = kids;
+  var intlEl = document.getElementById('s-intl');
+  if (intlEl) {
+    var intlGuests = guests.filter(function(g){ return g.grupo === 'INTERNACIONAL'; });
+    var answered = intlGuests.filter(function(g){
+      return rsvpRows.some(function(r){ return rsvpCode(r) === String(g.codigo).trim() && rsvpAtt(r); });
+    }).length;
+    var intlNo = rsvpRows.filter(function(r){ return rsvpIsIntlGroup(r) && rsvpAtt(r) === 'no'; }).length;
+    intlEl.textContent = virt;
+    var sub = document.getElementById('s-intl-sub');
+    if (sub) sub.textContent = intlGuests.length
+      ? 'de ' + intlGuests.length + ' invitados · ' + (intlGuests.length - answered) + ' sin respuesta' + (intlNo ? ' · ' + intlNo + ' no asisten' : '')
+      : (virt ? 'por elección propia' : '');
+  }
 }
 
 function updateRSVPStatus(codigo, newStatus) {
@@ -1428,7 +1500,7 @@ function renderRSVP() {
   if(!rows.length){ tbody.innerHTML=''; empty.style.display='block'; document.getElementById('rsvp-table').style.display='none'; return; }
   empty.style.display='none'; document.getElementById('rsvp-table').style.display='table';
 
-  tbody.innerHTML = rows.map(r=>{
+  const rowHtml = (r)=>{
     // Try all possible column name variations
     const code = r.codigo||r.confirmation_code||r['código']||'—';
     const nombre = r.nombre||r.first_name||r['Nombre']||'';
@@ -1499,6 +1571,35 @@ function renderRSVP() {
     if (excedido) rowStyle = 'background:' + ((atiende && kids > 0) ? 'rgba(142,108,196,.12)' : 'rgba(220,107,107,.08)') + ';border-left:3px solid var(--red);';
     const excBadge = excedido ? '<span style="font-size:.6rem;color:var(--red);font-weight:600;display:block;">⚠️ Cupos excedidos</span>' : '';
     return `<tr style="${rowStyle}"><td class="td-name">${ea(name)}${excBadge}</td><td class="td-code">${ea(code)}</td><td>${phoneCell}</td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${kidsCell}</td><td style="text-align:center;">${cellMesa} ${altContactBtn} ${editBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${ea(fecha)}</td></tr>`;
+  };
+
+  // Agrupar por grupo: presenciales primero, "Sin grupo" y al final INTERNACIONAL (virtual)
+  const known = getGroups();
+  const buckets = {}, order = [];
+  rows.forEach(function(r){ var gr = rsvpGroup(r); if (!buckets[gr]) { buckets[gr] = []; order.push(gr); } buckets[gr].push(r); });
+  const rank = function(n){ return n === 'INTERNACIONAL' ? 1e6 : n === 'Sin grupo' ? 1e5 : (known.indexOf(n) >= 0 ? known.indexOf(n) : 5e4); };
+  order.sort(function(a, b){ return rank(a) - rank(b) || a.localeCompare(b); });
+  visibleGroups.rsvp = order.slice();
+  const collapsedMap = loadCollapsed().rsvp || {};
+  tbody.innerHTML = order.map(function(gr) {
+    const list = buckets[gr], intl = gr === 'INTERNACIONAL';
+    let pers = 0, no = 0, kidsN = 0, virt = 0;
+    list.forEach(function(r) {
+      const a = rsvpAtt(r);
+      if (a === 'no') no++;
+      else if (a) { if (rsvpIsVirtual(r)) virt += rsvpPersons(r); else { pers += rsvpPersons(r); kidsN += parseInt(r.menores) || 0; } }
+    });
+    const parts = [list.length + (list.length === 1 ? ' respuesta' : ' respuestas')];
+    if (intl) { if (virt) parts.push(virt + (virt === 1 ? ' persona en línea' : ' personas en línea')); }
+    else { if (pers || !virt) parts.push(pers + (pers === 1 ? ' persona' : ' personas')); if (virt) parts.push(virt + ' virtual'); }
+    if (no) parts.push(no + (no === 1 ? ' no asiste' : ' no asisten'));
+    if (kidsN) parts.push(kidsN + (kidsN === 1 ? ' menor' : ' menores'));
+    const col = !q && !!collapsedMap[gr];   // si hay una búsqueda activa, se muestran todos los resultados
+    const head = '<tr class="rsvp-grp' + (intl ? ' intl' : '') + '" onclick="' + ea('toggleGroup(' + JSON.stringify('rsvp') + ',' + JSON.stringify(gr) + ')') + '">'
+      + '<td colspan="10"><span class="chev" style="' + (col ? 'transform:rotate(-90deg);' : '') + '">▾</span>'
+      + '<span class="gname">' + (intl ? '🌍 ' : '🌿 ') + ea(gr) + (intl ? ' · virtual' : '') + '</span>'
+      + '<span class="gcount">' + parts.join(' · ') + '</span></td></tr>';
+    return head + (col ? '' : list.map(rowHtml).join(''));
   }).join('');
 }
 
@@ -1603,13 +1704,16 @@ function renderGuests() {
   } else {
     // Group by grupo
     const groups = getGroups();
+    const collapsedInv = (q ? {} : (loadCollapsed().inv || {}));
+    visibleGroups.inv = groups.filter(function(gr){ return filtered.some(function(g){ return g.grupo === gr; }); })
+      .concat(filtered.some(function(g){ return !groups.includes(g.grupo); }) ? ['Sin grupo'] : []);
     container.innerHTML = groups.map(grupo => {
       const groupGuests = filtered.filter(g=>g.grupo===grupo);
       if(!groupGuests.length) return '';
       const totalG = groupGuests.reduce((a,g)=>a+g.cupos,0);
-      return `<div class="group-section">
-        <div class="group-header">
-          <span class="group-header-name">🌿 ${grupo}</span>
+      return `<div class="group-section${collapsedInv[grupo] ? ' collapsed' : ''}">
+        <div class="group-header clickable" onclick="${ea('toggleGroup(' + JSON.stringify('inv') + ',' + JSON.stringify(grupo) + ')')}" title="Clic para expandir o contraer">
+          <span class="group-header-name"><span class="chev">▾</span>${grupo === 'INTERNACIONAL' ? '🌍' : '🌿'} ${grupo}</span>
           <span class="group-header-count">${groupGuests.length} invitados · ${totalG}${getGroupLimit(grupo) ? ' / ' + getGroupLimit(grupo) : ''} cupos${(getGroupLimit(grupo) && totalG >= getGroupLimit(grupo)) ? ' · ✓ completo' : ''}</span>
         </div>
         <table style="width:100%;border-collapse:collapse;min-width:580px;">
@@ -1633,9 +1737,9 @@ function renderGuests() {
     // Ungrouped guests
     const ungrouped = filtered.filter(g=>!groups.includes(g.grupo));
     if(ungrouped.length) {
-      container.innerHTML += `<div class="group-section">
-        <div class="group-header">
-          <span class="group-header-name">🌿 Sin grupo</span>
+      container.innerHTML += `<div class="group-section${collapsedInv['Sin grupo'] ? ' collapsed' : ''}">
+        <div class="group-header clickable" onclick="${ea('toggleGroup(' + JSON.stringify('inv') + ',' + JSON.stringify('Sin grupo') + ')')}" title="Clic para expandir o contraer">
+          <span class="group-header-name"><span class="chev">▾</span>🌿 Sin grupo</span>
           <span class="group-header-count">${ungrouped.length} invitados</span>
         </div>
         <table style="width:100%;border-collapse:collapse;min-width:580px;">
@@ -2684,8 +2788,9 @@ function asisLabel(a) { return { both: 'Ceremonia y recepción', ceremony: 'Solo
 function escHtml(t) { return String(t == null ? '' : t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
 function printEntryList() {
-  var rows = rsvpRows.filter(function(r){ return r.asistencia && r.asistencia !== 'no' && r.asistencia !== 'virtual'; });
+  var rows = rsvpRows.filter(function(r){ return r.asistencia && r.asistencia !== 'no' && !rsvpIsVirtual(r); });
   if (!rows.length) { alert('Todavía no hay confirmaciones presenciales.'); return; }
+  var virtN = confStats().virt;
   rows.sort(function(a, b){ return ((a.apellido || '') + ' ' + (a.nombre || '')).localeCompare((b.apellido || '') + ' ' + (b.nombre || ''), 'es'); });
   var totAd = 0, totK = 0;
   var tr = rows.map(function(r, i) {
@@ -2700,7 +2805,7 @@ function printEntryList() {
     + 'table{width:100%;border-collapse:collapse;}th,td{border:1px solid #bbb;padding:5px 7px;text-align:left;}th{background:#eee;}td.c{text-align:center;}tr:nth-child(even) td{background:#fafafa;}'
     + '@media print{body{margin:8mm;}}</style></head><body>'
     + '<h1>Lista de ingreso — Ivan &amp; Narda · 5 de diciembre de 2026</h1>'
-    + '<p>' + rows.length + ' confirmaciones · ' + totAd + ' adultos (16+) · ' + totK + ' menores (barra aparte)</p>'
+    + '<p>' + rows.length + ' confirmaciones · ' + totAd + ' adultos (16+) · ' + totK + ' menores (barra aparte)' + (virtN ? ' · ' + virtN + ' virtuales/internacionales (no ingresan, no se listan)' : '') + '</p>'
     + '<table><thead><tr><th>#</th><th>Invitado</th><th>Mesa</th><th>Adultos</th><th>Menores</th><th>Asistencia</th><th>Alergias</th><th>Ingresó</th></tr></thead><tbody>' + tr + '</tbody></table></body></html>';
   var w = window.open('', '_blank');
   if (!w) { alert('Permite las ventanas emergentes de esta página para imprimir la lista.'); return; }
@@ -2710,16 +2815,17 @@ function printEntryList() {
 
 function buildEventSummary() {
   var pers = function(r){ return 1 + (parseInt(r.acompanantes) || 0); };
-  var pres = rsvpRows.filter(function(r){ return r.asistencia && r.asistencia !== 'no' && r.asistencia !== 'virtual'; });
+  var st = confStats();
+  var pres = rsvpRows.filter(function(r){ return r.asistencia && r.asistencia !== 'no' && !rsvpIsVirtual(r); });
   var cnt  = function(k){ return pres.filter(function(r){ return r.asistencia === k; }).reduce(function(a, r){ return a + pers(r); }, 0); };
-  var virt = rsvpRows.filter(function(r){ return r.asistencia === 'virtual'; }).reduce(function(a, r){ return a + pers(r); }, 0);
-  var no   = rsvpRows.filter(function(r){ return r.asistencia === 'no'; }).reduce(function(a, r){ return a + pers(r); }, 0);
+  var virt = st.virt;
+  var no   = st.noPres;
   var adultos = pres.reduce(function(a, r){ return a + pers(r); }, 0);
   var kidsR = pres.filter(function(r){ return (parseInt(r.menores) || 0) > 0; });
   var kids  = kidsR.reduce(function(a, r){ return a + (parseInt(r.menores) || 0); }, 0);
   var conMesa = pres.filter(function(r){ return mesaAssigns[String(r.codigo).trim()]; }).length;
-  var sinResp = Math.max(0, totalCupos() - adultos - virt - no);
-  var al = rsvpRows.filter(function(r){ return r.alergia === 'yes'; });
+  var sinResp = st.sinResp;
+  var al = rsvpRows.filter(function(r){ return r.alergia === 'yes' && !rsvpIsVirtual(r); });
   var L = [];
   L.push('RESUMEN DEL EVENTO — 5 de diciembre de 2026');
   L.push('');
@@ -2728,7 +2834,7 @@ function buildEventSummary() {
   L.push('  · Solo ceremonia: ' + cnt('ceremony'));
   L.push('  · Solo recepción: ' + cnt('reception'));
   L.push('MENORES DE 16 (barra aparte, no ocupan cupo): ' + kids + (kidsR.length ? ' en ' + kidsR.length + (kidsR.length === 1 ? ' familia' : ' familias') : ''));
-  L.push('VIRTUALES: ' + virt + ' personas');
+  L.push('VIRTUALES / INTERNACIONALES (no ingresan, solo cifra): ' + virt + ' personas');
   L.push('NO ASISTIRÁN: ' + no + ' personas');
   L.push('SIN RESPUESTA: ' + sinResp + ' cupos (de ' + totalCupos() + ' repartidos)');
   L.push('');
