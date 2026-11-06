@@ -548,7 +548,7 @@
 </div>
 
 <script>
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzh5KnVkNnOIpgYSgnIh5TtuYjEXKTJDvU_uPzhyMqmYJEK4Uk5DRVhFjOV9-781ZSN_Q/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyMhmixNExEnro4uZfn943oMOcJ5VO-vc_czHJz-K0vq9gIlkLCsNVZc4U-3EaTNSONkg/exec';
 const INACTIVITY_MS    = 30 * 60 * 1000;
 
 // El RSVP ya no descarga la lista de invitados: consulta un solo código a la vez.
@@ -1133,15 +1133,15 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
   window[cb] = function(data) {
     clearTimeout(timer);
     try { document.head.removeChild(s); } catch (e) {}
-    if (data && data.ok && data.value && /^\d{4}-\d{2}-\d{2}$/.test(String(data.value.iso || ''))) {
-      iso = data.value.iso;
+    if (data && data.ok && data.value && /^\d{4}-\d{2}-\d{2}$/.test(String(data.value.plazo || ''))) {
+      iso = data.value.plazo;
       try { localStorage.setItem('ni-plazo-iso', iso); } catch (e) {}
     }
     fin = true;
     cuandoListo(pintar);
   };
   s.onerror = function() { clearTimeout(timer); terminar(); };
-  s.src = SHEETS + '?action=getConfig&key=plazo&callback=' + cb + '&t=' + Date.now();
+  s.src = SHEETS + '?action=getConfig&key=sitio&callback=' + cb + '&t=' + Date.now();
   document.head.appendChild(s);
 })();
 

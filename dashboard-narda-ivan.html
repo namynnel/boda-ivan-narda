@@ -566,6 +566,8 @@ select.edit-input{cursor:pointer;}
       <input type="text" id="stream-link-input" placeholder="https://youtube.com/live/..." oninput="saveStreamLink(this.value)"
         style="width:100%;box-sizing:border-box;padding:.5rem .75rem;border:1px solid rgba(92,107,58,.25);border-radius:6px;font-size:.72rem;font-family:'Montserrat',sans-serif;">
       <p id="stream-link-status" style="font-size:.64rem;margin-top:.3rem;color:var(--ink-lt);min-height:1em;"></p>
+      <label style="display:flex;align-items:center;gap:.45rem;font-size:.7rem;margin-top:.4rem;cursor:pointer;"><input type="checkbox" id="pub-stream" onchange="togglePublishLink('stream',this.checked)"> 🌐 Mostrar este link en la invitación (sección «Distribución de Mesas»)</label>
+      <p id="pub-stream-status" style="font-size:.64rem;margin-top:.25rem;min-height:1em;color:var(--ink-lt);"></p>
     </div>
   </div>
 
@@ -655,6 +657,8 @@ select.edit-input{cursor:pointer;}
       <button class="btn btn-ghost" onclick="testPlanoLink()" style="font-size:.65rem;white-space:nowrap;">Probar</button>
     </div>
     <p id="plano-link-status" style="font-size:.65rem;margin-top:.35rem;color:var(--ink-lt);"></p>
+    <label style="display:flex;align-items:center;gap:.45rem;font-size:.7rem;margin-top:.4rem;cursor:pointer;"><input type="checkbox" id="pub-plano" onchange="togglePublishLink('plano',this.checked)"> 🌐 Mostrar este link en la invitación (sección «Distribución de Mesas»)</label>
+    <p id="pub-plano-status" style="font-size:.64rem;margin-top:.25rem;min-height:1em;color:var(--ink-lt);"></p>
   </div>
 </div>
 
@@ -917,7 +921,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw2oFoVu8tyjObTvUus049eYdQKD5mpZC_yZRf-YE3NE3_9yJ71Eir3IWA5ac5tQxyvDg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyMhmixNExEnro4uZfn943oMOcJ5VO-vc_czHJz-K0vq9gIlkLCsNVZc4U-3EaTNSONkg/exec';
 function adminKey() { return localStorage.getItem('ni-pk') || ''; }
 const MAX_CUPOS  = 409;
 const MAX_MESA   = 14;
@@ -2452,6 +2456,7 @@ function saveStreamLink(v) {
   scheduleSettingsSync();
   var st = document.getElementById('stream-link-status');
   if (st) { st.textContent = v.trim() ? '✓ Link guardado' : ''; }
+  republishLink('stream');
 }
 
 // Pestaña Ajustes
@@ -2466,8 +2471,8 @@ function initAjustesTab() {
   loadCronogramaFromSheets();
   loadPadrinosFromSheets();
   renderPadrinosEditor();
-  loadPlazoFromSheets();
   updateDeadlineUi();
+  updatePublishUi();
   renderGiftItems();
   renderCronogramaEditor();
   ['inv','mesa','stream','menores','recordatorio'].forEach(function(k) {
@@ -2479,6 +2484,7 @@ function initAjustesTab() {
   if (sl) { sl.value = getStreamLink(); }
   var pli = document.getElementById('plano-link-input');
   if (pli) { var saved = getPlanoLink(); pli.value = saved || ''; if (saved) { var st = document.getElementById('plano-link-status'); if (st) st.textContent = '✓ Link guardado'; } }
+  updatePublishUi();
 }
 
 
@@ -3277,11 +3283,48 @@ function verifyConfig(key, value, statusId) {
 /* ══════════════════════════════════════
    LISTA DE REGALOS: ACTIVAR / DESACTIVAR
 ══════════════════════════════════════ */
+/* ── Configuración pública del sitio (clave 'sitio' en Sheets): lista de regalos, fecha límite y links publicados ──
+   Todo viaja en una sola clave que el script ya publicado acepta, así no depende de actualizar el Apps Script. */
+function getSitio() { try { var c = JSON.parse(localStorage.getItem('ni-sitio') || '{}'); return (c && typeof c === 'object') ? c : {}; } catch (e) { return {}; } }
+function sitioValue() {
+  var c = getSitio();
+  return { listaRegalos: c.listaRegalos !== false, plazo: isoValido(c.plazo) ? c.plazo : '',
+           planoUrl: typeof c.planoUrl === 'string' ? c.planoUrl : '', streamUrl: typeof c.streamUrl === 'string' ? c.streamUrl : '' };
+}
+function publishSitio(v, statusId) { localStorage.setItem('ni-sitio', JSON.stringify(v)); publishVerified('sitio', v, statusId); }
+
+/* ── Publicar el link del plano y de la transmisión en la invitación ── */
+function isHttpUrl(u) { return /^https?:\/\/\S+$/i.test(String(u || '').trim()); }
+function togglePublishLink(which, on) {
+  var url = (which === 'stream' ? getStreamLink() : getPlanoLink()).trim();
+  var cb = document.getElementById('pub-' + which);
+  if (on && !isHttpUrl(url)) { alert('Primero pega un link completo que empiece con https://'); if (cb) cb.checked = false; return; }
+  var cfg = sitioValue(); cfg[which === 'stream' ? 'streamUrl' : 'planoUrl'] = on ? url : '';
+  publishSitio(cfg, 'pub-' + which + '-status');
+}
+var _pubTimer = {};
+function republishLink(which) {   // si el link ya está publicado y lo cambias, la invitación se actualiza sola
+  var key = which === 'stream' ? 'streamUrl' : 'planoUrl';
+  if (!sitioValue()[key]) return;
+  clearTimeout(_pubTimer[which]);
+  _pubTimer[which] = setTimeout(function() {
+    var url = (which === 'stream' ? getStreamLink() : getPlanoLink()).trim();
+    var cfg = sitioValue();
+    if (isHttpUrl(url)) cfg[key] = url;
+    else { cfg[key] = ''; var cb = document.getElementById('pub-' + which); if (cb) cb.checked = false; }
+    publishSitio(cfg, 'pub-' + which + '-status');
+  }, 1200);
+}
+function updatePublishUi() {
+  var c = sitioValue();
+  var a = document.getElementById('pub-stream'); if (a) a.checked = !!c.streamUrl;
+  var b = document.getElementById('pub-plano');  if (b) b.checked = !!c.planoUrl;
+}
+
 function setListaRegalos(on) {
-  var cfg = { listaRegalos: !!on };
-  localStorage.setItem('ni-sitio', JSON.stringify(cfg));
+  var cfg = sitioValue(); cfg.listaRegalos = !!on;
   var l = document.getElementById('gift-items-list'); if (l) l.style.opacity = on ? '1' : '.45';
-  publishVerified('sitio', cfg, 'gift-status');
+  publishSitio(cfg, 'gift-status');
 }
 function loadSitioFromSheets() {
   var cb = 'cfgSitio_' + Date.now(), s = document.createElement('script');
@@ -3293,6 +3336,8 @@ function loadSitioFromSheets() {
     var on = cfg.listaRegalos !== false;
     var cb2 = document.getElementById('gift-list-toggle'); if (cb2) cb2.checked = on;
     var l = document.getElementById('gift-items-list'); if (l) l.style.opacity = on ? '1' : '.45';
+    if (isoValido(cfg.plazo)) localStorage.setItem('ni-deadline-iso', cfg.plazo);   // la fecha publicada manda
+    updateDeadlineUi(); updatePublishUi();
   };
   s.onerror = function(){ try { document.head.removeChild(s); } catch(e) {} delete window[cb]; };
   s.src = SHEETS_URL + '?action=getConfig&key=sitio&callback=' + cb;
@@ -3328,21 +3373,8 @@ function saveDeadlineIso(v) {
   localStorage.setItem('ni-deadline-iso', v);
   updateDeadlineUi();
   scheduleSettingsSync();
-  publishVerified('plazo', { iso: v }, 'plazo-status');
-}
-function loadPlazoFromSheets() {
-  var cb = 'cfgPlz_' + Date.now(), s = document.createElement('script');
-  window[cb] = function(data) {
-    try { document.head.removeChild(s); } catch(e) {}
-    delete window[cb];
-    if (data && data.ok && data.value && isoValido(data.value.iso)) {
-      localStorage.setItem('ni-deadline-iso', data.value.iso);
-      updateDeadlineUi();
-    }
-  };
-  s.onerror = function() { try { document.head.removeChild(s); } catch(e) {} delete window[cb]; };
-  s.src = SHEETS_URL + '?action=getConfig&key=plazo&callback=' + cb + '&t=' + Date.now();
-  document.head.appendChild(s);
+  var cfg = sitioValue(); cfg.plazo = v;
+  publishSitio(cfg, 'plazo-status');
 }
 function loadReminded() { try { return JSON.parse(localStorage.getItem('ni-reminded') || '{}'); } catch(e) { return {}; } }
 
@@ -3770,6 +3802,7 @@ function savePlanoLink(val) {
   var st = document.getElementById('plano-link-status');
   if (val) st.textContent = '✓ Link guardado';
   else st.textContent = '';
+  republishLink('plano');
 }
 
 function testPlanoLink() {
@@ -3793,6 +3826,7 @@ planoRender = function() {
     var st = document.getElementById('plano-link-status');
     if (st && saved) st.textContent = '✓ Link guardado';
   }
+  updatePublishUi();
 };
 
 

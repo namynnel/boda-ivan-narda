@@ -786,6 +786,8 @@ footer{
 .band-cream .rune,.band-linen .rune,.band-light .rune{color:#A35F00 !important;text-shadow:none;}
 .band-olive .rune,.band-euca .rune,.band-sage .rune,.band-dark .rune{color:#FFD05A !important;text-shadow:0 1px 3px rgba(0,0,0,.45);}
 
+.lnk-btn{display:inline-block;margin-top:18px;padding:11px 26px;border:1px solid rgba(221,176,80,.7);color:var(--gold-lt);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.25em;text-transform:uppercase;text-decoration:none;transition:background .2s;}
+.lnk-btn:hover{background:rgba(221,176,80,.18);}
 /* ── PADRES, PADRINOS Y TESTIGOS ── */
 .pad-wrap{margin:2.6rem auto 0;max-width:720px;text-align:center;}
 .pad-wrap .rune{font-size:11px;letter-spacing:.3em;line-height:1.9;margin-bottom:1.3rem;}
@@ -1348,9 +1350,10 @@ footer{
           el nombre y ubicación de tu mesa — con el plano del salón
           para que llegues tranquilo/a y sin preocupaciones.
         </p>
-        <p style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(221,176,80,.75);margin-top:18px;">
+        <p id="aviso-mesa" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(221,176,80,.75);margin-top:18px;">
           📅 Lo recibirás en noviembre 2026
         </p>
+        <a id="link-plano" class="lnk-btn" href="#" target="_blank" rel="noopener" style="display:none;">🗺️ Ver plano de mesas</a>
       </div>
 
       <!-- Livestream -->
@@ -1361,9 +1364,10 @@ footer{
           Transmitiremos el evento en vivo para que ningún ser querido
           se pierda este momento especial, sin importar la distancia.
         </p>
-        <p style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(168,197,176,.6);margin-top:16px;">
+        <p id="aviso-stream" style="font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:rgba(168,197,176,.6);margin-top:16px;">
           🔗 El link de transmisión llegará por WhatsApp el día del evento
         </p>
+        <a id="link-stream" class="lnk-btn" href="#" target="_blank" rel="noopener" style="display:none;border-color:rgba(168,197,176,.7);color:rgba(168,197,176,.95);">📺 Ver transmisión en vivo</a>
       </div>
 
     </div>
@@ -1506,7 +1510,7 @@ function closeGiftList() {
 /* ══════════════════════════════════════
    CRONOGRAMA DINÁMICO
 ══════════════════════════════════════ */
-var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzh5KnVkNnOIpgYSgnIh5TtuYjEXKTJDvU_uPzhyMqmYJEK4Uk5DRVhFjOV9-781ZSN_Q/exec';
+var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyMhmixNExEnro4uZfn943oMOcJ5VO-vc_czHJz-K0vq9gIlkLCsNVZc4U-3EaTNSONkg/exec';
 var DEFAULT_CRONOGRAMA = [
   {
     "hora": "13:30",
@@ -1620,7 +1624,16 @@ function loadConfigFromSheets(key, storageKey, done) {
 }
 
 /* Opciones del sitio que se editan desde el dashboard (por ahora: mostrar u ocultar la lista de regalos) */
+function setEnlace(linkId, avisoId, url) {
+  var a = document.getElementById(linkId), av = document.getElementById(avisoId);
+  var ok = typeof url === 'string' && /^https?:\/\/\S+$/i.test(url.trim());
+  if (a) { if (ok) { a.setAttribute('href', url.trim()); a.style.display = 'inline-block'; } else a.style.display = 'none'; }
+  if (av) av.style.display = ok ? 'none' : '';
+}
 function applySitio(cfg) {
+  setEnlace('link-plano', 'aviso-mesa', cfg && cfg.planoUrl);
+  setEnlace('link-stream', 'aviso-stream', cfg && cfg.streamUrl);
+  if (cfg && /^\d{4}-\d{2}-\d{2}$/.test(String(cfg.plazo || ''))) aplicarPlazo(cfg.plazo);
   var show = !(cfg && cfg.listaRegalos === false);
   var card = document.getElementById('gift-list-card'), phys = document.getElementById('gift-physical-card');
   if (card) card.style.display = show ? '' : 'none';
@@ -1741,27 +1754,10 @@ function aplicarPlazo(iso) {
   var t = plazoTexto(iso), el = document.getElementById('plazo-texto');
   if (el && t) el.textContent = t;
 }
-function loadPlazo() {
-  try { var c = localStorage.getItem('ni-plazo-iso'); if (c) aplicarPlazo(c); } catch (e) {}
-  var cb = 'cfg_plazo_' + Date.now(), s = document.createElement('script');
-  var timer = setTimeout(function(){ try { document.head.removeChild(s); } catch(e) {} }, 8000);
-  window[cb] = function(data) {
-    clearTimeout(timer);
-    try { document.head.removeChild(s); } catch(e) {}
-    if (data && data.ok && data.value && /^\d{4}-\d{2}-\d{2}$/.test(String(data.value.iso || ''))) {
-      try { localStorage.setItem('ni-plazo-iso', data.value.iso); } catch(e) {}
-      aplicarPlazo(data.value.iso);
-    }
-  };
-  s.onerror = function(){ clearTimeout(timer); };
-  s.src = SHEETS_URL + '?action=getConfig&key=plazo&callback=' + cb;
-  document.head.appendChild(s);
-}
 
 document.addEventListener('DOMContentLoaded', function() {
   renderPadrinos();
   loadPadrinos();
-  loadPlazo();
   loadSitio();
   renderCronograma();
   loadConfigFromSheets('cronograma', 'ni-cronograma', renderCronograma);
