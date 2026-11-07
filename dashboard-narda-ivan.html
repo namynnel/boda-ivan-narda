@@ -1342,6 +1342,17 @@ function switchTab(name, el) {
 /* ══════════════════════════════════════
    RSVP
 ══════════════════════════════════════ */
+// Nombres de acompañantes: tolera encabezados distintos en la hoja (tildes, mayúsculas, guiones bajos)
+function pickCompNames(r) {
+  if (!r) return '';
+  var v = r.nombres_acompanantes || r['nombres_acompañantes'];
+  if (v) return String(v).trim();
+  for (var k in r) {
+    var n = String(k).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z]/g, '');
+    if (n.indexOf('acomp') >= 0 && (n.indexOf('nombre') >= 0 || n.indexOf('names') >= 0) && r[k]) return String(r[k]).trim();
+  }
+  return '';
+}
 function refreshRSVP() {
   const icon = document.getElementById('ri');
   icon.classList.add('spin');
@@ -1372,7 +1383,7 @@ function refreshRSVP() {
           telefono:   String(r.telefono || '').trim(),
           asistencia: r.asistencia || '',
           acompanantes: parseInt(r.acompanantes || r['acompañantes'] || 0)||0,
-          nombres_acompanantes: r.nombres_acompanantes || r['nombres_acompañantes'] || '',
+          nombres_acompanantes: pickCompNames(r),
           alergia:    r.alergia || '',
           detalle_alergia: r.detalle_alergia || '',
           mensaje:    r.mensaje || '',
@@ -1392,7 +1403,7 @@ function refreshRSVP() {
           telefono:  String(r.telefono || r['teléfono'] || r.phone || '').trim(),
           asistencia: r.asistencia || r.attendance || r['Asistencia'] || '',
           acompanantes: parseInt(r.acompanantes || r['acompañantes'] || r.companion_count || 0) || 0,
-          nombres_acompanantes: r.nombres_acompanantes || r['nombres_acompañantes'] || '',
+          nombres_acompanantes: pickCompNames(r),
           alergia:   r.alergia || r.has_allergy || '',
           detalle_alergia: r.detalle_alergia || r.dietary_restrictions || '',
           mensaje:   r.mensaje || r.message || '',
@@ -1612,7 +1623,11 @@ function renderRSVP() {
     if (atiende && kids > 0) rowStyle = 'background:rgba(142,108,196,.12);border-left:3px solid #8E6CC4;';
     if (excedido) rowStyle = 'background:' + ((atiende && kids > 0) ? 'rgba(142,108,196,.12)' : 'rgba(220,107,107,.08)') + ';border-left:3px solid var(--red);';
     const excBadge = excedido ? '<span style="font-size:.6rem;color:var(--red);font-weight:600;display:block;">⚠️ Cupos excedidos</span>' : '';
-    return `<tr style="${rowStyle}"><td class="td-name">${ea(name)}${excBadge}</td><td class="td-code">${ea(code)}</td><td>${phoneCell}</td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${kidsCell}</td><td style="text-align:center;">${cellMesa} ${altContactBtn} ${editBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${ea(fecha)}</td></tr>`;
+    const compNames = atiende ? pickCompNames(r) : '';
+    const compLine = !atiende ? '' : compNames
+      ? `<span style="font-size:.64rem;color:var(--ink-mid);display:block;margin-top:.15rem;line-height:1.35;" title="Acompañantes">👥 ${ea(compNames)}</span>`
+      : (numAcomp > 0 ? '<span style="font-size:.6rem;color:#b3501f;display:block;margin-top:.15rem;">👥 ' + numAcomp + (numAcomp === 1 ? ' acompañante' : ' acompañantes') + ' · sin nombres</span>' : '');
+    return `<tr style="${rowStyle}"><td class="td-name">${ea(name)}${excBadge}${compLine}</td><td class="td-code">${ea(code)}</td><td>${phoneCell}</td><td>${att}</td><td style="text-align:center;">${ppl}</td><td style="text-align:center;">${kidsCell}</td><td style="text-align:center;">${cellMesa} ${altContactBtn} ${editBtn}</td><td>${alergia}</td><td>${msg}</td><td style="font-size:.68rem;color:var(--ink-lt);">${ea(fecha)}</td></tr>`;
   };
 
   // Agrupar por grupo: presenciales primero, "Sin grupo" y al final INTERNACIONAL (virtual)
@@ -2717,7 +2732,7 @@ function resumenDatos(row) {
   var acRaw = (row.acompanantes != null && row.acompanantes !== '') ? row.acompanantes : row['acompañantes'];
   var ac = parseInt(acRaw) || 0;
   return { asis: String(row.asistencia || ''), ac: ac, men: parseInt(row.menores) || 0,
-           adultos: 1 + ac, nombres: String(row.nombres_acompanantes || row['nombres_acompañantes'] || '').trim() };
+           adultos: 1 + ac, nombres: pickCompNames(row) };
 }
 function resumenConfirmacion(row) {
   var d = resumenDatos(row);
@@ -2914,7 +2929,7 @@ function entryRows() {
              mesa: mesaNombreDe(rsvpCode(r)),
              adultos: 1 + (parseInt(r.acompanantes) || 0),
              menores: parseInt(r.menores) || 0,
-             acomp: String(r.nombres_acompanantes || r['nombres_acompañantes'] || '').trim() };
+             acomp: pickCompNames(r) };
   });
 }
 function entryLetter(n) { var c = (n || '?').charAt(0).toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); return /[A-Z]/.test(c) ? c : '#'; }
