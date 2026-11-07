@@ -333,6 +333,7 @@ select.edit-input{cursor:pointer;}
     <span style="font-size:.62rem;color:#6B4BA8;margin-left:.3rem;">🟣 Fila morada = viene con menores</span>
     <button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="setAllGroups('rsvp',false)" title="Mostrar la lista de todos los grupos">▾ Expandir grupos</button><button class="btn btn-ghost" style="font-size:.62rem;" type="button" onclick="setAllGroups('rsvp',true)" title="Dejar solo los encabezados de cada grupo">▸ Contraer grupos</button>
     <button class="btn btn-ghost" style="font-size:.62rem;margin-left:auto;" onclick="printEntryList()">🖨️ Lista de ingreso</button>
+    <button class="btn btn-ghost" style="font-size:.62rem;" onclick="downloadEntryChecklist()" title="Archivo para seguridad: se abre en cualquier teléfono y permite marcar quién ingresó">📲 Lista digital</button>
     <button class="btn btn-ghost" style="font-size:.62rem;" onclick="openEventSummary()">📋 Resumen del evento</button>
     <button class="btn btn-olive" style="font-size:.62rem;" onclick="openKidsReminder()">📣 Recordatorio a familias con menores</button>
     <button class="btn btn-ghost" style="font-size:.62rem;" onclick="openAllMessages()">💌 Mensajes para los novios</button>
@@ -487,6 +488,24 @@ select.edit-input{cursor:pointer;}
       <span id="max-cupos-info" style="font-size:.7rem;color:var(--ink-mid);margin-left:.4rem;"></span>
     </div>
     <p style="font-size:.62rem;color:var(--ink-lt);margin-top:.5rem;">Los topes de cada grupo reservado se ajustan en la tarjeta de abajo.</p>
+  </div>
+
+  <!-- Control de ingreso -->
+  <div style="background:rgba(58,69,32,.04);border:1px solid rgba(92,107,58,.15);border-radius:10px;padding:1rem;margin-bottom:1rem;">
+    <strong style="font-family:'Cinzel',serif;font-size:.78rem;color:var(--olive-dk);display:block;margin-bottom:.35rem;">🚪 Control de ingreso (guardias)</strong>
+    <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.7rem;line-height:1.6;">
+      La lista digital (📲 en Confirmaciones) funciona sola en cada dispositivo. Si activas la sincronización, todos los guardias ven al instante quién ya ingresó. Necesita internet en la puerta y el script v16; si se cae la señal, las marcas se guardan y se envían al volver.
+    </p>
+    <label style="display:flex;align-items:center;gap:.45rem;font-size:.72rem;cursor:pointer;"><input type="checkbox" id="gate-on" onchange="setGateSync(this.checked)"> Sincronizar ingresos entre varios guardias</label>
+    <div id="gate-tools" style="display:none;margin-top:.6rem;">
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+        <button class="btn btn-ghost" style="font-size:.66rem;" type="button" onclick="gateTest()">🔄 Probar / ver avance</button>
+        <button class="btn btn-ghost" style="font-size:.66rem;" type="button" onclick="gateReset()">🧹 Reiniciar marcas (pruebas)</button>
+        <button class="btn btn-ghost" style="font-size:.66rem;" type="button" onclick="gateRevoke()">🔒 Revocar acceso (después del evento)</button>
+      </div>
+      <p style="font-size:.62rem;color:var(--ink-lt);margin-top:.4rem;">Después de activar o cambiar algo, descarga de nuevo la lista digital: la clave va dentro del archivo.</p>
+    </div>
+    <p id="gate-status" style="font-size:.66rem;margin-top:.45rem;min-height:1em;color:var(--ink-lt);"></p>
   </div>
 
   <!-- Cupos reservados por grupo -->
@@ -938,7 +957,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyMhmixNExEnro4uZfn943oMOcJ5VO-vc_czHJz-K0vq9gIlkLCsNVZc4U-3EaTNSONkg/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbytJVSHJrCBiyVWauVMi9R0ubKdBhS2uTrbnmDodf9BMPqZYZiuS7H3B5tZSYXwdI6DtA/exec';
 function adminKey() { return localStorage.getItem('ni-pk') || ''; }
 var MAX_CUPOS_DEFAULT = 409;
 // Límite total de cupos presenciales: se cambia en Ajustes y se recuerda (también entre dispositivos)
@@ -2516,6 +2535,7 @@ function initAjustesTab() {
   updateDeadlineUi();
   updatePublishUi();
   updateMaxCuposUi();
+  updateGateUi();
   renderGiftItems();
   renderCronogramaEditor();
   ['inv','mesa','stream','menores','recordatorio'].forEach(function(k) {
@@ -2836,31 +2856,204 @@ function mesaNombreDe(code) {
 function asisLabel(a) { return { both: 'Ceremonia y recepción', ceremony: 'Solo ceremonia', reception: 'Solo recepción', virtual: 'Virtual', no: 'No asiste' }[a] || a; }
 function escHtml(t) { return String(t == null ? '' : t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function printEntryList() {
+/* ── Control de ingreso: sincronización entre guardias (opcional) ── */
+function getGate() { try { var g = JSON.parse(localStorage.getItem('ni-gate') || '{}'); return { on: !!g.on, key: typeof g.key === 'string' ? g.key : '' }; } catch (e) { return { on: false, key: '' }; } }
+function saveGate(g) { localStorage.setItem('ni-gate', JSON.stringify(g)); scheduleSettingsSync(); }
+function gateCall(params, cb) {
+  var n = 'gt_' + Date.now() + Math.floor(Math.random() * 1000), sc = document.createElement('script'), done = false;
+  var to = setTimeout(function(){ fin(null); }, 15000);
+  function fin(x) { if (done) return; done = true; clearTimeout(to); try { document.head.removeChild(sc); } catch(e) {} delete window[n]; cb(x); }
+  window[n] = fin; sc.onerror = function(){ fin(null); };
+  sc.src = SHEETS_URL + '?' + params + '&pk=' + encodeURIComponent(adminKey()) + '&callback=' + n + '&t=' + Date.now();
+  document.head.appendChild(sc);
+}
+function gateMsg(t, err) { var e = document.getElementById('gate-status'); if (e) { e.textContent = t; e.style.color = err ? '#b3501f' : 'var(--olive-dk)'; } }
+function randKey() { var a = new Uint8Array(16), s = ''; crypto.getRandomValues(a); a.forEach(function(b){ s += 'abcdefghijkmnpqrstuvwxyz23456789'[b % 32]; }); return s; }
+function updateGateUi() {
+  var g = getGate(), c = document.getElementById('gate-on'); if (c) c.checked = g.on;
+  var b = document.getElementById('gate-tools'); if (b) b.style.display = g.on ? 'block' : 'none';
+}
+function setGateSync(on) {
+  var g = getGate();
+  if (!on) { g.on = false; saveGate(g); updateGateUi(); gateMsg('Sincronización desactivada: la lista digital que descargues funcionará solo en cada dispositivo.'); return; }
+  gateMsg('Configurando…');
+  var key = g.key || randKey();
+  gateCall('action=setGateKey&newkey=' + encodeURIComponent(key), function(r) {
+    if (r && r.ok) { saveGate({ on: true, key: key }); updateGateUi(); gateTest(); }
+    else {
+      var c = document.getElementById('gate-on'); if (c) c.checked = false;
+      gateMsg(!r ? '⚠️ No hubo respuesta de Google. Revisa tu conexión.' : (r.error === 'no_autorizado' || r.error === 'clave_no_configurada') ? '⚠️ La clave del panel no coincide con la del script.' : '⚠️ El script no tiene la versión v16. Apps Script → Implementar → Administrar implementaciones → Nueva versión.', true);
+    }
+  });
+}
+function gateTest() {
+  gateCall('action=gateGet', function(r) {
+    if (r && r.ok) { var n = r.rows.length; var tot = entryRows().length; gateMsg('✓ Sincronización lista · ' + n + ' de ' + tot + ' invitaciones marcadas como ingresadas. Ahora descarga la lista digital (📲) y envíala a los guardias.'); }
+    else gateMsg('⚠️ No se pudo leer el registro de ingresos. ¿Publicaste el script v16 (Nueva versión)?', true);
+  });
+}
+function gateReset() {
+  if (!confirm('Esto borra TODAS las marcas de ingreso del registro compartido (útil para hacer pruebas antes del evento).\n\n¿Seguro?')) return;
+  gateCall('action=gateReset', function(r) { gateMsg(r && r.ok ? '✓ Registro de ingresos reiniciado. Cada guardia debe cerrar y abrir su lista para limpiar las marcas locales (o se limpian solas al sincronizar).' : '⚠️ No se pudo reiniciar.', !(r && r.ok)); });
+}
+function gateRevoke() {
+  if (!confirm('Revoca la clave de puerta: las listas digitales ya repartidas dejarán de sincronizar. Úsalo después del evento.\n\n¿Continuar?')) return;
+  gateCall('action=setGateKey&newkey=', function(r) {
+    if (r && r.ok) { saveGate({ on: false, key: '' }); updateGateUi(); gateMsg('✓ Clave revocada y sincronización desactivada.'); }
+    else gateMsg('⚠️ No se pudo revocar.', true);
+  });
+}
+
+/* ── Lista de ingreso: datos compartidos por la versión impresa y la digital ── */
+function entryRows() {
   var rows = rsvpRows.filter(function(r){ return r.asistencia && r.asistencia !== 'no' && !rsvpIsVirtual(r); });
+  rows.sort(function(a, b){ return ((a.apellido || '') + ' ' + (a.nombre || '')).localeCompare((b.apellido || '') + ' ' + (b.nombre || ''), 'es'); });
+  return rows.map(function(r) {
+    return { codigo: rsvpCode(r),
+             nombre: ((r.apellido || '') + ' ' + (r.nombre || '')).trim(),
+             mesa: mesaNombreDe(rsvpCode(r)),
+             adultos: 1 + (parseInt(r.acompanantes) || 0),
+             menores: parseInt(r.menores) || 0,
+             acomp: String(r.nombres_acompanantes || r['nombres_acompañantes'] || '').trim() };
+  });
+}
+function entryLetter(n) { var c = (n || '?').charAt(0).toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); return /[A-Z]/.test(c) ? c : '#'; }
+
+function printEntryList() {
+  var rows = entryRows();
   if (!rows.length) { alert('Todavía no hay confirmaciones presenciales.'); return; }
   var virtN = confStats().virt;
-  rows.sort(function(a, b){ return ((a.apellido || '') + ' ' + (a.nombre || '')).localeCompare((b.apellido || '') + ' ' + (b.nombre || ''), 'es'); });
-  var totAd = 0, totK = 0;
+  var totAd = 0, totK = 0, last = '';
   var tr = rows.map(function(r, i) {
-    var ad = 1 + (parseInt(r.acompanantes) || 0), kids = parseInt(r.menores) || 0;
-    totAd += ad; totK += kids;
-    var al = (r.alergia === 'yes') ? escHtml(r.detalle_alergia || 'Sí') : '';
-    return '<tr><td>' + (i + 1) + '</td><td>' + escHtml(((r.apellido || '') + ' ' + (r.nombre || '')).trim()) + '</td><td>' + escHtml(mesaNombreDe(r.codigo)) + '</td>'
-      + '<td class="c">' + ad + '</td><td class="c">' + (kids || '') + '</td><td>' + asisLabel(r.asistencia) + '</td><td>' + al + '</td><td class="c">☐</td></tr>';
+    totAd += r.adultos; totK += r.menores;
+    var L = entryLetter(r.nombre), sep = '';
+    if (L !== last) { last = L; sep = '<tr class="let"><td colspan="8">' + L + '</td></tr>'; }
+    return sep + '<tr><td class="c">' + (i + 1) + '</td><td class="cod">' + escHtml(r.codigo) + '</td><td class="nom">' + escHtml(r.nombre) + '</td><td>' + escHtml(r.mesa) + '</td>'
+      + '<td class="c">' + r.adultos + '</td><td class="c">' + (r.menores || '') + '</td><td class="ac">' + escHtml(r.acomp) + '</td><td class="c box">☐</td></tr>';
   }).join('');
   var html = '<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Lista de ingreso · Ivan & Narda</title>'
-    + '<style>body{font-family:Arial,sans-serif;font-size:12px;color:#222;margin:18px;}h1{font-size:18px;margin:0 0 4px;}p{margin:2px 0 10px;color:#555;}'
-    + 'table{width:100%;border-collapse:collapse;}th,td{border:1px solid #bbb;padding:5px 7px;text-align:left;}th{background:#eee;}td.c{text-align:center;}tr:nth-child(even) td{background:#fafafa;}'
+    + '<style>body{font-family:Arial,sans-serif;font-size:11.5px;color:#222;margin:18px;}h1{font-size:17px;margin:0 0 4px;}p{margin:2px 0 10px;color:#555;}'
+    + 'table{width:100%;border-collapse:collapse;}th,td{border:1px solid #999;padding:5px 6px;text-align:left;vertical-align:top;}th{background:#e8e8e8;}td.c{text-align:center;}'
+    + 'td.nom{font-weight:bold;font-size:12.5px;}td.cod{font-family:monospace;font-size:11px;}td.ac{font-size:10.5px;color:#444;}td.box{font-size:20px;line-height:1;}'
+    + 'tr.let td{background:#333;color:#fff;font-weight:bold;font-size:13px;padding:2px 8px;}tr{page-break-inside:avoid;}thead{display:table-header-group;}'
     + '@media print{body{margin:8mm;}}</style></head><body>'
     + '<h1>Lista de ingreso — Ivan &amp; Narda · 5 de diciembre de 2026</h1>'
-    + '<p>' + rows.length + ' confirmaciones · ' + totAd + ' adultos (16+) · ' + totK + ' menores (barra aparte)' + (virtN ? ' · ' + virtN + ' virtuales/internacionales (no ingresan, no se listan)' : '') + '</p>'
-    + '<table><thead><tr><th>#</th><th>Invitado</th><th>Mesa</th><th>Adultos</th><th>Menores</th><th>Asistencia</th><th>Alergias</th><th>Ingresó</th></tr></thead><tbody>' + tr + '</tbody></table></body></html>';
+    + '<p>Ordenada por apellido · ' + rows.length + ' invitaciones · ' + totAd + ' adultos · ' + totK + ' menores' + (virtN ? ' · ' + virtN + ' virtuales/internacionales (no ingresan, no se listan)' : '') + '</p>'
+    + '<table><thead><tr><th>#</th><th>Código</th><th>Invitado</th><th>Mesa</th><th>Adultos</th><th>Menores</th><th>Acompañantes</th><th>Ingresó</th></tr></thead><tbody>' + tr + '</tbody></table></body></html>';
   var w = window.open('', '_blank');
   if (!w) { alert('Permite las ventanas emergentes de esta página para imprimir la lista.'); return; }
   w.document.write(html); w.document.close();
   setTimeout(function(){ try { w.focus(); w.print(); } catch(e) {} }, 400);
 }
+
+/* Versión digital: un archivo HTML independiente (sin acceso al dashboard) para que seguridad marque quién ingresó */
+function downloadEntryChecklist() {
+  var rows = entryRows();
+  if (!rows.length) { alert('Todavía no hay confirmaciones presenciales.'); return; }
+  var data = JSON.stringify(rows).replace(/</g, '\\u003c');
+  var stamp = new Date().toLocaleString('es-BO', { timeZone: 'America/La_Paz' });
+  var gate = getGate();
+  var syncCfg = (gate.on && gate.key) ? JSON.stringify({ url: SHEETS_URL, gk: gate.key }).replace(/</g, '\\u003c') : 'null';
+  if (gate.on && !gate.key) { alert('La sincronización está activada pero falta la clave de puerta. Ve a Ajustes → Control de ingreso.'); return; }
+  var page = ENTRY_CHECKLIST_TPL.split('<\\/script>').join('</scr' + 'ipt>').replace('__DATA__', function(){ return data; }).replace('__SYNC__', function(){ return syncCfg; }).replace('__STAMP__', stamp);
+  var blob = new Blob([page], { type: 'text/html' });
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'lista-ingreso-ivan-narda.html';
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+var ENTRY_CHECKLIST_TPL = String.raw`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ingreso · Ivan y Narda</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f1ea;color:#222}
+header{position:sticky;top:0;background:#3a4520;color:#fff;padding:10px 12px;z-index:5}
+header h1{font-size:15px;margin:0 0 6px}#cnt{font-size:12px;opacity:.9;margin-bottom:6px}
+#q{width:100%;padding:11px;font-size:16px;border:0;border-radius:6px}
+.bar{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}.bar button{flex:1;padding:8px;border:0;border-radius:6px;font-size:12px;background:#e9e3d0;color:#333}
+.bar button.on{background:#ddb050;font-weight:bold}
+.let{background:#333;color:#fff;font-weight:bold;padding:3px 12px;font-size:13px}
+.row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid #d8d2c0;background:#fff}
+.row.in{background:#dff0d5}.row .t{flex:1;min-width:0}.nm{font-weight:bold;font-size:15px}.sub{font-size:12px;color:#555;margin-top:2px}
+.mesa{font-weight:bold;color:#3a4520}.ck{width:34px;height:34px;flex:none}.cod{font-family:monospace;font-size:11px;color:#777}
+.hide{display:none}#empty{padding:30px;text-align:center;color:#777}
+</style></head><body>
+<header><h1>Lista de ingreso · Ivan y Narda · 5 dic 2026</h1><div id="cnt"></div><div id="syn" style="font-size:11px;margin-bottom:6px"></div>
+<input id="q" type="search" placeholder="Buscar por apellido, nombre, código o mesa…" autocomplete="off">
+<div class="bar"><button id="f0" class="on">Todos</button><button id="f1">Faltan por ingresar</button><button id="f2">Ya ingresaron</button><button id="ex">Descargar ingresados</button></div></header>
+<div id="list"></div><div id="empty" class="hide">Sin resultados</div>
+<p style="font-size:11px;color:#888;padding:8px 12px">Lista generada el __STAMP__. Si arriba no aparece el estado de sincronización, las marcas se guardan solo en este dispositivo.</p>
+<script>
+var D=__DATA__, SYNC=__SYNC__, K='ni-ingreso-', Q='ni-ingreso-cola', filt=0, srv=null;
+function g(c){try{return localStorage.getItem(K+c)}catch(e){return null}}
+function s(c,v,t){try{v?localStorage.setItem(K+c,String(t||Date.now())):localStorage.removeItem(K+c)}catch(e){}}
+function norm(t){return String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
+function esc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function letter(n){var c=norm(n).charAt(0).toUpperCase();return /[A-Z]/.test(c)?c:'#'}
+var list=document.getElementById('list'),last='';
+D.forEach(function(r,i){
+  var L=letter(r.nombre);
+  if(L!==last){last=L;var h=document.createElement('div');h.className='let';h.dataset.l=L;h.textContent=L;list.appendChild(h)}
+  var d=document.createElement('div');d.className='row';d.dataset.i=i;d.dataset.l=L;
+  d.dataset.s=norm(r.nombre+' '+r.codigo+' '+r.mesa+' '+r.acomp);
+  var kids=r.menores?' · '+r.menores+(r.menores==1?' menor':' menores'):'';
+  d.innerHTML='<input class="ck" type="checkbox"><div class="t"><div class="nm">'+esc(r.nombre)+' <span class="cod">'+esc(r.codigo)+'</span></div>'
+   +'<div class="sub"><span class="mesa">'+esc(r.mesa)+'</span> · '+r.adultos+(r.adultos==1?' adulto':' adultos')+kids+'</div>'
+   +(r.acomp?'<div class="sub">Con: '+esc(r.acomp)+'</div>':'')+'</div>';
+  var ck=d.querySelector('input');ck.checked=!!g(r.codigo);d.classList.toggle('in',ck.checked);
+  ck.onchange=function(){s(r.codigo,ck.checked);d.classList.toggle('in',ck.checked);apply();queue(r.codigo,ck.checked)};
+  list.appendChild(d);
+});
+function apply(){
+  var q=norm(document.getElementById('q').value).trim(),n=0,inv=0,tot=0,vis={};
+  list.querySelectorAll('.row').forEach(function(d){
+    var r=D[d.dataset.i],ck=d.querySelector('input').checked;tot+=r.adultos+r.menores;if(ck)inv+=r.adultos+r.menores;
+    var ok=(!q||d.dataset.s.indexOf(q)>-1)&&(filt==0||(filt==1&&!ck)||(filt==2&&ck));
+    d.classList.toggle('hide',!ok);if(ok){n++;vis[d.dataset.l]=1}
+  });
+  list.querySelectorAll('.let').forEach(function(h){h.classList.toggle('hide',!vis[h.dataset.l])});
+  document.getElementById('empty').classList.toggle('hide',n>0);
+  var done=D.filter(function(r){return g(r.codigo)}).length;
+  document.getElementById('cnt').textContent='Ingresaron '+done+' de '+D.length+' invitaciones · '+inv+' de '+tot+' personas';
+}
+document.getElementById('q').oninput=apply;
+[0,1,2].forEach(function(k){document.getElementById('f'+k).onclick=function(){filt=k;[0,1,2].forEach(function(j){document.getElementById('f'+j).className=j==k?'on':''});apply()}});
+document.getElementById('ex').onclick=function(){
+  var l=['Codigo,Invitado,Mesa,Adultos,Menores,Hora de ingreso'];
+  D.forEach(function(r){var t=g(r.codigo);if(t)l.push([r.codigo,r.nombre,r.mesa,r.adultos,r.menores,new Date(+t).toLocaleString('es-BO')].map(function(x){return '"'+String(x).replace(/"/g,'""')+'"'}).join(','))});
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+l.join('\n')],{type:'text/csv'}));a.download='ingresados.csv';document.body.appendChild(a);a.click();a.remove()};
+apply();
+
+/* ── Sincronización entre guardias (solo si el dashboard la activó) ── */
+function cola(){try{return JSON.parse(localStorage.getItem(Q)||'[]')}catch(e){return[]}}
+function setCola(a){try{localStorage.setItem(Q,JSON.stringify(a))}catch(e){}}
+function dev(){try{var d=localStorage.getItem('ni-ingreso-dev');if(!d){d='D'+Math.random().toString(36).slice(2,6).toUpperCase();localStorage.setItem('ni-ingreso-dev',d)}return d}catch(e){return'D?'}}
+function jp(params,cb){
+  var n='gj'+Date.now()+Math.floor(Math.random()*1e4),sc=document.createElement('script'),done=false;
+  var to=setTimeout(function(){fin(null)},15000);
+  function fin(x){if(done)return;done=true;clearTimeout(to);try{document.head.removeChild(sc)}catch(e){}delete window[n];cb(x)}
+  window[n]=fin;sc.onerror=function(){fin(null)};
+  sc.src=SYNC.url+'?'+params+'&gk='+encodeURIComponent(SYNC.gk)+'&callback='+n+'&_='+Date.now();document.head.appendChild(sc)}
+function badge(t,c){var e=document.getElementById('syn');if(e){e.textContent=t;e.style.color=c}}
+function queue(c,on){if(!SYNC)return;var q=cola().filter(function(x){return x[0]!==c});q.push([c,on?1:0,Date.now()]);setCola(q);flush()}
+var busy=false;
+function flush(){
+  if(!SYNC||busy)return;var q=cola();
+  if(!q.length){poll();return}
+  busy=true;var part=q.slice(0,40);
+  jp('action=gateSetMany&d='+encodeURIComponent(dev())+'&items='+encodeURIComponent(JSON.stringify(part)),function(r){
+    busy=false;
+    if(r&&r.ok){var sent={};part.forEach(function(x){sent[x[0]+'|'+x[2]]=1});setCola(cola().filter(function(x){return!sent[x[0]+'|'+x[2]]}));merge(r.rows);if(cola().length)flush()}
+    else status(false,r)})}
+function status(ok,r){
+  var n=cola().length;
+  if(r&&r.error==='no_autorizado')badge('🔴 Clave de puerta inválida: pide un archivo nuevo','#ffb4a0');
+  else if(ok)badge('🟢 Sincronizado'+(n?' · '+n+' por enviar':''),'#b9e6a8');
+  else badge('🟠 Sin conexión · '+n+' marcas por enviar (se envían solas)','#ffd28a')}
+function merge(rows){
+  var m={};(rows||[]).forEach(function(r){m[r[0]]=r[1]});var pend={};cola().forEach(function(x){pend[x[0]]=1});
+  D.forEach(function(r){if(pend[r.codigo])return;if(m[r.codigo]){if(!g(r.codigo))s(r.codigo,true,m[r.codigo])}else if(g(r.codigo))s(r.codigo,false)});
+  list.querySelectorAll('.row').forEach(function(d){var r=D[d.dataset.i],ck=d.querySelector('input'),on=!!g(r.codigo);ck.checked=on;d.classList.toggle('in',on)});
+  status(true);apply()}
+function poll(){if(!SYNC||busy||cola().length)return;jp('action=gateGet',function(r){if(r&&r.ok)merge(r.rows);else status(false,r)})}
+if(SYNC){badge('⏳ Conectando…','#fff');flush();setInterval(function(){cola().length?flush():poll()},5000);window.addEventListener('online',flush)}
+<\/script></body></html>`;
 
 function buildEventSummary() {
   var pers = function(r){ return 1 + (parseInt(r.acompanantes) || 0); };
@@ -2997,7 +3190,7 @@ function collectAdminSettings() {
            stream: localStorage.getItem('ni-tpl-stream') || '', menores: localStorage.getItem('ni-tpl-menores') || '', recordatorio: localStorage.getItem('ni-tpl-recordatorio') || '' },
     streamLink: localStorage.getItem('ni-stream-link') || '',
     kidsReminded: loadKidsSent(),
-    reminded: loadReminded(), deadline: getDeadlineText(), maxCupos: MAX_CUPOS
+    reminded: loadReminded(), deadline: getDeadlineText(), maxCupos: MAX_CUPOS, gate: getGate()
   };
 }
 function scheduleSettingsSync() {
@@ -3020,6 +3213,7 @@ function loadAdminSettings() {
     if (v.reminded && typeof v.reminded === 'object') localStorage.setItem('ni-reminded', JSON.stringify(v.reminded));
     ['inv','mesa','stream','menores','recordatorio'].forEach(function(k){ var ta = document.getElementById('tpl-' + k); if (ta) ta.value = getTpl(k); });
     var sl = document.getElementById('stream-link-input'); if (sl) sl.value = getStreamLink();
+    if (v.gate && typeof v.gate === 'object') { localStorage.setItem('ni-gate', JSON.stringify({ on: !!v.gate.on, key: String(v.gate.key || '') })); updateGateUi(); }
     if (parseInt(v.maxCupos, 10) >= 1) { MAX_CUPOS = parseInt(v.maxCupos, 10); localStorage.setItem('ni-max-cupos', String(MAX_CUPOS)); updateCuposBar(); renderReservedCard(); }
   };
   s.onerror = function(){ try{document.head.removeChild(s);}catch(e){} delete window[cb]; };
