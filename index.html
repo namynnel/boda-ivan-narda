@@ -975,13 +975,15 @@ footer{
       <div id="padrinos-list"></div>
     </div>
 
-    <span class="historia-date reveal d3">05 de Diciembre de 2026</span>
+    <p class="rune reveal d3" style="text-align:center;margin:2.4rem 0 0;font-size:12px;letter-spacing:.3em;line-height:1.9;">✦ Te pedimos que nos acompañes el día ✦</p>
+    <span class="historia-date reveal d3" style="margin-top:.9rem;">05 de Diciembre de 2026</span>
 
     <div class="reveal d3" style="text-align:center;margin-bottom:2rem;">
       <button class="cal-btn" onclick="addToCalendar()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         Agregar a mi calendario
       </button>
+      <div style="margin-top:.6rem;"><a href="#" onclick="downloadIcs();return false;" style="font-size:.72rem;color:var(--ink-lt);text-decoration:underline;">Apple / Outlook (.ics)</a></div>
     </div>
 
     <span class="cd-pre reveal d3">Ya solo faltan...</span>
@@ -1463,14 +1465,49 @@ const obs=new IntersectionObserver(entries=>{
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
 /* ══ CALENDAR ══ */
+function calHoraMin(h){
+  var m = /(\d{1,2})\s*[:.hH]\s*(\d{2})\s*(a\.?m\.?|p\.?m\.?)?/i.exec(String(h || ''));
+  if (!m) return null;
+  var hh = parseInt(m[1], 10), mm = parseInt(m[2], 10), ap = (m[3] || '').toLowerCase().charAt(0);
+  if (ap === 'p' && hh < 12) hh += 12; if (ap === 'a' && hh === 12) hh = 0;
+  return (hh > 23 || mm > 59) ? null : hh * 60 + mm;
+}
+// Toma el inicio y el fin del evento del cronograma (el mismo que se edita en el dashboard)
+function calEvento(){
+  var items = loadCronograma(), t = [], last = -1, add = 0;
+  items.forEach(function(it){
+    var m = calHoraMin(it.hora); if (m === null) return;
+    if (last >= 0 && m < last) add += 1440;   // pasó de medianoche
+    last = m; t.push({ min: m + add, it: it });
+  });
+  if (!t.length) t = [{ min: 14 * 60, it: { hora: '14:00', evento: 'Ceremonia' } }, { min: 23 * 60, it: { hora: '23:00', evento: 'Fiesta' } }];
+  var ini = t[0].min, fin = Math.max(t[t.length - 1].min + 60, ini + 60);
+  var lines = items.map(function(it){ return (it.hora || '') + ' — ' + String(it.evento || '').replace(/\s+/g, ' ').trim(); });
+  return { ini: ini, fin: fin, lines: lines };
+}
+function calStamp(min){   // 5 dic 2026 + minutos, hora local de La Paz (sin zona) → "AAAAMMDDTHHMMSS"
+  var d = new Date(Date.UTC(2026, 11, 5, 0, 0) + min * 60000), p = function(n){ return ('0' + n).slice(-2); };
+  return d.getUTCFullYear() + p(d.getUTCMonth() + 1) + p(d.getUTCDate()) + 'T' + p(d.getUTCHours()) + p(d.getUTCMinutes()) + '00';
+}
+function calDetalle(ev){ return 'Cronograma:\n' + ev.lines.join('\n') + '\n\nSalón Don Quijote, La Paz, Bolivia'; }
 function addToCalendar(){
-  const title = encodeURIComponent('Boda de Ivan & Narda 🌿');
-  const details = encodeURIComponent('Ceremonia civil: 14:00\nRecepción: 16:00 — Salón Don Quijote, La Paz, Bolivia');
-  const location = encodeURIComponent('La Paz, Bolivia');
-  const start = '20261205T140000Z'; // 10:00 AM GMT-4
-  const end   = '20261206T020000Z'; // end evening
-  const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${start}/${end}&details=${details}&location=${location}`;
-  window.open(url,'_blank');
+  var ev = calEvento();
+  var url = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+    + '&text=' + encodeURIComponent('Boda de Ivan & Narda 🌿')
+    + '&dates=' + calStamp(ev.ini) + '/' + calStamp(ev.fin)
+    + '&ctz=America/La_Paz'
+    + '&details=' + encodeURIComponent(calDetalle(ev))
+    + '&location=' + encodeURIComponent('Salón Don Quijote, La Paz, Bolivia');
+  window.open(url, '_blank');
+}
+function downloadIcs(){   // Apple Calendar / Outlook
+  var ev = calEvento(), utc = function(min){ return calStamp(min + 240) + 'Z'; };   // La Paz = UTC-4 todo el año
+  var esc = function(t){ return String(t).replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\;'); };
+  var ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Boda Ivan y Narda//ES', 'BEGIN:VEVENT', 'UID:boda-ivan-narda-20261205@invitacion',
+    'DTSTAMP:' + calStamp(0).replace('T000000', 'T000000') + 'Z', 'DTSTART:' + utc(ev.ini), 'DTEND:' + utc(ev.fin),
+    'SUMMARY:' + esc('Boda de Ivan & Narda'), 'LOCATION:' + esc('Salón Don Quijote, La Paz, Bolivia'), 'DESCRIPTION:' + esc(calDetalle(ev)), 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' })); a.download = 'boda-ivan-narda.ics';
+  document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
 
 function openGiftList() {
@@ -1695,7 +1732,12 @@ function renderPadrinos() {
   var hasParents = left.length || right.length, html = '';
   if (hasParents) {
     var col = function(list) {
-      return '<div class="pad-col">' + list.map(function(p){ return '<div class="pad-name">' + cronEsc(p.nombre) + '</div>'; }).join('') + '</div>';
+      var sides = list.map(padSide), lab = '';
+      if (sides.every(function(x){ return x === 'novio'; })) lab = 'Padres del novio';
+      else if (sides.every(function(x){ return x === 'novia'; })) lab = 'Padres de la novia';
+      else lab = String(list[0].rol || '').trim();
+      return '<div class="pad-col">' + (lab ? '<span class="pad-title" style="margin-bottom:.7rem;">' + cronEsc(lab) + '</span>' : '')
+        + list.map(function(p){ return '<div class="pad-name">' + cronEsc(p.nombre) + '</div>'; }).join('') + '</div>';
     };
     html += '<div class="pad-block"><p class="rune">✦ Con la bendición de nuestros padres ✦</p>'
       + '<div class="pad-parents ' + (left.length && right.length ? 'two' : 'one') + '">'
