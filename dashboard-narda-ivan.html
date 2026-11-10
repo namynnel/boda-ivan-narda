@@ -1551,22 +1551,21 @@ function renderRSVP() {
   // Pendientes: además de las filas sin respuesta, se agregan los invitados que aún no tienen ninguna respuesta (invitación enviada o no)
   renderRemindBar();
   if (rsvpFilter === 'pending') {
+    // Pendiente = ya se le envió la invitación (enviada o entregada) y todavía no responde. Los códigos se comparan normalizados (0123 = 123).
     var answered = {};
-    rsvpRows.forEach(function(r){ if (rsvpAtt(r)) answered[rsvpCode(r)] = 1; });
-    var have = {}; rows.forEach(function(r){ have[rsvpCode(r)] = 1; });
+    rsvpRows.forEach(function(r){ if (rsvpAtt(r)) answered[normCode(rsvpCode(r))] = 1; });
+    var arch = {}; archived.forEach(function(a){ arch[normCode(a.codigo)] = 1; });
+    var out = [], seen = {};
     guests.forEach(function(g) {
-      var c = String(g.codigo).trim();
-      if (answered[c] || have[c]) return;
-      var nm = ((g.nombre || '') + ' ' + (g.apellido || '')).toLowerCase();
+      var c = normCode(g.codigo), ent = entregaOf(g);
+      if (answered[c] || arch[c] || seen[c] || (ent !== 'enviada' && ent !== 'entregada')) return;
+      var nm = ((g.nombre || '') + ' ' + (g.apellido || '') + ' ' + (g.sufijo || '')).toLowerCase();
       if (q && nm.indexOf(q) < 0 && c.toLowerCase().indexOf(q) < 0) return;
-      rows.push({ codigo: c, nombre: g.nombre || '', apellido: g.apellido || '', telefono: '', asistencia: '', _pend: true, _ent: entregaOf(g) });
+      seen[c] = 1;
+      var prev = rsvpRows.find(function(r){ return normCode(rsvpCode(r)) === c; });   // si ya hay una fila sin respuesta, se conservan sus datos (teléfono, etc.)
+      out.push(Object.assign({}, prev || {}, { codigo: c, nombre: g.nombre || '', apellido: g.apellido || '', asistencia: '', _pend: true, _ent: ent }));
     });
-    rows = rows.map(function(r) {   // filas sin respuesta que sí existen en Sheets: también llevan el estado de envío
-      if (r._pend) return r;
-      var g = guestByCode(rsvpCode(r));
-      return Object.assign({}, r, { _pend: true, _ent: g ? entregaOf(g) : '' });
-    });
-    rows.sort(function(a, b){ return (b._ent ? 1 : 0) - (a._ent ? 1 : 0); });   // primero a quienes ya se les envió la invitación
+    rows = out;
   }
 
   if(!rows.length){ tbody.innerHTML=''; empty.style.display='block'; document.getElementById('rsvp-table').style.display='none'; return; }
