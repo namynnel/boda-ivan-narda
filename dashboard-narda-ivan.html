@@ -956,7 +956,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbytJVSHJrCBiyVWauVMi9R0ubKdBhS2uTrbnmDodf9BMPqZYZiuS7H3B5tZSYXwdI6DtA/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwWpfhGZg3X-rxzBcMwwjCPkOx04k8qAKIHMKJdaR6PlYMDqC47-Mncr89G131A_uYQIw/exec';
 function adminKey() { return localStorage.getItem('ni-pk') || ''; }
 var MAX_CUPOS_DEFAULT = 409;
 // Límite total de cupos presenciales: se cambia en Ajustes y se recuerda (también entre dispositivos)
@@ -1461,7 +1461,7 @@ function setAllGroups(scope, collapse) {
    CONFIRMACIONES: presenciales vs. virtuales / internacionales
    Los del grupo INTERNACIONAL (y quien elige "virtual") no ocupan espacio presencial.
 ══════════════════════════════════════ */
-function guestByCode(code) { var c = String(code || '').trim(); return guests.find(function(g){ return String(g.codigo).trim() === c; }); }
+function guestByCode(code) { var c = normCode(code); return guests.find(function(g){ return normCode(g.codigo) === c; }); }
 function rsvpCode(r) { return String(r.codigo || r.confirmation_code || r['código'] || '').trim(); }
 function rsvpAtt(r) { return r.asistencia || r.attendance || ''; }
 function rsvpPersons(r) { return 1 + (parseInt(r['acompanantes'] || r['acompañantes'] || 0) || 0); }
@@ -1485,8 +1485,9 @@ function confStats() {
     kids += parseInt(r.menores) || 0;
   });
   var totalCup = totalCupos();
-  return { pres: pres, noPres: noPres, virt: virt, kids: kids, virtLocalCupos: virtLocalCupos, totalCup: totalCup,
-           sinResp: Math.max(0, totalCup - pres - noPres - virtLocalCupos) };
+  var answered = {}; rsvpRows.forEach(function(r){ if (rsvpAtt(r)) answered[normCode(rsvpCode(r))] = 1; });
+  var sinResp = 0; guests.forEach(function(g){ if (g.grupo !== 'INTERNACIONAL' && !answered[normCode(g.codigo)]) sinResp += parseInt(g.cupos) || 0; });
+  return { pres: pres, noPres: noPres, virt: virt, kids: kids, virtLocalCupos: virtLocalCupos, totalCup: totalCup, sinResp: sinResp };
 }
 
 function updateStats() {
@@ -1500,14 +1501,19 @@ function updateStats() {
   if (intlEl) {
     var intlGuests = guests.filter(function(g){ return g.grupo === 'INTERNACIONAL'; });
     var answered = intlGuests.filter(function(g){
-      return rsvpRows.some(function(r){ return rsvpCode(r) === String(g.codigo).trim() && rsvpAtt(r); });
+      return rsvpRows.some(function(r){ return normCode(rsvpCode(r)) === normCode(g.codigo) && rsvpAtt(r); });
     }).length;
     var intlNo = rsvpRows.filter(function(r){ return rsvpIsIntlGroup(r) && rsvpAtt(r) === 'no'; }).length;
+    var intlConf = rsvpRows.filter(function(r){ return rsvpIsIntlGroup(r) && rsvpAtt(r) && rsvpAtt(r) !== 'no'; }).reduce(function(a, r){ return a + rsvpPersons(r); }, 0);
     intlEl.textContent = virt;
     var sub = document.getElementById('s-intl-sub');
-    if (sub) sub.textContent = intlGuests.length
-      ? 'de ' + intlGuests.length + ' invitados · ' + (intlGuests.length - answered) + ' sin respuesta' + (intlNo ? ' · ' + intlNo + ' no asisten' : '')
-      : (virt ? 'por elección propia' : '');
+    if (sub) {
+      var parts = [];
+      if (intlGuests.length) parts.push(intlConf + ' del grupo INTERNACIONAL (' + (intlGuests.length - answered) + ' sin respuesta' + (intlNo ? ', ' + intlNo + ' no asisten' : '') + ')');
+      var elegidos = virt - intlConf;
+      if (elegidos > 0) parts.push(elegidos + ' de otros grupos que eligieron virtual');
+      sub.textContent = parts.join(' · ');
+    }
   }
 }
 
@@ -1683,6 +1689,13 @@ function renderRSVP() {
 /* ══════════════════════════════════════
    GUEST LIST
 ══════════════════════════════════════ */
+// ¿Este código es de alguien que no viene en persona? (grupo INTERNACIONAL o eligió «virtual»)
+function codeIsVirtual(code) {
+  var c = normCode(code), g = guests.find(function(x){ return normCode(x.codigo) === c; });
+  if (g && g.grupo === 'INTERNACIONAL') return true;
+  var r = rsvpRows.find(function(x){ return normCode(rsvpCode(x)) === c; });
+  return !!r && rsvpAtt(r) === 'virtual';
+}
 function totalCupos() { return guests.filter(function(g){return g.grupo!=='INTERNACIONAL';}).reduce((a,g)=>a+g.cupos,0); }
 
 function setMaxCupos(v) {
@@ -1976,8 +1989,9 @@ function renderMesas() {
   Object.entries(mesaAssigns).forEach(function(entry){
     var codigo = String(entry[0]).trim();
     var mesaNum = entry[1];
+    if (codeIsVirtual(codigo)) return;   // virtual / internacional: no ocupa asiento
     var row = rsvpRows.find(function(r){ 
-      return String(r.codigo||r.confirmation_code||'').trim() === codigo; 
+      return normCode(r.codigo||r.confirmation_code||'') === normCode(codigo); 
     });
     if(row){
       var asist = row.asistencia||row.attendance||'';
@@ -2005,7 +2019,7 @@ function renderMesas() {
         var cod = String(e[0]).trim();
         // Try rsvp rows first
         var row = rsvpRows.find(function(r){ 
-          return String(r.codigo||r.confirmation_code||'').trim()===cod; 
+          return normCode(r.codigo||r.confirmation_code||'') === normCode(cod); 
         });
         if(row && (row.nombre||row.first_name)){
           var n = ((row.nombre||row.first_name||'')+' '+(row.apellido||row.last_name||'')).trim();
@@ -4218,6 +4232,7 @@ function planoRender() {
   // Contar personas por mesa desde mesaAssigns
   const counts = {};
   Object.entries(mesaAssigns).forEach(function(e) {
+    if (codeIsVirtual(e[0])) return;
     var n = e[1]; counts[n] = (counts[n]||0) + 1;
   });
 
@@ -4369,7 +4384,7 @@ function planoExport() {
   var w = wrap.offsetWidth || 800;
   var h = wrap.offsetHeight || 500;
   var counts = {};
-  Object.entries(mesaAssigns).forEach(function(e){ var n=e[1]; counts[n]=(counts[n]||0)+1; });
+  Object.entries(mesaAssigns).forEach(function(e){ if (codeIsVirtual(e[0])) return; var n=e[1]; counts[n]=(counts[n]||0)+1; });
 
   var svgParts = ['<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '">'];
   svgParts.push('<rect width="' + w + '" height="' + h + '" fill="#F5F0E8"/>');

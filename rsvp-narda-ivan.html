@@ -519,6 +519,38 @@
     </div>
   </div>
 
+  <!-- YA CONFIRMADO: quien vuelve a usar su código ve el resumen y solo puede editar su mensaje -->
+  <div id="step-confirmed" class="max-w-2xl mx-auto hidden">
+    <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
+      <div class="px-6 sm:px-10 py-10 text-center">
+        <div class="w-16 h-16 mx-auto mb-5 rounded-full bg-gradient-to-br from-eucalyptus to-olive flex items-center justify-center">
+          <svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h2 id="cf-title" class="font-serif text-2xl sm:text-3xl text-olive font-semibold mb-3">Tu confirmación ya está registrada</h2>
+        <div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-gold to-transparent mx-auto mb-5"></div>
+        <p id="cf-hello" class="font-sans text-olive/80 text-sm leading-relaxed mb-5"></p>
+        <div id="cf-summary" class="text-left max-w-md mx-auto rounded-xl border border-eucalyptus-light/40 bg-cream/60 px-5 py-4 font-sans text-sm text-olive/90 space-y-1.5 mb-8"></div>
+
+        <div class="text-left max-w-md mx-auto">
+          <label for="cf-msg" class="block font-sans text-sm font-medium text-olive mb-1">Mensaje para los novios <span class="text-olive/50 font-normal">(opcional)</span></label>
+          <textarea id="cf-msg" rows="4" maxlength="600" class="w-full rounded-lg border border-eucalyptus-light/60 bg-white px-4 py-3 font-sans text-sm text-olive focus:outline-none focus:ring-2 focus:ring-eucalyptus/40" placeholder="Escribe aquí unas palabras para Ivan y Narda…"></textarea>
+          <button id="cf-save" type="button" onclick="saveConfirmedMessage()" class="mt-3 w-full px-6 py-3 bg-gradient-to-r from-olive to-eucalyptus text-white font-sans font-medium rounded-lg hover:shadow-lg transition-all duration-300">Guardar mensaje</button>
+          <p id="cf-status" class="font-sans text-xs mt-2 min-h-[1rem] text-center"></p>
+        </div>
+
+        <div class="max-w-md mx-auto mt-8 pt-6 border-t border-eucalyptus-light/40">
+          <p class="font-sans text-sm text-olive font-medium mb-1">¿No eres tú? ¿Tienes algún problema con tu confirmación?</p>
+          <p class="font-sans text-xs text-olive/70 mb-4">Escríbenos y lo resolvemos enseguida:</p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a id="cf-wa-narda" href="https://wa.me/59161144206" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg font-sans text-sm font-medium bg-[#25D366]/15 border border-[#25D366]/40 text-olive hover:bg-[#25D366]/25 transition">💬 Narda · +591 61144206</a>
+            <a id="cf-wa-ivan" href="https://wa.me/59160552435" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg font-sans text-sm font-medium bg-[#25D366]/15 border border-[#25D366]/40 text-olive hover:bg-[#25D366]/25 transition">💬 Ivan · +591 60552435</a>
+          </div>
+          <button type="button" onclick="backToCode()" class="mt-4 font-sans text-xs text-olive/60 underline">Usar otro código</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SUCCESS -->
   <div id="step-success" class="max-w-2xl mx-auto hidden">
     <div class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-eucalyptus-light/30 overflow-hidden">
@@ -548,7 +580,7 @@
 </div>
 
 <script>
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbytJVSHJrCBiyVWauVMi9R0ubKdBhS2uTrbnmDodf9BMPqZYZiuS7H3B5tZSYXwdI6DtA/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwWpfhGZg3X-rxzBcMwwjCPkOx04k8qAKIHMKJdaR6PlYMDqC47-Mncr89G131A_uYQIw/exec';
 const INACTIVITY_MS    = 30 * 60 * 1000;
 
 // El RSVP ya no descarga la lista de invitados: consulta un solo código a la vez.
@@ -607,6 +639,7 @@ async function verifyCode() {
     return;
   }
   if (!data.ok) {
+    if (data.error === 'ya_usado' && data.resumen) { showConfirmed(code, data.resumen); return; }
     if (data.error === 'ya_usado') {
       errEl.innerHTML = '⚠️ Este codigo ya fue utilizado. Cada codigo solo puede usarse una vez.<br><span style="font-size:.8em;opacity:.8;">Si crees que es un error, ' + wa + '.</span>';
     } else if (data.error === 'no_existe') {
@@ -619,6 +652,58 @@ async function verifyCode() {
     return;
   }
   showForm(code, data.cupos || 1, data.nombre || '', data.grupo || '');
+}
+
+
+/* ── Código ya confirmado: resumen + edición solo del mensaje ── */
+var confirmedCode = '';
+var CF_ASIS = { both: 'Ceremonia y recepción', ceremony: 'Solo la ceremonia', reception: 'Solo la recepción', virtual: 'Virtual (transmisión en vivo)', no: 'No podrás acompañarnos' };
+function cfEsc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function showConfirmed(code, r) {
+  confirmedCode = code;
+  var asis = String(r.asistencia || ''), no = asis === 'no';
+  var fila = function(k, v) { return '<div><span class="text-olive/60">' + k + ':</span> <strong class="font-semibold">' + v + '</strong></div>'; };
+  var h = fila('Asistencia', cfEsc(CF_ASIS[asis] || asis || 'Registrada'));
+  if (!no) {
+    var ac = parseInt(r.acompanantes) || 0, mn = parseInt(r.menores) || 0;
+    h += fila('Acompañantes', ac ? ac + (r.nombres_acompanantes ? ' · ' + cfEsc(r.nombres_acompanantes) : '') : 'Ninguno');
+    if (mn) h += fila('Menores', mn);
+  }
+  document.getElementById('cf-summary').innerHTML = h;
+  var who = ((r.nombre || '') + (r.apellido ? ' ' + r.apellido : '')).trim().replace(/\.$/, '');
+  document.getElementById('cf-hello').textContent = (who ? 'Hola, ' + who + '. ' : '') + 'Ya recibimos tu respuesta, no necesitas volver a confirmar. Esto es lo que tenemos registrado:';
+  var ta = document.getElementById('cf-msg'); ta.value = r.mensaje || '';
+  document.getElementById('cf-status').textContent = '';
+  var txt = encodeURIComponent('Hola, tengo un problema con mi confirmación para la boda (código ' + code + ').');
+  document.getElementById('cf-wa-narda').href = 'https://wa.me/59161144206?text=' + txt;
+  document.getElementById('cf-wa-ivan').href  = 'https://wa.me/59160552435?text=' + txt;
+  ['step-codigo', 'step-form', 'step-success'].forEach(function(id) { var e = document.getElementById(id); if (e) e.classList.add('hidden'); });
+  document.getElementById('step-confirmed').classList.remove('hidden');
+  var ov = document.getElementById('plazo-overlay'); if (ov && ov.parentNode) ov.parentNode.removeChild(ov);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function backToCode() {
+  document.getElementById('step-confirmed').classList.add('hidden');
+  document.getElementById('step-codigo').classList.remove('hidden');
+  var i = document.getElementById('code-input'); i.value = ''; i.focus();
+  var u = new URL(location.href); u.searchParams.delete('codigo'); history.replaceState(null, '', u.toString());
+}
+function saveConfirmedMessage() {
+  var btn = document.getElementById('cf-save'), st = document.getElementById('cf-status');
+  var msg = document.getElementById('cf-msg').value.trim();
+  btn.disabled = true; st.style.color = '#5C6B3A'; st.textContent = 'Guardando…';
+  var cb = 'um_' + Date.now(), sc = document.createElement('script'), done = false;
+  function fin(d) {
+    if (done) return; done = true; clearTimeout(t);
+    try { document.head.removeChild(sc); } catch (e) {} delete window[cb];
+    btn.disabled = false;
+    if (d && d.ok) { st.style.color = '#2f7a4a'; st.textContent = '✓ Mensaje guardado. ¡Gracias!'; }
+    else { st.style.color = '#b3501f'; st.textContent = 'No pudimos guardarlo. Revisa tu conexión e inténtalo de nuevo, o escríbenos por WhatsApp.'; }
+  }
+  var t = setTimeout(function() { fin(null); }, 15000);
+  window[cb] = fin; sc.onerror = function() { fin(null); };
+  sc.src = SHEETS_URL + '?action=updateMessage&codigo=' + encodeURIComponent(confirmedCode) + '&mensaje=' + encodeURIComponent(msg) + '&callback=' + cb;
+  document.head.appendChild(sc);
 }
 
 function showForm(code, cupos, nombre, grupo) {
@@ -1102,8 +1187,12 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
       + '<h2 style="font-family:Cinzel,serif;color:#C9A962;font-size:1.1rem;margin-bottom:1rem;">Fecha límite alcanzada</h2>'
       + '<p style="color:rgba(250,244,232,.8);font-size:.85rem;line-height:1.7;margin-bottom:1.5rem;">'
       + 'El plazo para confirmar asistencia venció el <strong class="plazo-texto" style="color:#C9A962;"></strong>.<br><br>'
-      + 'Si crees que se trata de un error, contáctanos directamente:'
+      + 'Si ya confirmaste, escribe tu código para ver tu confirmación. Si crees que se trata de un error, contáctanos directamente:'
       + '</p>'
+      + '<div style="display:flex;gap:.5rem;margin-bottom:.4rem;">'
+      + '<input id="plazo-code" type="text" inputmode="numeric" maxlength="4" placeholder="Tu código" style="flex:1;min-width:0;padding:.7rem;border-radius:8px;border:1px solid rgba(201,169,98,.4);background:rgba(255,255,255,.06);color:#FAF4E8;text-align:center;font-size:1rem;letter-spacing:.2em;">'
+      + '<button id="plazo-code-btn" type="button" style="padding:.7rem 1rem;border-radius:8px;border:1px solid rgba(201,169,98,.6);background:rgba(201,169,98,.2);color:#C9A962;cursor:pointer;font-size:.8rem;">Ver mi confirmación</button></div>'
+      + '<p id="plazo-code-msg" style="min-height:1.2rem;font-size:.72rem;color:#f0b3a0;margin-bottom:1rem;"></p>'
       + '<div style="display:flex;flex-direction:column;gap:.75rem;">'
       + '<a href="' + NARDA_WA + '" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;background:rgba(37,211,102,.15);border:1px solid rgba(37,211,102,.3);border-radius:8px;color:#25D366;font-size:.8rem;text-decoration:none;">'
       + '💬 Narda · +591 61144206</a>'
@@ -1112,6 +1201,24 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
       + '</div>'
       + '</div>';
     document.body.appendChild(overlay);
+    var inp = overlay.querySelector('#plazo-code'), msg = overlay.querySelector('#plazo-code-msg'), btn = overlay.querySelector('#plazo-code-btn');
+    inp.addEventListener('input', function() { inp.value = inp.value.replace(/[^0-9]/g, ''); });
+    function buscar() {
+      var c = inp.value.trim();
+      if (!/^[0-9]{4}$/.test(c)) { msg.textContent = 'Escribe tu código de 4 dígitos.'; return; }
+      msg.style.color = 'rgba(250,244,232,.7)'; msg.textContent = 'Buscando…'; btn.disabled = true;
+      validateCodeRemote(c).then(function(d) {
+        btn.disabled = false; msg.style.color = '#f0b3a0';
+        if (d && d.error === 'ya_usado' && d.resumen) showConfirmed(c, d.resumen);
+        else if (d && d.error === 'ya_usado') msg.textContent = 'Tu código ya tiene una confirmación registrada.';
+        else if (d && d.ok) msg.textContent = 'Este código aún no tiene una confirmación y el plazo venció. Contáctanos y lo vemos.';
+        else if (d) msg.textContent = 'No encontramos ese código. Revísalo o contáctanos.';
+        else msg.textContent = 'No pudimos verificar. Revisa tu conexión.';
+      });
+    }
+    btn.addEventListener('click', buscar);
+    inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') buscar(); });
+    try { var uc = new URLSearchParams(location.search).get('codigo'); if (uc && /^[0-9]{4}$/.test(uc)) { inp.value = uc; buscar(); } } catch (e) {}
   }
   function pintar() {
     var ov = document.getElementById('plazo-overlay');
