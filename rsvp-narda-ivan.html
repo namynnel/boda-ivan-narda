@@ -6,6 +6,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RSVP - Ivan & Narda</title>
+  <!-- Respaldo: si el estilo externo (Tailwind) no carga en el celular, al menos los pasos ocultos siguen ocultos y el formulario se puede usar -->
+  <style>.hidden{display:none !important;}body{font-family:Montserrat,Arial,sans-serif;margin:0;}input,select,textarea,button{font:inherit;max-width:100%;}</style>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -1165,7 +1167,7 @@ document.getElementById('rsvp-form').addEventListener('submit', async function(e
 (function() {
   var NARDA_WA = 'https://wa.me/59161144206';
   var IVAN_WA  = 'https://wa.me/59160552435';
-  var SHEETS   = 'https://script.google.com/macros/s/AKfycbytJVSHJrCBiyVWauVMi9R0ubKdBhS2uTrbnmDodf9BMPqZYZiuS7H3B5tZSYXwdI6DtA/exec';
+  var SHEETS   = 'https://script.google.com/macros/s/AKfycbwWpfhGZg3X-rxzBcMwwjCPkOx04k8qAKIHMKJdaR6PlYMDqC47-Mncr89G131A_uYQIw/exec';
   var MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   var iso = '2026-11-05';   // respaldo si no se puede leer la configuración (se cambia desde el dashboard)
   try { var c = localStorage.getItem('ni-plazo-iso'); if (/^\d{4}-\d{2}-\d{2}$/.test(c || '')) iso = c; } catch (e) {}

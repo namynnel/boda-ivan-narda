@@ -148,6 +148,14 @@ body{
   background:var(--olive-dk);
 }
 
+.scroll-cue{position:relative;margin:14px auto 0;width:150px;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.5;
+  text-decoration:none;color:#fff;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;text-align:center;
+  background:rgba(20,28,10,.55);border:1px solid rgba(221,176,80,.65);border-radius:26px;padding:8px 12px 6px;backdrop-filter:blur(3px);
+  text-shadow:0 1px 6px rgba(0,0,0,.6);transition:opacity .5s,visibility .5s;}
+.scroll-cue svg{animation:cueBounce 1.6s ease-in-out infinite;color:var(--gold-lt);}
+.scroll-cue.gone{opacity:0;visibility:hidden;pointer-events:none;}
+@keyframes cueBounce{0%,100%{transform:translateY(-2px);}50%{transform:translateY(5px);}}
+@media (prefers-reduced-motion:reduce){.scroll-cue svg{animation:none;}}
 /* ── CARRUSEL (móvil — sin cambios) ── */
 #hero-carousel-wrap{height:100%;display:flex;flex-direction:column;}
 .car-track{display:flex;flex:1;height:100%;transition:transform .95s cubic-bezier(.4,0,.2,1);}
@@ -673,6 +681,10 @@ body{
   transition:all .4s;
 }
 .rsvp-cta:hover{box-shadow:0 12px 40px rgba(0,0,0,.4);transform:translateY(-2px);}
+.rsvp-cta-click{text-align:center;line-height:1.5;animation:ctaPulse 2.4s ease-in-out infinite;}
+.rsvp-cta-click svg{flex:none;}
+@keyframes ctaPulse{0%,100%{box-shadow:0 0 0 0 rgba(221,176,80,.55);}60%{box-shadow:0 0 0 14px rgba(221,176,80,0);}}
+@media (prefers-reduced-motion:reduce){.rsvp-cta-click{animation:none;}}
 
 /* ═══════════════════════════════════════
    MESAS
@@ -836,7 +848,7 @@ footer{
     <div class="v-tip" id="v-tip">Reproducir música</div>
   </div>
 </div>
-<audio id="audio-fondo" loop preload="auto">
+<audio id="audio-fondo" loop preload="metadata">
   <source src="shissou.mpeg" type="audio/mpeg">
 </audio>
 
@@ -924,6 +936,10 @@ footer{
     <div class="hero-hint">
       🎵 Te compartimos un poquito de nosotros a través de esta canción — toca el vinilo
     </div>
+    <a href="#historia" class="scroll-cue" id="scroll-cue" aria-label="Desliza hacia abajo para ver tu invitación">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    Desliza para ver tu invitación
+  </a>
   </div>
 </section>
 
@@ -1279,11 +1295,11 @@ footer{
     </p>
     <div class="deadline reveal d1" id="plazo-box">📅 Confirma tu asistencia antes del <strong id="plazo-texto">05 de noviembre de 2026</strong></div>
     <br>
-    <a href="https://namynnel.github.io/boda-ivan-narda/rsvp-narda-ivan.html" target="_blank" class="rsvp-cta reveal d2">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.64A2 2 0 012 .95h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.77a16 16 0 006.29 6.29l1.18-1.18a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+    <a href="https://namynnel.github.io/boda-ivan-narda/rsvp-narda-ivan.html" target="_blank" class="rsvp-cta rsvp-cta-click reveal d2">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M9 9l5.2 12.4 2.2-5.3 5.3-2.2L9 9z"/><path d="M7.2 3.2L6.4 6M3.2 7.2l2.8-.8M13.8 4.2l-1.6 2.4M4.2 13.8l2.4-1.6"/>
       </svg>
-      Confirmar Asistencia
+      Haz click aquí para confirmar tu asistencia
     </a>
   </div>
 </section>
@@ -1408,6 +1424,12 @@ window.addEventListener('scroll',()=>{
   nav.classList.toggle('show',s<=lastScroll||s<=100);
   lastScroll=s;
 },{passive:true});
+// Aviso «Desliza»: se oculta en cuanto la persona empieza a bajar
+(function(){
+  var cue = document.getElementById('scroll-cue'); if (!cue) return;
+  function chk(){ cue.classList.toggle('gone', (window.pageYOffset || document.documentElement.scrollTop) > 60); }
+  window.addEventListener('scroll', chk, { passive: true }); chk();
+})();
 // Active nav
 const secs=document.querySelectorAll('section[id]');
 window.addEventListener('scroll',()=>{
