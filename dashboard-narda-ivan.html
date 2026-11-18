@@ -283,7 +283,7 @@ select.edit-input{cursor:pointer;}
 
 #msg-modal-overlay{z-index:1200 !important;}
 </style>
-</head>
+<link rel="stylesheet" href="plano-dashboard.css"></head>
 <body>
 
 
@@ -413,7 +413,7 @@ select.edit-input{cursor:pointer;}
 <!-- ══ TAB 3: MESAS ══ -->
 <div id="tab-mesas" class="tab-content">
   <div class="controls">
-    <span style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--olive-dk);">30 MESAS · Mesa Principal: 12 · Resto: 14 · Capacidad: 418 · Cupos: <span id="plano-cupos-n">409</span></span>
+    <span style="font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.15em;color:var(--olive-dk);">28 MESAS REDONDAS + PRINCIPAL · Principal: 12 · Resto: 14 · Cupos: <span id="plano-cupos-n">409</span></span>
     <span id="mesas-resumen" style="font-size:.72rem;color:var(--ink-lt);margin-left:auto;"></span>
   </div>
   <div class="mesas-grid" id="mesas-grid"></div>
@@ -703,10 +703,10 @@ select.edit-input{cursor:pointer;}
   <div style="background:rgba(201,169,98,.06);border:1px solid rgba(201,169,98,.2);border-radius:10px;padding:1rem;">
     <strong style="font-family:'Cinzel',serif;font-size:.75rem;color:var(--olive-dk);display:block;margin-bottom:.5rem;">🗺️ Link del plano de mesas</strong>
     <p style="font-size:.65rem;color:var(--ink-lt);margin-bottom:.5rem;line-height:1.5;">
-      Exporta el plano desde la pestaña Plano → súbelo a Google Drive → pega el link aquí. Se incluirá automáticamente en cada mensaje de mesa.
+      El enlace común del organizador se completa automáticamente. Se incluirá en cada mensaje de mesa. Si aquí tenías un enlace antiguo de Drive, sustitúyelo por la dirección de mesas-invitados.html de tu sitio.
     </p>
     <div style="display:flex;gap:.5rem;">
-      <input type="text" id="plano-link-input" placeholder="https://drive.google.com/file/..."
+      <input type="text" id="plano-link-input" placeholder="https://tu-sitio/mesas-invitados.html"
         style="flex:1;padding:.5rem .75rem;border:1px solid rgba(92,107,58,.25);border-radius:6px;font-size:.72rem;font-family:'Montserrat',sans-serif;"
         oninput="savePlanoLink(this.value)">
       <button class="btn btn-ghost" onclick="testPlanoLink()" style="font-size:.65rem;white-space:nowrap;">Probar</button>
@@ -965,7 +965,7 @@ select.edit-input{cursor:pointer;}
 /* ══════════════════════════════════════
    CONFIG
 ══════════════════════════════════════ */
-const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwWpfhGZg3X-rxzBcMwwjCPkOx04k8qAKIHMKJdaR6PlYMDqC47-Mncr89G131A_uYQIw/exec';
+const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzNTjxsmVv5Js4c7f2ata8lF002DUZb6MqBsUom07SH8VLtFjmYQTxLcziYdlRkUihdKA/exec';
 function adminKey() { return localStorage.getItem('ni-pk') || ''; }
 var MAX_CUPOS_DEFAULT = 409;
 // Límite total de cupos presenciales: se cambia en Ajustes y se recuerda (también entre dispositivos)
@@ -1078,7 +1078,7 @@ function getGroups() { return loadGroups(); }
 function renderGroupChips() {
   const groups = getGroups();
   document.getElementById('group-chips').innerHTML = groups.map(g=>
-    `<span class="group-chip">${g}<button class="del-g" onclick="deleteGroup('${g}')" title="Eliminar grupo">✕</button></span>`
+    `<span class="group-chip">${escHtml(g)}<button class="del-g" onclick="${ea('deleteGroup(' + JSON.stringify(g) + ')')}" title="Eliminar grupo">✕</button></span>`
   ).join('');
 }
 
@@ -1304,15 +1304,12 @@ function loadMesas() {
   if (saved) {
     // Migración: las mesas que tenían capacidad 10 pasan a 14
     const arr = JSON.parse(saved).map(function(m){ if (m.maxPersonas === 10) m.maxPersonas = 14; return m; });
-    if (arr.length === 29 && !localStorage.getItem('ni-mesa30')) {
-      arr.push({num:30, nombre:'Mesa 30', grupo:'', personas:0, maxPersonas:14});
-      localStorage.setItem('ni-mesa30', '1');
-    }
+
     localStorage.setItem('ni-mesas', JSON.stringify(arr));
     return arr;
   }
   const ms = [{num:1, nombre:'Mesa Principal', grupo:'Novios', personas:0, maxPersonas:12}];
-  for(let i=2;i<=30;i++) ms.push({num:i, nombre:`Mesa ${i}`, grupo:'', personas:0, maxPersonas:14});
+  for(let i=2;i<=29;i++) ms.push({num:i, nombre:i===4?'Stormhold':`Mesa ${i}`, grupo:'', personas:0, maxPersonas:14});
   return ms;
 }
 function saveMesas(m) { localStorage.setItem('ni-mesas', JSON.stringify(m)); scheduleCfgSync('mesas'); }
@@ -1383,19 +1380,20 @@ function refreshRSVP() {
     icon.classList.remove('spin');
     if (data && data.ok) {
       rsvpRows = (data.rows || []).map(function(r) {
+        r = Object.fromEntries(Object.entries(r).map(function(entry){ return [String(entry[0]).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, '_'), entry[1]]; }));
         // Normalizar campos
         return {
-          codigo:     String(r.codigo || r['código'] || '').trim(),
-          nombre:     r.nombre || '',
-          apellido:   r.apellido || '',
-          telefono:   String(r.telefono || '').trim(),
-          asistencia: r.asistencia || '',
-          acompanantes: parseInt(r.acompanantes || r['acompañantes'] || 0)||0,
+          codigo:     normCode(r.codigo || r.confirmation_code || ''),
+          nombre:     r.nombre || r.first_name || '',
+          apellido:   r.apellido || r.last_name || '',
+          telefono:   String(r.telefono || r.phone || '').trim(),
+          asistencia: r.asistencia || r.attendance || '',
+          acompanantes: parseInt(r.acompanantes || r.companion_count || 0)||0,
           nombres_acompanantes: pickCompNames(r),
-          alergia:    r.alergia || '',
-          detalle_alergia: r.detalle_alergia || '',
-          mensaje:    r.mensaje || '',
-          fecha:      r.fecha || '',
+          alergia:    r.alergia || r.has_allergy || '',
+          detalle_alergia: r.detalle_alergia || r.dietary_restrictions || '',
+          mensaje:    r.mensaje || r.message || '',
+          fecha:      r.fecha || r.submitted_at || '',
           excedido:   r.excedido || '',
           menores:    r.menores,
           contacto_social: r.contacto_social || '',
@@ -1422,11 +1420,8 @@ function refreshRSVP() {
           contacto_email:  r.contacto_email || ''
         };
       });
-      // Aplicar overrides locales
-      const overrides = JSON.parse(localStorage.getItem('ni-status-overrides')||'{}');
-      rsvpRows.forEach(function(r) {
-        if(overrides[r.codigo]) r.asistencia = overrides[r.codigo];
-      });
+      // Sheets is authoritative. Legacy local overrides are retained in storage only;
+      // applying them here would disagree with the editor on another device.
       renderRSVP();
       updateStats();
       autoArchiveNoShows();
@@ -1526,17 +1521,28 @@ function updateStats() {
   }
 }
 
-function updateRSVPStatus(codigo, newStatus) {
-  // Save override locally
-  const overrides = JSON.parse(localStorage.getItem('ni-status-overrides')||'{}');
-  overrides[String(codigo).trim()] = newStatus;
-  localStorage.setItem('ni-status-overrides', JSON.stringify(overrides));
-  // Update in memory without adding new rows
-  const row = rsvpRows.find(r => String(r.codigo||r.confirmation_code||'').trim() === String(codigo).trim());
-  if(row) row.asistencia = newStatus;
-  autoArchiveNoShows();
-  updateStats();
-  renderRSVP();
+var pendingStatusUpdates = {};
+function readConfirmationsForCheck() {
+  return new Promise(function(resolve,reject){
+    const cb='verifyRsvp_'+Date.now()+'_'+Math.random().toString(36).slice(2),script=document.createElement('script');
+    const timer=setTimeout(()=>done(new Error('Google no respondió a la verificación.')),12000);
+    function done(error,value){clearTimeout(timer);script.remove();delete window[cb];error?reject(error):resolve(value)}
+    window[cb]=data=>data&&data.ok?done(null,data.rows||[]):done(new Error(data&&data.error||'No se pudo verificar el guardado.'));
+    script.onerror=()=>done(new Error('No se pudo leer Sheets para verificar.'));
+    script.src=SHEETS_URL+'?'+new URLSearchParams({callback:cb,pk:adminKey(),t:Date.now()});document.head.append(script);
+  });
+}
+async function updateRSVPStatus(codigo, newStatus) {
+  const code=normCode(codigo),row=rsvpRows.find(r=>normCode(r.codigo)===code);if(!row||pendingStatusUpdates[code])return;
+  pendingStatusUpdates[code]=true;renderRSVP();showSyncStatus('⏳ Guardando asistencia en Sheets…','loading');
+  try{
+    await sendImage(SHEETS_URL+'?'+new URLSearchParams({action:'updateStatus',codigo:code,asistencia:newStatus,pk:adminKey()}));
+    const rows=await readConfirmationsForCheck(),saved=rows.find(r=>normCode(r.codigo||r['código']||r['Código']||r.confirmation_code)===code);
+    if(!saved||String(saved.asistencia??saved.Asistencia??saved.attendance??'')!==newStatus)throw Error('Sheets no confirmó el cambio. Se conserva la asistencia anterior.');
+    row.asistencia=newStatus;const overrides=JSON.parse(localStorage.getItem('ni-status-overrides')||'{}');delete overrides[code];localStorage.setItem('ni-status-overrides',JSON.stringify(overrides));
+    autoArchiveNoShows();updateStats();showSyncStatus('✓ Asistencia guardada y verificada en Sheets','ok');
+  }catch(error){showSyncStatus('No guardado: '+error.message,'error')}
+  finally{delete pendingStatusUpdates[code];renderRSVP();renderGuests()}
 }
 
 function setRSVPFilter(f, btn) {
@@ -1596,7 +1602,7 @@ function renderRSVP() {
     const phoneDisplay = phone || '—';
     const asistencia = r.asistencia||r.attendance||r['Asistencia']||'';
     const attBadge = asistencia ? `<span class="badge ${asistencia==='no'?'b-no':'b-confirmed'}">${attLabel[asistencia]||asistencia}</span>` : `<span class="badge b-pending">⏳ Pendiente</span>`;
-    const attSelect = `<select onchange="${ea('updateRSVPStatus(' + JSON.stringify(code) + ',this.value)')}" onclick="event.stopPropagation()" style="font-size:.68rem;border:1px solid rgba(168,197,176,.4);border-radius:4px;padding:.15rem .3rem;background:#fff;color:var(--ink);cursor:pointer;margin-top:.3rem;width:100%;display:block;">
+    const attSelect = `<select data-status-code="${ea(code)}" ${pendingStatusUpdates[code]?'disabled':''} onchange="${ea('updateRSVPStatus(' + JSON.stringify(code) + ',this.value)')}" onclick="event.stopPropagation()" style="font-size:.68rem;border:1px solid rgba(168,197,176,.4);border-radius:4px;padding:.15rem .3rem;background:#fff;color:var(--ink);cursor:pointer;margin-top:.3rem;width:100%;display:block;">
       <option value="both" ${asistencia==='both'?'selected':''}>Ambos</option>
       <option value="ceremony" ${asistencia==='ceremony'?'selected':''}>Ceremonia</option>
       <option value="reception" ${asistencia==='reception'?'selected':''}>Recepcion</option>
@@ -1621,8 +1627,9 @@ function renderRSVP() {
     const mesaNum = code !== '—' ? (mesaAssigns[String(code).trim()] || '—') : '—';
     const mesaLabel = mesaNum !== '—' ? mesas.find(function(m){return m.num===mesaNum;}) : null;
     const mesaBtnLabel = mesaLabel ? mesaLabel.nombre : (mesaNum !== '—' ? 'Mesa '+mesaNum : 'Asignar');
-    const mesaBtn = `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;" onclick="${ea('openMesaModal(' + JSON.stringify(code) + ',' + JSON.stringify(name) + ')')}">${ea(mesaBtnLabel)}</button>`;
-    const hasMesa   = !!mesaAssigns[String(code).trim()];
+    const needsMesa = !isIntl && (asistencia==='both'||asistencia==='reception');
+    const mesaBtn = needsMesa ? `<button class="btn btn-ghost" style="font-size:.58rem;padding:.2rem .5rem;" onclick="${ea('openMesaModal(' + JSON.stringify(code) + ',' + JSON.stringify(name) + ')')}">${ea(mesaBtnLabel)}</button>` : `<span style="font-size:.62rem;color:var(--ink-lt)">${isIntl?'Sin mesa · virtual':asistencia==='ceremony'?'Solo ceremonia':'—'}</span>`;
+    const hasMesa   = needsMesa && !!mesaAssigns[String(code).trim()];
     const yaConfirmo = asistencia && asistencia !== '' && asistencia !== 'virtual';
     const socialRaw  = String(r.contacto_social||r['contacto_social']||'').trim();
     const emailRaw   = String(r.contacto_email||r['contacto_email']||'').trim();
@@ -2995,7 +3002,7 @@ function printEntryList() {
     + 'table{width:100%;border-collapse:collapse;}th,td{border:1px solid #999;padding:5px 6px;text-align:left;vertical-align:top;}th{background:#e8e8e8;}td.c{text-align:center;}'
     + 'td.nom{font-weight:bold;font-size:12.5px;}td.cod{font-family:monospace;font-size:11px;}td.ac{font-size:10.5px;color:#444;}td.box{font-size:20px;line-height:1;}'
     + 'tr.let td{background:#333;color:#fff;font-weight:bold;font-size:13px;padding:2px 8px;}tr{page-break-inside:avoid;}thead{display:table-header-group;}'
-    + '@media print{body{margin:8mm;}}</style></head><body>'
+    + '@media print{body{margin:8mm;}}</style><link rel="stylesheet" href="plano-dashboard.css"></head><body>'
     + '<h1>Lista de ingreso — Ivan &amp; Narda · 5 de diciembre de 2026</h1>'
     + '<p>Ordenada por apellido · ' + rows.length + ' invitaciones · ' + totAd + ' adultos · ' + totK + ' menores' + (virtN ? ' · ' + virtN + ' virtuales/internacionales (no ingresan, no se listan)' : '') + '</p>'
     + '<table><thead><tr><th>#</th><th>Código</th><th>Invitado</th><th>Mesa</th><th>Adultos</th><th>Menores</th><th>Acompañantes</th><th>Ingresó</th></tr></thead><tbody>' + tr + '</tbody></table></body></html>';
@@ -3032,7 +3039,7 @@ header h1{font-size:15px;margin:0 0 6px}#cnt{font-size:12px;opacity:.9;margin-bo
 .row.in{background:#dff0d5}.row .t{flex:1;min-width:0}.nm{font-weight:bold;font-size:15px}.sub{font-size:12px;color:#555;margin-top:2px}
 .mesa{font-weight:bold;color:#3a4520}.ck{width:34px;height:34px;flex:none}.cod{font-family:monospace;font-size:11px;color:#777}
 .hide{display:none}#empty{padding:30px;text-align:center;color:#777}
-</style></head><body>
+</style><link rel="stylesheet" href="plano-dashboard.css"></head><body>
 <header><h1>Lista de ingreso · Ivan y Narda · 5 dic 2026</h1><div id="cnt"></div><div id="syn" style="font-size:11px;margin-bottom:6px"></div>
 <input id="q" type="search" placeholder="Buscar por apellido, nombre, código o mesa…" autocomplete="off">
 <div class="bar"><button id="f0" class="on">Todos</button><button id="f1">Faltan por ingresar</button><button id="f2">Ya ingresaron</button><button id="ex">Descargar ingresados</button></div></header>
@@ -3442,7 +3449,7 @@ function defaultGroupsList() {
 function packAssigns(a) { return Object.keys(a).map(function(k){ return k + ':' + a[k]; }).join(','); }
 function unpackAssigns(s) {
   var o = {};
-  String(s || '').split(',').forEach(function(p){ var kv = p.split(':'); if (kv[0] && kv[1]) o[kv[0]] = parseInt(kv[1]); });
+  String(s || '').split(',').forEach(function(p){ var kv = p.split(':'); if (kv[0] && kv[1]) o[normCode(kv[0])] = parseInt(kv[1]); });
   return o;
 }
 function packMesas() {
@@ -4139,13 +4146,13 @@ function savePlanoLink(val) {
 }
 
 function testPlanoLink() {
-  var link = localStorage.getItem('ni-plano-link') || '';
-  if (!link) { alert('Pega primero el link de Google Drive.'); return; }
+  var link = getPlanoLink();
+  if (!isHttpUrl(link)) { alert('Introduce el enlace completo de la página de invitados.'); return; }
   window.open(link, '_blank');
 }
 
 function getPlanoLink() {
-  return localStorage.getItem('ni-plano-link') || '';
+  return localStorage.getItem('ni-plano-link') || new URL('mesas-invitados.html', location.href).href;
 }
 
 // Cargar link guardado al abrir la tab de plano
@@ -4501,5 +4508,5 @@ if ('serviceWorker' in navigator) {
 }
 
 </script>
-</body>
+<script src="plano-dashboard.js"></script></body>
 </html>

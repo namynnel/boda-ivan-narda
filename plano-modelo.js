@@ -1,0 +1,50 @@
+(function(root){'use strict';
+const names=['Mesa principal','El Capitolio','La Madriguera','Stormhold','Berk','Winterfell','Rohan','Skyrim','Narnia','Hogwarts','Rivendel','Derry','Arcadia Bay','Gravity Falls','Basement','Distrito 12','Ilvermorny','Mordor','Cathedral','Hallownest','La Comarca','La Colmena','Minas Tirith','Cainhurst','Hogsmeade','Isengard','Yharnam','Pendiente 1','Pendiente 2'];
+const groups=['Novios','Damas y Caballeros','Arze + Mariño','Arze + Mariño','Arze + Mariño','Zelada','Zelada','Zelada','K-pop','K-pop','K-pop','K-pop','Cosplay','Cosplay','Cosplay','Cosplay','CETI','Abog','Abog','Compa','Compa','Caldero','Taller','7 REINOS','Alasitas + Otros','Dragón','TDB','',''];
+const catalog={round:{label:'Mesa redonda',extra:0,cell:0,w:8,h:6.4},rect:{label:'Mesa rectangular',extra:1,cell:1,w:18,h:8},stage:{label:'Escenario',cell:2,w:29,h:18},bar:{label:'Barra',cell:3,w:20,h:16},bath:{label:'Baños',cell:4,w:18,h:16},dance:{label:'Pista de baile',cell:5,w:27,h:22},pillar:{label:'Columna',cell:6,w:4,h:5},wall:{label:'Pared',cell:7,w:30,h:2},entrance:{label:'Entrada',cell:8,w:15,h:10},memory:{label:'Árbol de huellas',extra:4,cell:9,w:17,h:15},gifts:{label:'Caja para sobres',extra:5,cell:10,w:17,h:15},stairs:{label:'Gradas / escaleras',extra:3,w:15,h:10},label:{label:'Rótulo',cell:11,w:18,h:5}};
+catalog.bathLadies={...catalog.bath,label:'Baños · Damas'};catalog.bathGents={...catalog.bath,label:'Baños · Caballeros'};delete catalog.bath;
+const norm=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+const normalizeCode=value=>{const s=String(value==null?'':value).trim();return /^\d{1,3}$/.test(s)?s.padStart(4,'0'):s};
+const id=()=>crypto.randomUUID();
+function object(type,x=50,y=50){return {id:id(),type,x,y,w:catalog[type].w,h:catalog[type].h,rotation:0,label:catalog[type].label}};
+function fresh(empty=false){const objects=empty?[]:[object('stage',50,14),object('bar',84,14),{...object('bathLadies',12,13),w:12,h:12},{...object('bathGents',25,13),w:12,h:12},object('dance',50,49),{...object('memory',40,83),w:12,h:12},{...object('gifts',60,83),w:12,h:12},object('entrance',50,94),{...object('stairs',50,24),h:6},...[ [32,34],[68,34],[32,66],[68,66]].map(p=>object('pillar',...p)),...[[50,3,90,2],[5,48,2,90],[95,48,2,90],[25,96,35,2],[75,96,35,2]].map(([x,y,w,h])=>({...object('wall',x,y),w:h>w?h:w,h:h>w?w:h,rotation:h>w?90:0}))];
+const positions=[[50,32],...[30,39,48,57,66,75,84].flatMap(y=>[[14,y],[86,y],[28,y],[72,y]])];
+return {schema:2,width:1000,height:1250,objects,tables:empty?[]:names.map((n,i)=>({...object(i===0?'rect':'round',...positions[i]),num:i+1,emblem:'option1',seats:i?14:12}))};}
+function migrate(value){const v=value||{},l=v.layout;let layout;if(l&&l.schema===2)layout=JSON.parse(JSON.stringify(l));else if(l){layout=fresh(true);layout.tables=(l.tables||[]).map(t=>({...object(t.num===1?'rect':'round',t.x,t.y),num:t.num,emblem:'auto'}));layout.objects=(l.pillars||[]).map(p=>({...object('pillar',p.x,p.y)}));layout.objects.push(object('entrance',50,94));}else layout=fresh();
+const mesas=names.map((n,i)=>[i+1,n,groups[i],i?14:12]);(v.m||[]).forEach(m=>{let i=mesas.findIndex(x=>x[0]===m[0]);if(i<0)mesas.push(m);else mesas[i]=m[0]===1&&norm(m[1])==='el gran comedor'?[1,'Mesa principal',m[2],m[3]]:m;});const assigns={};String(v.a||'').split(',').forEach(s=>{const [c,n]=s.split(':');if(c&&n)assigns[normalizeCode(c)]=Number(n)});Object.values(assigns).forEach(n=>{if(!mesas.some(m=>m[0]===n))mesas.push([n,'Mesa '+n,'',14])});mesas.forEach(m=>{m[3]=Math.max(12,Math.min(15,Number(m[3])||12));if(l&&l.schema===2)return;if(!layout.tables.some(t=>t.num===m[0]))layout.tables.push({...object('round',50,80),num:m[0],emblem:'auto'})});layout.tables.forEach(t=>{const m=mesas.find(m=>m[0]===t.num);if(m&&(!l||l.schema!==2||!t.seats))t.seats=m[3];});return {layout,mesas,assigns,revision:Number(v.revision||0)};}
+function obstacle(o,x,y,pad=0.8,ratio=1.25){const a=-(o.rotation||0)*Math.PI/180,dx=x-o.x,dy=(y-o.y)*ratio,xx=dx*Math.cos(a)-dy*Math.sin(a),yy=dx*Math.sin(a)+dy*Math.cos(a);if(o.type==='round'||o.type==='dance')return (xx/(o.w/2+pad))**2+(yy/(o.h*ratio/2+pad))**2<=1;return Math.abs(xx)<o.w/2+pad&&Math.abs(yy)<o.h*ratio/2+pad;}
+function route(layout,num){const end=layout.tables.find(t=>t.num===num),entrance=layout.objects.find(o=>o.type==='entrance');if(!end||!entrance)return [];const ratio=layout.height/layout.width,pad=2200/layout.width,step=Math.max(1,ratio)*1.2,start=[Math.round(entrance.x),Math.round(entrance.y)],obs=[...layout.tables.filter(t=>t.num!==num),...layout.objects.filter(o=>!['entrance','label'].includes(o.type))],queue=[start],seen=new Map([[start.join(','),null]]);let found;
+const atChairs=p=>!obstacle(end,...p,pad,ratio)&&obstacle(end,...p,pad+step,ratio);
+for(let i=0;i<queue.length;i++){const p=queue[i];if(atChairs(p)){found=p;break;}for(const [dx,dy]of [[0,-1],[1,0],[-1,0],[0,1]]){const n=[p[0]+dx,p[1]+dy],k=n.join(',');if(n[0]<1||n[0]>99||n[1]<1||n[1]>99||seen.has(k)||obstacle(end,...n,pad,ratio)||obs.some(o=>obstacle(o,...n,o.num!==undefined?pad:800/layout.width,ratio)))continue;seen.set(k,p);queue.push(n)}}if(!found)return [];const r=[];for(let p=found;p;p=seen.get(p.join(',')))r.push({x:p[0],y:p[1]});return r.reverse();}
+const fonts={"cormorant":"'Cormorant Garamond', Georgia, serif","cinzel":"'Cinzel', Georgia, serif","fell":"'IM Fell English', Georgia, serif","fellsc":"'IM Fell English SC', Georgia, serif","georgia":"Georgia, serif","montserrat":"'Montserrat', Arial, sans-serif"},textSizes={"tableName":{"value":12,"min":8,"max":60,"label":"Nombre de las mesas"},"tableNumber":{"value":18,"min":10,"max":80,"label":"Número de las mesas"},"placeLabel":{"value":17,"min":8,"max":72,"label":"Rótulos: Escenario, Barra, Baños…"},"walkerName":{"value":21,"min":12,"max":48,"label":"Nombre del invitado en el pergamino"},"emblem":{"value":32,"min":24,"max":90,"label":"Emblema sobre la mesa"},"arrivalName":{"value":29,"min":18,"max":60,"label":"Nombre de mesa al llegar"},"arrivalNumber":{"value":42,"min":24,"max":90,"label":"Número de mesa al llegar"},"arrivalEmblem":{"value":65,"min":40,"max":140,"label":"Emblema al llegar"}};
+function fontFamily(key,fallback='cormorant'){return fonts[key]||fonts[fallback]||fonts.cormorant;}
+function typography(layout){const raw=layout.typography||{},out={font:fonts[raw.font]?raw.font:'cormorant'};Object.entries(textSizes).forEach(([k,d])=>{const n=Number(raw[k]);out[k]=Number.isFinite(n)&&n>0?Math.max(d.min,Math.min(d.max,n)):d.value});return out;}
+// Coordinates follow the tabletop, excluding the hanging tablecloth in the sprite.
+function badgeMetrics(o,layout,showName=false){
+ const t=typography(layout),w=o.w*layout.width/100,h=o.h*layout.height/100,round=o.type!=='rect',number=Math.max(8,Math.min(80,Number(o.text?.numberSize)||t.tableNumber)),emblem=t.emblem,gap=2;
+ const desiredW=round?Math.max(number*1.4,emblem):number*1.4+gap+emblem,desiredH=round?number*1.1+gap+emblem:Math.max(number*1.1,emblem),angle=o.text?.upright===false?0:(o.rotation||0)*Math.PI/180,c=Math.abs(Math.cos(angle)),s=Math.abs(Math.sin(angle));
+ const availableW=w*(round?.64:.78),availableH=h*(round?(showName?.50:.60):(showName?.25:.32));
+ const scale=Math.min(1,availableW/(desiredW*c+desiredH*s),availableH/(desiredW*s+desiredH*c));
+ return {w,h,x:w*.5,y:h*(round?(showName?.375:.44):(showName?.41:.46)),number:number*scale,emblem:emblem*scale,gap:gap*scale,width:desiredW*scale,height:desiredH*scale,nameSize:Math.min(Number(o.text?.fontSize)||t.tableName,h*(round?.13:.09)),round};
+}
+function canonicalName(value){const s=norm(value);if(s==='the basement')return 'basement';if(s==='the cathedral')return 'cathedral';if(s==='amigos de papas')return 'amigos papas';return s;}
+function importGeometry(current,backup){
+ if(backup?.layout?.schema!==2||!Array.isArray(backup.layout.tables)||!Array.isArray(backup.layout.objects)||!Array.isArray(backup.m))throw Error('El archivo no es un plano editable compatible.');
+ const layout=JSON.parse(JSON.stringify(backup.layout));if(!Number.isInteger(layout.width)||!Number.isInteger(layout.height)||layout.width<400||layout.width>4000||layout.height<400||layout.height>4000)throw Error('Las dimensiones del respaldo no son compatibles.');
+ const used=new Set(),ids=new Set(),mapping=[];
+ for(const o of [...layout.objects,...layout.tables]){if(!catalog[o.type]||typeof o.id!=='string'||ids.has(o.id)||['x','y','w','h','rotation'].some(k=>typeof o[k]!=='number'||!Number.isFinite(o[k]))||o.x<0||o.x>100||o.y<0||o.y>100||o.w<.1||o.w>1000||o.h<.1||o.h>1000||o.rotation< -180||o.rotation>180)throw Error('El respaldo contiene una pieza inválida o repetida.');ids.add(o.id);}
+ for(const t of layout.tables){
+  const source=backup.m.find(m=>Number(m[0])===t.num);if(!source)throw Error('Falta el nombre de la mesa '+t.num+' en el respaldo.');
+  const name=canonicalName(source[1]),same=current.mesas.find(m=>m[0]===t.num&&canonicalName(m[1])===name),candidates=current.mesas.filter(m=>canonicalName(m[1])===name);let target=same;
+  if(t.num===1&&['mesa principal','el gran comedor'].includes(name))target=current.mesas.find(m=>m[0]===1);
+  if(!target&&candidates.length===1)target=candidates[0];
+  if(!target&&/^pendiente\s*\d+$/.test(name))target=current.mesas.find(m=>m[0]===t.num);
+  if(!target||used.has(target[0]))throw Error('No pude identificar de forma única «'+source[1]+'». Revisa su nombre antes de importar; tus datos actuales se conservaron.');
+  used.add(target[0]);const old=current.layout.tables.find(o=>o.num===target[0]);mapping.push({nombre:target[1],origen:t.num,destino:target[0]});t.num=target[0];t.seats=old?.seats||target[3];
+  if(old?.assetId)t.assetId=old.assetId;else delete t.assetId;
+ }
+ return {state:{...current,layout},mapping};
+}
+
+root.Plano={names,groups,catalog,norm,id,object,fresh,migrate,route,obstacle,normalizeCode,fonts,textSizes,fontFamily,typography,badgeMetrics,canonicalName,importGeometry};if(typeof module!=='undefined')module.exports=root.Plano;
+})(typeof window!=='undefined'?window:globalThis);

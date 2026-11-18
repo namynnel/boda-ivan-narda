@@ -1,0 +1,15 @@
+.scene{font-family:var(--map-font,'Cormorant Garamond',Georgia,serif)}.scene:before{font-family:var(--map-font,'Cormorant Garamond',Georgia,serif);font-size:var(--map-title-size,24px)}.scene .piece-label{font-family:var(--piece-font,var(--map-font,'Cormorant Garamond',Georgia,serif));font-size:var(--piece-text-size,var(--map-place-label,17px));line-height:1.15}.scene .table-label{font-family:var(--piece-font,var(--map-font,'Cormorant Garamond',Georgia,serif))}.scene .table-label .name{font-size:var(--piece-text-size,var(--map-table-name,12px))}.scene .table-label .number{font-size:var(--piece-number-size,var(--map-table-number,16px))}.scene .table-label img{width:var(--map-emblem,18px);height:var(--map-emblem,18px)}.scene .walker{font-family:var(--map-font,'Cormorant Garamond',Georgia,serif);font-size:var(--map-walker-name,21px)}.scene .arrival-card .table-label .name{font-size:var(--map-arrival-name,29px)}.scene .arrival-card .table-label .number{font-size:var(--map-arrival-number,42px)}.scene .arrival-card .table-label img{width:var(--map-arrival-emblem,65px);height:var(--map-arrival-emblem,65px)}
+
+.scene .piece.table>.table-label{inset:0;width:100%;height:100%;display:block;transform:none}
+.scene .table-core{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.scene .piece.table .table-core{position:absolute;transform:translate(-50%,-50%) rotate(var(--counter-angle,0deg));transform-origin:center}
+.scene .piece.table .table-core.badge-row{flex-direction:row}
+.scene .piece.table .table-core .number{font-size:var(--badge-number);font-weight:700;line-height:1.1;color:#3f2815;text-shadow:0 1px 1px #fff8e3}
+.scene .piece.table .table-core img{width:var(--badge-emblem);height:var(--badge-emblem)}
+.scene .table-core img{display:block;flex:none;filter:drop-shadow(0 1px 1px #70451f30)}
+.scene .piece.table>.table-label>.name{position:absolute;inset:0;width:100%;height:100%;font-size:var(--badge-name);line-height:1.1;margin:0;text-shadow:0 1px 1px #fff7df;font-weight:600}
+.scene .piece.table .name-arc{display:block;width:100%;height:100%;overflow:visible;fill:currentColor;transform:rotate(var(--counter-angle,0deg));transform-origin:50% 44%}
+.scene .piece.table[data-type="rect"]>.table-label>.name{inset:auto;top:54%;left:10%;width:80%;height:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.scene.map-guest .piece.table>.table-label>.name{display:none}
+.scene .arrival-card .table-label>.name{position:static;display:block;margin:0}
+#piece-upright-wrap{display:flex;align-items:center;gap:8px;line-height:1.4}#piece-upright{width:auto;flex:none}

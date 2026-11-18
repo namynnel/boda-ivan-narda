@@ -1,0 +1,6 @@
+#tabs .organizer-link{flex:none;white-space:nowrap}
+@media(max-width:600px){
+ #tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}
+ #tabs .tab{padding:.8rem .35rem;text-align:center;letter-spacing:.035em;font-size:.62rem}
+ #tabs .organizer-link{grid-column:1/-1;display:flex;align-items:center;justify-content:center;margin:.45rem .8rem .8rem!important;min-height:42px;white-space:nowrap;font-size:.72rem;letter-spacing:.06em}
+}
