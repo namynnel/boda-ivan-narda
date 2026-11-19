@@ -13,3 +13,8 @@
 @media(max-width:1100px){.workspace{--palette-width:150px;--inspector-width:310px}}
 @media(min-width:761px){.workspace .canvas-panel{min-height:0}.workspace .viewport{min-height:180px}}
 @media(max-width:760px){.panel-controls{position:sticky;top:0;z-index:40;padding:7px 10px;gap:5px}.panel-controls button{font-size:10px;padding:8px}.workspace.palette-closed.inspector-closed .viewport{height:72dvh;min-height:400px}}
+.guest-map-tools{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:12px 8px;background:#f8efdc;color:#382e23;border:1px solid #b69b66;border-bottom:0}
+.guest-map-tools button{font-size:13px;padding:8px 12px}.guest-map-tools output{min-width:50px;text-align:center;font-size:12px}.guest-map-tools small{width:100%;font-size:11px;color:#6c5838}.guest-download{background:#34473a;color:white;border-color:#34473a}.guest-download:hover{color:#382e23}
+.guest-map-scroll{position:relative;height:min(78dvh,900px);max-height:78dvh;touch-action:none;cursor:grab;background:#e8d5aa}.guest-map-scroll.dragging{cursor:grabbing}.guest-map-frame{position:relative;margin:0 auto}.guest-download-status{font-size:12px;line-height:1.5;min-height:1.5em}
+/* Ink lands softly; old prints retain a faint, slightly blurred trace. */
+.walking-print{transition:opacity .7s linear,filter .7s linear}.walking-print path{animation:print-ink .18s ease-out both}@keyframes print-ink{from{fill-opacity:.2}to{fill-opacity:1}}@media(prefers-reduced-motion:reduce){.walking-print{transition:none}.walking-print path{animation:none}}

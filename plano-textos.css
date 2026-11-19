@@ -13,3 +13,6 @@
 .scene.map-guest .piece.table>.table-label>.name{display:none}
 .scene .arrival-card .table-label>.name{position:static;display:block;margin:0}
 #piece-upright-wrap{display:flex;align-items:center;gap:8px;line-height:1.4}#piece-upright{width:auto;flex:none}
+.scene .piece:not([data-type="label"])>.piece-label{top:100%;margin-top:var(--piece-label-gap,var(--map-label-gap,12px))}
+.scene .piece[data-type="label"]>.piece-label{top:50%;transform:translateY(-50%);margin:0}
+.scene{box-sizing:content-box}
